@@ -1,17 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Welcome to English at Large
+
+Hello and welcome! We're going to have a great time developing this project over the next year. Follow the instructions below.
 
 ## Getting Started
 
-First, run the development server:
+First, after cloning the repository, run `npm i` to install all packages. This sets up the infrastructure and everything you need for the site to work and stores it on a folder called `node_modules`.
+
+You'll also want some packages on VSCode:
+
+- Live Share
+- Simple React Snippets
+- ESLint
+- Prettier - Code Formatter
+- Prettier ESLint
+
+## Development
+
+To actually run the site, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -28,9 +36,3 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
