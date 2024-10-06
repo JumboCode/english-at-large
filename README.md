@@ -14,6 +14,8 @@ You'll also want some packages on VSCode:
 - Prettier - Code Formatter
 - Prettier ESLint
 
+Run `npx prisma generate` to generate your Prisma Client. You'll need to run this if the schema gets updated, but Clarence will let you know when that happens.
+
 ## Development
 
 To actually run the site, run the development server:
