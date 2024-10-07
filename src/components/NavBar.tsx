@@ -2,22 +2,14 @@ import React from "react";
 
 const NavBar = () => {
   return (
-    <div
-      style={{
-        backgroundColor: "grey",
-        padding: 15,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "row", gap: 20 }}>
+    <div className="bg-gray-600 flex flex-row justify-between p-4">
+      <div className="flex flex-row: gap-5">
         <a href="/">
           <p>English At Large</p>
         </a>
-        <p>+ Add new</p>
+        <p>+ Add New</p>
       </div>
-      <div style={{ display: "flex", flexDirection: "row", gap: 20 }}>
+      <div className="flex flex-row: gap-5">
         <a href="/requests">
           <p>Requests</p>
         </a>
