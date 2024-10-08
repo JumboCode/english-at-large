@@ -14,11 +14,10 @@ export default function Home() {
         <a
           className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
           href="/about">
-          <p className="text-center">hello</p>
+          <p className="text-center">Click to go to test backend page</p>
         </a>
         <AddNewBookForm />
       </main>
-
       {/* Footer from Next.js. Can get rid of this in the future, but there's some useful links to tutorials so*/}
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
