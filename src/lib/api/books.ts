@@ -1,3 +1,4 @@
+import { Book } from "@prisma/client";
 import axios from "axios";
 
 export async function getBooks() {
@@ -9,7 +10,7 @@ export async function getBooks() {
   }
 }
 
-export async function createBook(book: { name: string; owner: string }) {
+export async function createBook(book: Omit<Book, 'id'>) {
   try {
     const response = await axios.post("/api/books", book);
     return response.data;
