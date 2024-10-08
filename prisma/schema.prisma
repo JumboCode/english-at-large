@@ -31,9 +31,9 @@ model Book {
   notes     String?
   status    String
   
-  // Required foreign key to BookGroup
-  groupId   Int       // Foreign key to BookGroup
-  group     BookGroup @relation(fields: [groupId], references: [id]) // Relation to BookGroup
+  // Foreign key to BookGroup. Is optional until we implement the BookGroup logic
+  // groupId   Int?       // Foreign key to BookGroup
+  // group     BookGroup? @relation(fields: [groupId], references: [id]) // Relation to BookGroup
   
   // Relation to Request
   requests  Request[] // One book can be requested in many requests
@@ -41,13 +41,13 @@ model Book {
   @@map("Books")
 }
 
-model BookGroup {
-  id    Int     @id @default(autoincrement())
-  title String
-  books Book[]  // One group can have many books
+// model BookGroup {
+//   id    Int     @id @default(autoincrement())
+//   title String
+//   books Book[]  // One group can have many books
 
-  @@map("BookGroups")
-}
+//   @@map("BookGroups")
+// }
 
 model Request {
   id        Int        @id @default(autoincrement())
