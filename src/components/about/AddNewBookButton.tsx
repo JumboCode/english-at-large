@@ -1,31 +1,16 @@
 "use client";
-import React from "react";
-import { styleText } from "util";
-
- 
+import React, {useState} from "react";
+import RedSquare from "@/components/about/RedSquare"; 
 
 const AddNewBookButton = () => {
-    const handleAddNewBook =  () => { 
-        // return (
-        //     <div style={{
-        //         border: '1px solid black',
-        //         padding: '20px',
-        //         width: '200px',
-        //         height: '100px'
-        //       }}>
-        //         This is a simple box
-        //     </div>
-        // );
+const [showSquare, setShowSquare] = useState(false);
 
-        console.log("clicked!"); 
+    const handleAddNewBook =  () => { 
+            setShowSquare(true);
     };
 
-    const styles = {
-        square: {
-            width: '50px',
-            height: '50px',
-            color: 'red',
-        }
+    if (showSquare) {
+        return (<RedSquare />);
     }
 
     return (
@@ -38,4 +23,3 @@ const AddNewBookButton = () => {
 }
 
 export default AddNewBookButton; 
-
