@@ -11,14 +11,23 @@ import { validateUserData } from "../util/types";
  * @remarks
  * - TODO: add filtering if needed
  */
-// export async function getUsers() {
-//   try {
-//     const response = await axios.get("/api/users");
-//     return response.data; //JSON
-//   } catch (error) {
-//     throw new Error("Failed to fetch books");
-//   }
-// }
+export async function getAllUsers() {
+  try {
+    const response = await axios.get("/api/users");
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch users");
+  }
+}
+
+export async function getOneUser(id: string) {
+    try {
+      const response = await axios.get("/api/users/?id=" + id);
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to fetch user with id: " + id);
+    }
+  }
 
 /**
  * Utility function for creating a books
@@ -40,5 +49,17 @@ export async function createUser(user: Omit<User, "id">) {
     console.error("Failed to create user: ", error);
   }
 }
+
+export async function updateUser(user: User) {
+    try {
+      if (!validateUserData(user)) {
+        throw new Error("Missing user fields");
+      }
+      const response = await axios.put("/api/users", user);
+      return response.data;
+    } catch (error) {
+      console.error("Failed to update user: ", error);
+    }
+  }
 
 // Add other CRUD functions as needed (updateBook, deleteBook, etc.)

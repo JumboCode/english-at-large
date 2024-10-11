@@ -2,27 +2,25 @@
 
 "use client";
 import { useState } from "react";
-import { createUser } from "@/lib/api/users";
-import { emptyUser } from "@/lib/util/types";
-import { userOne } from "@/lib/util/types";
+import { getAllUsers } from "@/lib/api/users";
 import { User } from "@prisma/client";
 
-const CreateUserButton = () => {
+const GetAllUsersButton = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
   
-    const handleCreateUser = async () => {
+    const handleGetUsers = async () => {
       setLoading(true);
       setError(null);
   
       try {
         // create user without id
-        await createUser(userOne as Omit<User, "id">);
-        console.log("user");
-        alert("User created successfully!");
+        const users: User[] = await getAllUsers();
+        console.log("getting all users");
+        console.log(users)
       } catch (err) {
         console.log("error bro");
-        setError("Failed to create user");
+        setError("Failed to get all users");
         console.error(err);
       } finally {
         setLoading(false);
@@ -31,12 +29,12 @@ const CreateUserButton = () => {
   
     return (
       <div>
-        <button onClick={handleCreateUser} disabled={loading}>
-          {loading ? "Creating..." : "Create User"}
+        <button onClick={handleGetUsers} disabled={loading}>
+          {loading ? "Creating..." : "Get all users"}
         </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
     );
   };
   
-  export default CreateUserButton;
+  export default GetAllUsersButton;
