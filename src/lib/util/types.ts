@@ -1,4 +1,4 @@
-import { Book } from "@prisma/client";
+import { Book, BookLevel, BookStatus, BookType } from "@prisma/client";
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
@@ -35,12 +35,16 @@ export function validateBookData(bookData: Partial<Book>): boolean {
  */
 export const emptyBook: Book = {
   id: 0, // Autoincremented, so can be 0 for dummy purposes
-  title: "Untitled Book", // Dummy title
-  isbn: "000-0-00-000000-0", // Dummy ISBN
-  level: "Beginner", // Dummy difficulty level
-  booktype: [], // Empty array for book types
-  scanLink: "http://example.com/scan", // Dummy link
-  notes: "No notes", // Optional, but can have dummy data
-  status: "Available", // Dummy status
-  // groupId: 1, // Dummy groupId
+  title: "Untitled Book",
+  author: "",
+  isbn: "000-0-00-000000-0",
+  publisher: "",
+  level: BookLevel.Beginner,
+  booktype: BookType.Reference,
+  scanLink: "http://example.com/scan",
+  description: "",
+  notes: "",
+  status: BookStatus.Available,
+  skills: [],
+  releaseDate: null,
 };
