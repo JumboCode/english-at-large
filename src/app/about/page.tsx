@@ -1,4 +1,5 @@
 import CreateBookButton from "@/components/about/CreateBookButton";
+import CreateUserButton from "@/components/about/CreateUserButton";
 import React from "react";
 
 export default function About() {
@@ -6,6 +7,7 @@ export default function About() {
     <div>
       Testing
       <CreateBookButton />
+      <CreateUserButton />
     </div>
   );
 }
