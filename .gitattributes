@@ -3,3 +3,4 @@
 
 # Set line endings to LF to standardize changes in Windows/Mac
 text eol=lf
+*.sql text eol=lf

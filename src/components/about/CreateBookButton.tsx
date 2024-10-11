@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { createBook } from "@/lib/api/books"; // Adjust the path as necessary
+import { emptyBook } from "@/lib/util/types";
+import { Book } from "@prisma/client";
 
 const CreateBookButton = () => {
   const [loading, setLoading] = useState(false);
@@ -13,8 +15,8 @@ const CreateBookButton = () => {
     try {
       console.log("book");
       // Replace these with your book details
-      const newBook = { name: "New Book Title", owner: "Author Name" };
-      await createBook(newBook);
+      // cast as book w/o id since we can't have an existing id when creating a book
+      await createBook(emptyBook as Omit<Book, "id">);
       alert("Book created successfully!");
     } catch (err) {
       console.log("error bro");
