@@ -48,3 +48,36 @@ export const emptyBook: Book = {
   skills: [],
   releaseDate: null,
 };
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+/////                                                                      /////
+/////                              REQUESTS                                /////
+/////                                                                      /////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Utility function for checking if a request is valid (no fields are empty, etc.)
+ *
+ * @param requestData - Partial request data to be validated.
+ * @returns `true` if valid, otherwise false
+ *
+ * @remarks
+ * - This function does **not** validate the `id` field. This is to account for
+ *   cases where the ID has not been assigned yet (e.g., when creating a new book).
+ */
+export function validateRequestData(requestData: Partial<Book>): boolean {
+        // Don't validate ID since sometimes you'll need to have
+        // TODO: add bookGroup back in
+        const requiredFields = ["title", "isbn", "level"] as const;
+      
+        for (const field of requiredFields) {
+          if (!bookData[field]) {
+            return false;
+          }
+        }
+      
+        return true; // No errors
+      }
+      
