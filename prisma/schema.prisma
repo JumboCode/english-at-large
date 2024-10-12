@@ -7,11 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  Admin
+  Volunteer
+  Tutor
+}
+
 model User {
   id        String    @id @default(cuid())
   name      String?
   email     String?   @unique
-  role      String
+  role      UserRole
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   
@@ -21,19 +27,57 @@ model User {
   @@map("users")
 }
 
+enum BookStatus {
+  Available
+  Requested
+  Borrowed
+  Lost
+}
+
+enum BookSkills {
+  Grammar
+  Vocab_Building // use underscore for easier string processing when we display
+  Reading
+  Writing
+  Speaking
+  Listening
+  Pronounciation
+}
+
+enum BookType {
+  Reference
+  Volunteer_Resource
+  Standalone
+  Series
+}
+
+enum BookLevel {
+  Beginner
+  High_Beginner
+  Low_Intermediate
+  Intermediate
+  High_Intermediate
+  Advanced
+}
+
 model Book {
-  id        Int       @id @default(autoincrement())
-  title     String
-  isbn      String
-  level     String
-  booktype  String[]
-  scanLink  String
-  notes     String?
-  status    String
+  id          Int       @id @default(autoincrement())
+  title       String
+  author      String
+  isbn        String
+  description String
+  publisher   String
+  level       BookLevel
+  booktype    BookType
+  skills      BookSkills[]
+  scanLink    String?
+  releaseDate String?
+  notes       String?
+  status      BookStatus @default(Available)
   
-  // Required foreign key to BookGroup
-  groupId   Int       // Foreign key to BookGroup
-  group     BookGroup @relation(fields: [groupId], references: [id]) // Relation to BookGroup
+  // Foreign key to BookGroup. Is optional until we implement the BookGroup logic
+  // groupId   Int?       // Foreign key to BookGroup
+  // group     BookGroup? @relation(fields: [groupId], references: [id]) // Relation to BookGroup
   
   // Relation to Request
   requests  Request[] // One book can be requested in many requests
@@ -41,13 +85,13 @@ model Book {
   @@map("Books")
 }
 
-model BookGroup {
-  id    Int     @id @default(autoincrement())
-  title String
-  books Book[]  // One group can have many books
+// model BookGroup {
+//   id    Int     @id @default(autoincrement())
+//   title String
+//   books Book[]  // One group can have many books
 
-  @@map("BookGroups")
-}
+//   @@map("BookGroups")
+// }
 
 model Request {
   id        Int        @id @default(autoincrement())
