@@ -29,7 +29,7 @@ const GetOneUserButton = () => {
     return (
       <div>
         <button onClick={handleGetUser} disabled={loading}>
-          {loading ? "Getting..." : "Get single User"}
+          {loading ? "Getting..." : "Get Single User"}
         </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>

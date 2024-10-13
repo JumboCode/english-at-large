@@ -2,24 +2,25 @@
 
 "use client";
 import { useState } from "react";
-import { getAllUsers } from "@/lib/api/users";
+import { deleteUser } from "@/lib/api/users";
 import { User } from "@prisma/client";
 
-const GetAllUsersButton = () => {
+const DeleteUserButton = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
   
-    const handleGetUsers = async () => {
+    const handleDeleteUser = async () => {
       setLoading(true);
       setError(null);
   
       try {
-        const users: User[] = await getAllUsers();
-        console.log("getting all users");
-        console.log(users)
+        // delete User by id
+        const user: User = await deleteUser("username");
+        console.log("Deleting user");
+        console.log(user)
       } catch (err) {
         console.log("error bro");
-        setError("Failed to get all users");
+        setError("Failed to delete user");
         console.error(err);
       } finally {
         setLoading(false);
@@ -28,12 +29,12 @@ const GetAllUsersButton = () => {
   
     return (
       <div>
-        <button onClick={handleGetUsers} disabled={loading}>
-          {loading ? "Getting..." : "Get All Users"}
+        <button onClick={handleDeleteUser} disabled={loading}>
+          {loading ? "Deleting..." : "Delete User"}
         </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
     );
   };
   
-  export default GetAllUsersButton;
+  export default DeleteUserButton;
