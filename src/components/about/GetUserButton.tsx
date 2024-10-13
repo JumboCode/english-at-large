@@ -14,7 +14,7 @@ const GetOneUserButton = () => {
       setError(null);
   
       try {
-        const user: User = await getOneUser("username");
+        const user: User = await getOneUser("hello");
         console.log("getting one user");
         console.log(user)
       } catch (err) {

@@ -93,7 +93,7 @@ export async function deleteUser(id: string) {
     const response = await axios.delete("api/users/?id=" + id)
     return response.data;
   } catch (error) {
-    console.error("Failed to delete user: ", error);
+    console.error("Failed to delete user: " + id, error);
   }
 }
 

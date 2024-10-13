@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { User } from "@prisma/client";
-import { postUserController } from "./controller";
-import { putUserController } from "./controller";
+import {
+  getAllUsersController, postUserController, putUserController,
+  deleteUserController, getOneUserController
+} from "./controller";
 
 // GET - retrieve all users or single user by ID
 export async function GET(req: Request) {
@@ -12,21 +14,19 @@ export async function GET(req: Request) {
   try {
     if (id) {
       // if id, fetch the specific user
-      const user = await prisma.user.findUnique({
-        where: { id: id },
-      });
-
-      if (!user) {
+      try {
+        const user = await getOneUserController(id)
+        return NextResponse.json(user);
+      } catch {
         return NextResponse.json(
           { error: "User not found" },
           { status: 404 }
         );
       }
 
-      return NextResponse.json(user);
     } else {
       // if no id, fetch all users
-      const users = await prisma.user.findMany();
+      const users: User[] = await getAllUsersController()
       return NextResponse.json(users);
     }
   } catch (error) {
@@ -77,25 +77,18 @@ export async function DELETE(req: Request) {
     const id = searchParams.get("id");
 
     if (id) {
-      // if id, fetch the specific user
-      const user = await prisma.user.findUnique({
-        where: { id: id },
-      });
-
-      if (!user) {
+      // if id, delete the specific user
+      try {
+        await deleteUserController(id);
+        return NextResponse.json(
+          { message: "User deleted successfully" },
+          { status: 200 });
+      } catch {
         return NextResponse.json(
           { error: "ID not found" },
           { status: 400 }
         );
       }
-
-      await prisma.user.delete({
-        where: { id: id },
-      });
-
-      return NextResponse.json(
-        { message: "User deleted successfully" },
-        { status: 200 });
 
     } else {
       return NextResponse.json(

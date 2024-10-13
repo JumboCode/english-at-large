@@ -15,9 +15,8 @@ const DeleteUserButton = () => {
   
       try {
         // delete User by id
-        const user: User = await deleteUser("username");
+        await deleteUser("username");
         console.log("Deleting user");
-        console.log(user)
       } catch (err) {
         console.log("error bro");
         setError("Failed to delete user");

@@ -17,7 +17,7 @@ const CreateUserButton = () => {
   
       try {
         // create user without id
-        await createUser(userOne as Omit<User, "id">);
+        await createUser(emptyUser as Omit<User, "id">);
         console.log("user");
         alert("User created successfully!");
       } catch (err) {
