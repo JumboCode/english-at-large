@@ -2,13 +2,26 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Book } from "@prisma/client";
 // import { validateBookData } from "@/lib/util/types";
-import { deleteBookController, postBookController, putBookController } from "./controller";
+import { deleteBookController, getOneBookController, postBookController, putBookController } from "./controller";
 
 // GET - Fetch all books
 export async function GET() {
   try {
     const books = await prisma.book.findMany();
     return NextResponse.json(books);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to fetch books" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GETONE(req: Request) {
+  try {
+    const bookId = await req.json();
+    const book = getOneBookController(bookId);
+    return NextResponse.json(book);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch books" },

@@ -27,6 +27,22 @@ export const postBookController = async (bookData: Omit<Book, "id">) => {
   return newBook;
 };
 
+export const getOneBookController = async (bookId: number) => {
+  console.log("in putBookController");
+  if (!bookId) {
+    return NextResponse.json(
+      { error: "Missing id" },
+      { status: 400 }
+    );
+  }
+
+  const findBook = await prisma.book.findUnique({
+    where: { id: bookId }
+  });
+
+  return findBook;
+}
+
 
 export const putBookController = async (bookData: Book) => {
     console.log("in putBookController");

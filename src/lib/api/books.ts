@@ -20,6 +20,15 @@ export async function getBooks() {
   }
 }
 
+export async function getOneBook(bookId: number)  {
+  try {
+    const response = await axios.get("/api/books/${bookId}");
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch books");
+  }
+}
+
 /**
  * Utility function for creating a books
  *
