@@ -41,4 +41,18 @@ export async function createBook(book: Omit<Book, "id">) {
   }
 }
 
+export async function updateBook(book: Book) {
+  try {
+    if (!validateBookData(book)) {
+      throw new Error("Missing book fields");
+    }
+    // alert("Book update successfully!");
+    const response = await axios.put("/api/books", book);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create book: ", error);
+  }
+}
+
+
 // Add other CRUD functions as needed (updateBook, deleteBook, etc.)

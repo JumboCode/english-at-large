@@ -26,3 +26,21 @@ export const postBookController = async (bookData: Omit<Book, "id">) => {
 
   return newBook;
 };
+
+
+export const putBookController = async (bookData: Book) => {
+    console.log("in putBookController");
+    if (!bookData.id || !validateBookData(bookData)) {
+      return NextResponse.json(
+        { error: "Missing id, and name or owner" },
+        { status: 400 }
+      );
+    }
+
+    const updatedBook = await prisma.book.update({
+      where: { id: bookData.id },
+      data: bookData,
+    });
+
+    return updatedBook;
+}
