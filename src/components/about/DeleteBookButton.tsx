@@ -1,15 +1,15 @@
 "use client";
 import { useState } from "react";
-import { updateBook } from "@/lib/api/books"; // Adjust the path as necessary
+import { deleteBook } from "@/lib/api/books"; // Adjust the path as necessary
 import { emptyBook } from "@/lib/util/types";
-import { Book } from "@prisma/client";
+// import { Book } from "@prisma/client";
 
-const UpdateBookButton = () => {
-  console.log("IN UPDATE BOOK BUTTOn")
+const DeleteBookButton = () => {
+  console.log("IN DELETE BOOK BUTTOn")
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleUpdateBook = async () => {
+  const handleDeleteBook = async () => {
     setLoading(true);
     setError(null);
 
@@ -19,7 +19,7 @@ const UpdateBookButton = () => {
       // cast as book w/o id since we can't have an existing id when creating a book
       emptyBook.id = 4;
       emptyBook.author = "";
-      await updateBook(emptyBook);
+      await deleteBook(emptyBook);
       // alert("Book update successfully!");
     } catch (err) {
       console.log("error bro");
@@ -32,12 +32,12 @@ const UpdateBookButton = () => {
 
   return (
     <div>
-      <button onClick={handleUpdateBook} disabled={loading}>
-        {loading ? "Updating..." : "Update Book"}
+      <button onClick={handleDeleteBook} disabled={loading}>
+        {loading ? "Deleting..." : "Delete Book"}
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };
 
-export default UpdateBookButton;
+export default DeleteBookButton;

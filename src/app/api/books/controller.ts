@@ -44,3 +44,18 @@ export const putBookController = async (bookData: Book) => {
 
     return updatedBook;
 }
+
+export const deleteBookController = async (bookData: Book) => {
+  console.log("in deleteBookController");
+
+    if (!bookData.id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
+
+    await prisma.book.delete({
+      where: { id: bookData.id },
+    });
+
+    return NextResponse.json({ message: "Book deleted successfully" });
+    
+}

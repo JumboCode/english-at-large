@@ -1,5 +1,5 @@
 import { Book } from "@prisma/client";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { validateBookData } from "../util/types";
 
 /**
@@ -48,6 +48,24 @@ export async function updateBook(book: Book) {
     }
     // alert("Book update successfully!");
     const response = await axios.put("/api/books", book);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create book: ", error);
+  }
+}
+
+export async function deleteBook(book: Book) {
+  try {
+    if (!validateBookData(book)) {
+      throw new Error("Missing book fields");
+    }
+
+    const config: AxiosRequestConfig = {
+      data: book,
+    };
+    
+    // alert("Book update successfully!");
+    const response = await axios.delete("/api/books", config);
     return response.data;
   } catch (error) {
     console.error("Failed to create book: ", error);

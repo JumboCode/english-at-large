@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Book } from "@prisma/client";
-import { validateBookData } from "@/lib/util/types";
-import { postBookController, putBookController } from "./controller";
+// import { validateBookData } from "@/lib/util/types";
+import { deleteBookController, postBookController, putBookController } from "./controller";
 
 // GET - Fetch all books
 export async function GET() {
@@ -44,7 +44,7 @@ export async function PUT(req: Request) {
 
     const updatedBook = putBookController(bookData);
 
-    return NextResponse.json(updatedBook, {status: 201});
+    return NextResponse.json(updatedBook, {status: 200});
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to update book" },
@@ -58,15 +58,10 @@ export async function DELETE(req: Request) {
   try {
     const bookData: Book = await req.json();
 
-    if (!bookData.id) {
-      return NextResponse.json({ error: "Missing id" }, { status: 400 });
-    }
+    const deletedBook = deleteBookController(bookData);
 
-    await prisma.book.delete({
-      where: { id: bookData.id },
-    });
-
-    return NextResponse.json({ message: "Book deleted successfully" });
+    return NextResponse.json(deletedBook, {status: 200});
+    
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to delete book" },
