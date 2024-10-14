@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { updateBook } from "@/lib/api/books"; // Adjust the path as necessary
 import { emptyBook } from "@/lib/util/types";
-// import { Book } from "@prisma/client";
+import { Book } from "@prisma/client";
 
 const UpdateBookButton = () => {
   console.log("IN UPDATE BOOK BUTTOn")
