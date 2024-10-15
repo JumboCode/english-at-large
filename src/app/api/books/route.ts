@@ -4,11 +4,37 @@ import { Book } from "@prisma/client";
 // import { validateBookData } from "@/lib/util/types";
 import { deleteBookController, getOneBookController, postBookController, putBookController } from "./controller";
 
-// GET - Fetch all books
-export async function GET() {
+export async function GET(req: Request) {
+  console.log("IN GET", req);
   try {
-    const books = await prisma.book.findMany();
-    return NextResponse.json(books);
+    const { searchParams } = new URL(req.url);
+    const bookIdParam = searchParams.get('id'); // Assuming the ID is passed as a query parameter
+
+    if (bookIdParam) {
+      const bookId = Number(bookIdParam); // Convert the string to a number
+
+      // Check if the conversion was successful
+      if (isNaN(bookId)) {
+        return NextResponse.json(
+          { error: "Invalid book ID" },
+          { status: 400 }
+        );
+      }
+
+      // If a valid ID is provided, fetch a single book
+      const book = await getOneBookController(bookId);
+      if (!book) {
+        return NextResponse.json(
+          { error: "Book not found" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(book);
+    } else {
+      // If no ID is provided, fetch all books
+      const books = await prisma.book.findMany();
+      return NextResponse.json(books);
+    }
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch books" },
@@ -17,18 +43,7 @@ export async function GET() {
   }
 }
 
-export async function GETONE(req: Request) {
-  try {
-    const bookId = await req.json();
-    const book = getOneBookController(bookId);
-    return NextResponse.json(book);
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch books" },
-      { status: 500 }
-    );
-  }
-}
+
 
 // POST - Create a new book
 export async function POST(req: Request) {

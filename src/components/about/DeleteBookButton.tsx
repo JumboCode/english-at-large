@@ -23,7 +23,7 @@ const DeleteBookButton = () => {
       // alert("Book update successfully!");
     } catch (err) {
       console.log("error bro");
-      setError("Failed to create book");
+      setError("Failed to delete book");
       console.error(err);
     } finally {
       setLoading(false);

@@ -48,3 +48,22 @@ export const emptyBook: Book = {
   skills: [],
   releaseDate: null,
 };
+
+/**
+ * "Empty book" with dummy data.
+ */
+export const newEmptyBook: Omit<Book, "id"> = {
+
+  title: "Untitled Book",
+  author: "",
+  isbn: "000-0-00-000000-0",
+  publisher: "",
+  level: BookLevel.Beginner,
+  booktype: BookType.Reference,
+  scanLink: "http://example.com/scan",
+  description: "",
+  notes: "",
+  status: BookStatus.Available,
+  skills: [],
+  releaseDate: null,
+};

@@ -12,6 +12,7 @@ import { NextResponse } from "next/server";
  *  - This controller can later be modified to call other backend functions as needed.
  */
 export const postBookController = async (bookData: Omit<Book, "id">) => {
+  console.log("In postBookController")
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   if (!validateBookData(bookData)) {
     return NextResponse.json(
@@ -19,16 +20,20 @@ export const postBookController = async (bookData: Omit<Book, "id">) => {
       { status: 400 }
     );
   }
+  console.log(bookData)
 
   const newBook = await prisma.book.create({
     data: bookData,
   });
 
+  console.log(newBook)
+
   return newBook;
 };
 
 export const getOneBookController = async (bookId: number) => {
-  console.log("in putBookController");
+  console.log("in getONeBookController");
+  console.log("bookid", bookId )
   if (!bookId) {
     return NextResponse.json(
       { error: "Missing id" },
@@ -37,8 +42,9 @@ export const getOneBookController = async (bookId: number) => {
   }
 
   const findBook = await prisma.book.findUnique({
-    where: { id: bookId }
+    where: { id: 0 }
   });
+  console.log("found book!", findBook)
 
   return findBook;
 }
