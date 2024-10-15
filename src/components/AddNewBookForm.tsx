@@ -1,12 +1,20 @@
 "use client";
+import { BookSkills, BookLevel, BookStatus, BookType } from "@prisma/client"; 
 
 const AddNewBookForm = () => {
-  //   const [loading, setLoading] = useState(false);
-  //   const [error, setError] = useState<string | null>(null);
+
+  const skills = Object.values(BookSkills);
+  const levels = Object.values(BookLevel);
+  const status = Object.values(BookStatus);
+  const types = Object.values(BookType);
+
+
+
+  console.log(skills)
 
   return (
     <div className="bg-white text-black block text-sm font-medium leading-6 text-gray-900">
-      <form className="block flex flex-col gap-y-4">
+      <form className="flex flex-col gap-y-4">
         <h1 className="font-bold text-3xl">Add new Book</h1>
         <div>
           <label htmlFor="title" className="block text-lg ">Title</label>
@@ -18,7 +26,18 @@ const AddNewBookForm = () => {
           <label htmlFor="ISBN " className="block text-lg ">ISBN Number</label>
           <input type="text" id="ISBN" className="border-2 border-black border-solid rounded-md"/>
           <select name="type" className="border-2 border-black border-solid rounded-md">
+            <option value="">Select Book Status</option>
+            {status.map((stat, index) => {
+                return (<option key={index}>{stat.replace("_", " ")}</option>)
+              })}
+          </select>
+        </div>
+        <div>
+          <select name="type" className="border-2 border-black border-solid rounded-md">
             <option value="">Select Book Type</option>
+            {types.map((type, index) => {
+                return (<option key={index}>{type.replace("_", " ")}</option>)
+              })}
           </select>
         </div>
         <div>
@@ -34,20 +53,19 @@ const AddNewBookForm = () => {
         <div>
         <select name="level" className="border-2 border-black border-solid rounded-md">
             <option value="">Select Level</option >
+            {levels.map((level, index) => {
+                return (<option key={index}>{level.replace("_", " ")}</option>)
+              })}
           </select>
         </div>
 
         <div>
           <p>Skills</p>
-          <ul>
-            <li>Grammar</li>
-            <li>Vocab</li>
-            <li>Reading</li>
-            <li>Writing</li>
-            <li>Speaking</li>
-            <li>Listening</li>
-            <li>Pronunciation</li>
-          </ul>
+            <ul>
+              {skills.map((skill, index) => {
+                return (<li key={index}>{skill.replace("_", " ")}</li>)
+              })}
+            </ul>
         </div>
         <div>
           <button type="button" className="border-2 border-black border-solid rounded-md">Cancel</button>
