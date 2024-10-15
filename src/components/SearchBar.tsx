@@ -16,7 +16,7 @@ const SearchBar = () => {
   return (
     <div className="flex flex-row gap-4 items-center min-w-full justify-between">
       <div
-        className="flex flex-row justify-between items-center p-3 w-full min-w-max border border-grey-800 rounded-full bg-white"
+        className="flex flex-row justify-between items-center px-5 py-3 w-full min-w-max border border-grey-800 rounded-full bg-white cursor-text"
         onClick={clickBar}
       >
         <input
