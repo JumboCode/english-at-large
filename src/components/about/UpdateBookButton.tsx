@@ -17,8 +17,8 @@ const UpdateBookButton = () => {
       console.log("book");
       // Replace these with your book details
       // cast as book w/o id since we can't have an existing id when creating a book
-      emptyBook.id = 0;
-      emptyBook.author = "";
+      emptyBook.id = 3;
+      emptyBook.author = "ru roh";
       await updateBook(emptyBook);
       // alert("Book update successfully!");
     } catch (err) {
