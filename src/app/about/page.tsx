@@ -1,15 +1,24 @@
+"use client";
 import CreateBookButton from "@/components/about/CreateBookButton";
-import AddNewBookButton from "@/components/about/AddNewBookButton";
+import Button from "@/components/common/button/ButtonProps";
+import RedSquare from "@/components/about/RedSquare";
 
-import React from "react";
+import React, {useState} from "react";
 
-export default function About() {
+const About = () => {
+  const [showSquare, setShowSquare] = useState(false);
+
   return (
     <div>
       Testing
       <CreateBookButton />
-      <AddNewBookButton />
-    </div>
 
+      <Button onClick={() => setShowSquare(true)} label="Add new"/>
+        { showSquare ? <RedSquare /> : null } 
+
+    </div>
   );
+
 }
+
+export default About; 
