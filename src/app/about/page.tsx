@@ -1,24 +1,27 @@
 "use client";
 import CreateBookButton from "@/components/about/CreateBookButton";
 import Button from "@/components/common/button/ButtonProps";
-import RedSquare from "@/components/about/RedSquare";
+import AddNewBookForm from "@/components/AddNewBookForm";
 
-import React, {useState} from "react";
+import { DiApple } from "react-icons/di";
+
+import React, { useState } from "react";
 
 const About = () => {
-  const [showSquare, setShowSquare] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   return (
     <div>
       Testing
       <CreateBookButton />
-
-      <Button onClick={() => setShowSquare(true)} label="Add new"/>
-        { showSquare ? <RedSquare /> : null } 
-
+      <Button
+        onClick={() => setShowForm(true)}
+        label="Add new"
+        icon={<DiApple />}
+      />
+      {showForm ? <AddNewBookForm /> : null}
     </div>
   );
+};
 
-}
-
-export default About; 
+export default About;

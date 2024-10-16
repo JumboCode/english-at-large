@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-interface ButtonProps { 
+interface ButtonProps {
   label: string;
   onClick: () => void;
   icon?: React.ElementType;
@@ -9,16 +9,17 @@ interface ButtonProps {
 }
 
 const Button = (props: ButtonProps) => {
-  const { label, onClick, icon, altStyle } = props; // this is called destructuring, otherwise we'd need to 
-                                                    // write 'props.label' or 'props.onClick'
-  // your code here 
+  const { label, onClick, icon = false, altStyle } = props;
+
+  // if icon isn't passed in, nothing will show
   return (
-    <div>
+    <div className="text-white w-20 h-10 rounded-md bg-blue-800 hover:bg-blue-900 flex items-center">
       <button onClick={onClick}>
         {label}
+        {icon}
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default Button; 
+export default Button;
