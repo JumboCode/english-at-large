@@ -1,4 +1,7 @@
 import CreateBookButton from "@/components/about/CreateBookButton";
+import CreateRequestButton from "@/components/about/CreateRequestButton";
+import GetRequestButton from "@/components/about/GetRequestButton";
+
 import React from "react";
 
 export default function About() {
@@ -6,6 +9,8 @@ export default function About() {
     <div>
       Testing
       <CreateBookButton />
+      <CreateRequestButton />
+      <GetRequestButton />
     </div>
   );
 }
