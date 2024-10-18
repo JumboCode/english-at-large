@@ -31,9 +31,12 @@ export const postBookController = async (bookData: Omit<Book, "id">) => {
   return newBook;
 };
 
+export const getAllBooksController = async () => {
+  const Books = await prisma.book.findMany()
+  return Books;
+}
+
 export const getOneBookController = async (bookId: number) => {
-  console.log("in getONeBookController");
-  console.log("bookid", bookId )
   if (!bookId) {
     return NextResponse.json(
       { error: "Missing id" },
@@ -49,7 +52,14 @@ export const getOneBookController = async (bookId: number) => {
   return findBook;
 }
 
-
+/**
+ * Utility controller that validates book fields, then updates a Book in backend.
+ *
+ * @returns bookData (with id) if book is valid, error otherwise
+ * @params bookData
+ * @remarks
+ *  - N/A
+ */
 export const putBookController = async (bookData: Book) => {
     console.log("in putBookController");
     if (!bookData.id || !validateBookData(bookData)) {
@@ -67,6 +77,14 @@ export const putBookController = async (bookData: Book) => {
     return updatedBook;
 }
 
+/**
+ * Utility controller that validates book fields, then updates a Book in backend.
+ *
+ * @returns bookData (with id) if book is valid, error otherwise
+ * @params bookData
+ * @remarks
+ *  - N/A
+ */
 export const deleteBookController = async (bookData: Book) => {
   console.log("in deleteBookController");
 

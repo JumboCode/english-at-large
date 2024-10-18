@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Book } from "@prisma/client";
 // import { validateBookData } from "@/lib/util/types";
-import { deleteBookController, getOneBookController, postBookController, putBookController } from "./controller";
+import { deleteBookController, getAllBooksController, getOneBookController, postBookController, putBookController } from "./controller";
 
 export async function GET(req: Request) {
   console.log("IN GET", req);
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
       return NextResponse.json(book);
     } else {
       // If no ID is provided, fetch all books
-      const books = await prisma.book.findMany();
+      const books = await getAllBooksController();
       return NextResponse.json(books);
     }
   } catch (error) {

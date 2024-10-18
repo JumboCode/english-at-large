@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { updateBook } from "@/lib/api/books"; // Adjust the path as necessary
 import { emptyBook } from "@/lib/util/types";
-import { Book } from "@prisma/client";
+// import { Book } from "@prisma/client";
 
 const UpdateBookButton = () => {
   console.log("IN UPDATE BOOK BUTTOn")
@@ -17,10 +17,8 @@ const UpdateBookButton = () => {
       console.log("book");
       // Replace these with your book details
       // cast as book w/o id since we can't have an existing id when creating a book
-      emptyBook.id = 3;
-      emptyBook.author = "ru roh";
       await updateBook(emptyBook);
-      // alert("Book update successfully!");
+      alert("Book update successfully!");
     } catch (err) {
       console.log("error bro");
       setError("Failed to getOne book");

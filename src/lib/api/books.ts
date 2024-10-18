@@ -57,7 +57,6 @@ export async function updateBook(book: Book) {
     if (!validateBookData(book)) {
       throw new Error("Missing book fields");
     }
-    // alert("Book update successfully!");
     const response = await axios.put("/api/books", book);
     return response.data;
   } catch (error) {
@@ -74,8 +73,6 @@ export async function deleteBook(book: Book) {
     const config: AxiosRequestConfig = {
       data: book,
     };
-    
-    // alert("Book update successfully!");
     const response = await axios.delete("/api/books", config);
     return response.data;
   } catch (error) {

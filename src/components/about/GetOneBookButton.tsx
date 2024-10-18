@@ -17,7 +17,7 @@ const GetOneBookButton = () => {
       console.log("book");
       const gotOneBook = await getOneBook(3);
       console.log(gotOneBook.author)
-      // alert("Book getOne successfully!");
+      alert("Book getOne successfully!");
     } catch (err) {
       console.log("error bro");
       setError("Failed to fetch book");
