@@ -46,7 +46,9 @@ export async function getOneUser(id: string) {
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function createUser(user: Omit<User, "id">) {
+export async function createUser(
+  user: Omit<User, "id" | "createdAt" | "updatedAt">
+) {
   try {
     if (!validateUserData(user)) {
       throw new Error("Missing user fields");
@@ -90,10 +92,9 @@ export async function updateUser(user: User) {
  */
 export async function deleteUser(id: string) {
   try {
-    const response = await axios.delete("api/users/?id=" + id)
+    const response = await axios.delete("api/users/?id=" + id);
     return response.data;
   } catch (error) {
     console.error("Failed to delete user: " + id, error);
   }
 }
-

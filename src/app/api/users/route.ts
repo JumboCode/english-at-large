@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { User } from "@prisma/client";
 import {
-  getAllUsersController, postUserController, putUserController,
-  deleteUserController, getOneUserController
+  getAllUsersController,
+  postUserController,
+  putUserController,
+  deleteUserController,
+  getOneUserController,
 } from "./controller";
 
 // GET - retrieve all users or single user by ID
@@ -15,18 +17,14 @@ export async function GET(req: Request) {
     if (id) {
       // if id, fetch the specific user
       try {
-        const user = await getOneUserController(id)
+        const user = await getOneUserController(id);
         return NextResponse.json(user);
       } catch {
-        return NextResponse.json(
-          { error: "User not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
-
     } else {
       // if no id, fetch all users
-      const users: User[] = await getAllUsersController()
+      const users: User[] = await getAllUsersController();
       return NextResponse.json(users);
     }
   } catch (error) {
@@ -48,7 +46,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
-
     return NextResponse.json(
       { error: "Failed to create user" },
       { status: 500 }
@@ -60,7 +57,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const userData: User = await req.json();
-    const updatedUser = putUserController(userData)
+    const updatedUser = putUserController(userData);
     return NextResponse.json(updatedUser, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -82,18 +79,13 @@ export async function DELETE(req: Request) {
         await deleteUserController(id);
         return NextResponse.json(
           { message: "User deleted successfully" },
-          { status: 200 });
-      } catch {
-        return NextResponse.json(
-          { error: "ID not found" },
-          { status: 400 }
+          { status: 200 }
         );
+      } catch {
+        return NextResponse.json({ error: "ID not found" }, { status: 400 });
       }
-
     } else {
-      return NextResponse.json(
-        { error: "No ID provided" },
-        { status: 400 });
+      return NextResponse.json({ error: "No ID provided" }, { status: 400 });
     }
   } catch (error) {
     return NextResponse.json(
