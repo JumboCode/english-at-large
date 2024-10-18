@@ -1,6 +1,6 @@
 "use client";
 import CreateBookButton from "@/components/about/CreateBookButton";
-import Button from "@/components/common/button/ButtonProps";
+import Button from "@/components/common/button/CommonButton";
 import AddNewBookForm from "@/components/AddNewBookForm";
 
 import { DiApple } from "react-icons/di";
