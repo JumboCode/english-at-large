@@ -47,7 +47,6 @@ export const getOneBookController = async (bookId: number) => {
   const findBook = await prisma.book.findUnique({
     where: { id: bookId }
   });
-  console.log("found book!", findBook)
 
   return findBook;
 }
