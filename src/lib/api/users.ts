@@ -11,12 +11,12 @@ import { validateUserData } from "../util/types";
  * @remarks
  * - TODO: add filtering if needed
  */
-export const getAllUsers = async (): Promise<User[]> => {
+export const getAllUsers = async (): Promise<User[] | undefined> => {
   try {
     const response = await axios.get("/api/users");
     return response.data;
   } catch (error) {
-    throw error;
+    console.error("Failed to get user: ", error);
   }
 };
 
@@ -28,12 +28,12 @@ export const getAllUsers = async (): Promise<User[]> => {
  *
  * @remarks
  */
-export const getOneUser = async (id: string): Promise<User> => {
+export const getOneUser = async (id: string): Promise<User | undefined> => {
   try {
     const response = await axios.get("api/users/?id=" + id);
     return response.data;
   } catch (error) {
-    throw error;
+    console.error("Failed to get user: ", error);
   }
 };
 
@@ -48,7 +48,7 @@ export const getOneUser = async (id: string): Promise<User> => {
  */
 export const createUser = async (
   user: Omit<User, "id" | "createdAt" | "updatedAt">
-): Promise<User> => {
+): Promise<User | undefined> => {
   try {
     if (!validateUserData(user)) {
       throw new Error("Missing user fields");
@@ -56,8 +56,7 @@ export const createUser = async (
     const response = await axios.post("/api/users", user);
     return response.data;
   } catch (error) {
-    console.error("Failed to create user: ", error);
-    throw error;
+    console.error("Failed to created user: ", error);
   }
 };
 
@@ -70,7 +69,7 @@ export const createUser = async (
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export const updateUser = async (user: User): Promise<User> => {
+export const updateUser = async (user: User): Promise<User | undefined> => {
   try {
     if (!validateUserData(user)) {
       throw new Error("Missing user fields");
@@ -79,7 +78,6 @@ export const updateUser = async (user: User): Promise<User> => {
     return response.data;
   } catch (error) {
     console.error("Failed to update user: ", error);
-    throw error;
   }
 };
 
@@ -92,12 +90,11 @@ export const updateUser = async (user: User): Promise<User> => {
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function deleteUser(id: string): Promise<User> {
+export async function deleteUser(id: string): Promise<User | undefined> {
   try {
     const response = await axios.delete("api/users/?id=" + id);
     return response.data;
   } catch (error) {
     console.error("Failed to delete user: " + id, error);
-    throw error;
   }
 }
