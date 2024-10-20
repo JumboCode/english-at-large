@@ -3,6 +3,7 @@ import { useState } from "react";
 import { createBook } from "@/lib/api/books"; // Adjust the path as necessary
 import { emptyBook } from "@/lib/util/types";
 import { Book } from "@prisma/client";
+import AddIcon from "@/assets/icons/Add";
 
 const CreateBookButton = () => {
   const [loading, setLoading] = useState(false);
@@ -29,8 +30,13 @@ const CreateBookButton = () => {
 
   return (
     <div>
-      <button onClick={handleCreateBook} disabled={loading}>
-        {loading ? "Creating..." : "Create Book"}
+      <button
+        className="flex flex-row items-center gap-2 min-w-max p-3 rounded-lg border border-dark-blue bg-dark-blue"
+        onClick={handleCreateBook}
+        disabled={loading}
+      >
+        <AddIcon />
+        <p className="text-sm">{loading ? "Creating..." : "Create Book"}</p>
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
