@@ -5,7 +5,7 @@ import { emptyBook, newEmptyBook } from "@/lib/util/types";
 import { Book } from "@prisma/client";
 
 const CreateBookButton = () => {
-  console.log("Create Book Button")
+  console.log("Create Book Button");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,7 +14,6 @@ const CreateBookButton = () => {
     setError(null);
 
     try {
-      console.log("book");
       // Replace these with your book details
       // cast as book w/o id since we can't have an existing id when creating a book
       await createBook(newEmptyBook);
