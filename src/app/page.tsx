@@ -16,6 +16,13 @@ export default function Home() {
           href="/about">
           <p className="text-center">Click to go to test backend page</p>
         </a>
+
+        <a
+          className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
+          href="/login">
+          <p className="text-center">Login</p>
+        </a>
+
         <AddNewBookForm />
       </main>
       {/* Footer from Next.js. Can get rid of this in the future, but there's some useful links to tutorials so*/}
