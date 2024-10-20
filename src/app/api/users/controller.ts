@@ -4,64 +4,87 @@ import { validateUserData } from "../../../lib/util/types";
 import { NextResponse } from "next/server";
 
 export const getAllUsersController = async () => {
-  const users = await prisma.user.findMany();
-  return users;
-}
+  try {
+    const users = await prisma.user.findMany();
+    return users;
+  } catch (error) {
+    console.error("Error fetching users: ", error);
+    throw error;
+  }
+};
 
 export const getOneUserController = async (id: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id: id },
-  });
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: id },
+    });
 
-  if (!user) {
-    throw new Error("User not found");
-  } else {
-    return user;
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      return user;
+    }
+  } catch (error) {
+    console.error("Error fetchin user: ", error);
+    throw error;
   }
-}
+};
 
 export const postUserController = async (userData: Omit<User, "id">) => {
-  // Validate required fields
-  if (!validateUserData(userData)) {
-    return NextResponse.json(
-      { error: "Missing required user properties" },
-      { status: 400 }
-    );
+  try {
+    // Validate required fields
+    if (!validateUserData(userData)) {
+      throw new Error("Missing required user properties");
+    }
+
+    // Create the new user in the database
+    const newUser = await prisma.user.create({
+      data: userData,
+    });
+
+    return newUser;
+  } catch (error) {
+    console.error("Error in postUserController:", error);
+    throw error; // Let the calling function handle the error and response
   }
-
-  const newUser = await prisma.user.create({
-    data: userData,
-  });
-
-  return newUser;
 };
 
 export const putUserController = async (userData: User) => {
-  if (!userData.id || !validateUserData(userData)) {
-    return NextResponse.json(
-      { error: "Missing id, and name or owner" },
-      { status: 400 }
-    );
+  try {
+    if (!userData.id || !validateUserData(userData)) {
+      return NextResponse.json(
+        { error: "Missing id, and name or owner" },
+        { status: 400 }
+      );
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userData.id },
+      data: userData,
+    });
+
+    return updatedUser;
+  } catch (error) {
+    console.error("Error updating user", error);
+    throw error;
   }
-
-  const updatedUser = await prisma.user.update({
-    where: { id: userData.id },
-    data: userData,
-  });
-
-  return updatedUser;
 };
 
 export const deleteUserController = async (id: string) => {
-  const user = await prisma.user.findUnique({
-    where: { id: id },
-  });
-
-  if (!user) {
-    throw new Error("User not found")
-  } else {
-    await prisma.user.delete({
+  try {
+    const user = await prisma.user.findUnique({
       where: { id: id },
     });
+
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      await prisma.user.delete({
+        where: { id: id },
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting user", error);
+    throw error;
   }
-}
+};

@@ -42,8 +42,7 @@ export async function POST(req: Request) {
     const userData: Omit<User, "id"> = await req.json();
 
     // controller defined in controller.ts
-    const newUser = postUserController(userData);
-
+    const newUser = await postUserController(userData);
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -55,7 +54,6 @@ export async function POST(req: Request) {
 
 // PUT - update user
 export async function PUT(req: Request) {
-<<<<<<< Updated upstream
   try {
     const userData: User = await req.json();
     const updatedUser = putUserController(userData);
@@ -65,18 +63,6 @@ export async function PUT(req: Request) {
       { error: "Failed to update user" },
       { status: 500 }
     );
-=======
-    try {
-      const userData: User = await req.json();
-      const updatedUser = putUserController(userData)
-      return NextResponse.json(updatedUser);
-    } catch (error) {
-      return NextResponse.json(
-        { error: "Failed to update user" },
-        { status: 500 }
-      );
-    }
->>>>>>> Stashed changes
   }
 }
 

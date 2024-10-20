@@ -63,7 +63,7 @@ export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
 };
 
 export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
-  name: "U1",
+  name: "U12",
   email: "u1@gmail.com",
   role: "Admin",
 };

@@ -16,7 +16,7 @@ export async function getAllUsers() {
     const response = await axios.get("/api/users");
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch users");
+    throw error;
   }
 }
 
@@ -33,7 +33,7 @@ export async function getOneUser(id: string) {
     const response = await axios.get("api/users/?id=" + id);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch user with id: " + id);
+    throw error;
   }
 }
 
@@ -57,6 +57,7 @@ export async function createUser(
     return response.data;
   } catch (error) {
     console.error("Failed to create user: ", error);
+    throw error;
   }
 }
 
@@ -78,6 +79,7 @@ export async function updateUser(user: User) {
     return response.data;
   } catch (error) {
     console.error("Failed to update user: ", error);
+    throw error;
   }
 }
 
@@ -96,5 +98,6 @@ export async function deleteUser(id: string) {
     return response.data;
   } catch (error) {
     console.error("Failed to delete user: " + id, error);
+    throw error;
   }
 }

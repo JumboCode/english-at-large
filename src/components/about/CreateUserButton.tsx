@@ -16,10 +16,11 @@ const CreateUserButton = () => {
     try {
       // create user without id
 
-      const { id, ...emptyUserNoId } = newEmptyUser;
-      await createUser(emptyUserNoId);
-      console.log(emptyUserNoId);
-      alert("User created successfully!");
+      const newUser = await createUser(newEmptyUser);
+      if (newUser) alert("User created successfully!");
+      else {
+        throw new Error();
+      }
     } catch (err) {
       setError("Failed to create user");
       console.error(err);
