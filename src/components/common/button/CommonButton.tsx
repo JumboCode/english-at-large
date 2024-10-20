@@ -6,11 +6,18 @@ interface ButtonProps {
   onClick?: () => void;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
-  altStyle?: string; // will be tailwind styling later
+  altStyle?: string;
   altTextStyle?: string;
   disabled?: boolean;
 }
 
+/**
+ * Our internal button component which includes options for icons and adheres to our own styling system.
+ * @param props: label
+ * @param optional props: left/right icons, alternate Tailwind classes for the text and the
+ * @returns a React Components.
+ * @TODO: add in loading components
+ */
 const CommonButton = (props: ButtonProps) => {
   const {
     label,
