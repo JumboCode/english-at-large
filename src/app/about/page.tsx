@@ -7,8 +7,7 @@ import GetUsersButton from "@/components/about/GetUserButton";
 import UpdateUserButton from "@/components/about/UpdateUserButton";
 import DeleteUserButton from "@/components/about/DeleteUserButton";
 
-
-export default function About() {
+const About = () => {
   return (
     <div>
       Testing
@@ -20,4 +19,6 @@ export default function About() {
       <DeleteUserButton />
     </div>
   );
-}
+};
+
+export default About;
