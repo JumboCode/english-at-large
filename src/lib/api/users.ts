@@ -11,14 +11,14 @@ import { validateUserData } from "../util/types";
  * @remarks
  * - TODO: add filtering if needed
  */
-export async function getAllUsers() {
+export const getAllUsers = async (): Promise<User[]> => {
   try {
     const response = await axios.get("/api/users");
     return response.data;
   } catch (error) {
     throw error;
   }
-}
+};
 
 /**
  * Utility function for fetching one user by ID
@@ -28,27 +28,27 @@ export async function getAllUsers() {
  *
  * @remarks
  */
-export async function getOneUser(id: string) {
+export const getOneUser = async (id: string): Promise<User> => {
   try {
     const response = await axios.get("api/users/?id=" + id);
     return response.data;
   } catch (error) {
     throw error;
   }
-}
+};
 
 /**
  * Utility function for creating a user
  *
  * @param user WITHOUT an id field - this will be generated when posting
- * @returns nothing
+ * @returns the created user
  *
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function createUser(
+export const createUser = async (
   user: Omit<User, "id" | "createdAt" | "updatedAt">
-) {
+): Promise<User> => {
   try {
     if (!validateUserData(user)) {
       throw new Error("Missing user fields");
@@ -59,18 +59,18 @@ export async function createUser(
     console.error("Failed to create user: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Utility function for updating a user
  *
  * @param user: User
- * @returns nothing
+ * @returns the updated user
  *
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function updateUser(user: User) {
+export const updateUser = async (user: User): Promise<User> => {
   try {
     if (!validateUserData(user)) {
       throw new Error("Missing user fields");
@@ -81,18 +81,18 @@ export async function updateUser(user: User) {
     console.error("Failed to update user: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Utility function for deleting a user by ID
  *
  * @param user: id
- * @returns nothing
+ * @returns the deleted user.
  *
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function deleteUser(id: string) {
+export async function deleteUser(id: string): Promise<User> {
   try {
     const response = await axios.delete("api/users/?id=" + id);
     return response.data;

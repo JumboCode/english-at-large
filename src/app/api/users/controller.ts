@@ -79,7 +79,7 @@ export const deleteUserController = async (id: string) => {
     if (!user) {
       throw new Error("User not found");
     } else {
-      await prisma.user.delete({
+      return await prisma.user.delete({
         where: { id: id },
       });
     }

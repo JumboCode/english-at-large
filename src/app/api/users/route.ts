@@ -43,6 +43,7 @@ export async function POST(req: Request) {
 
     // controller defined in controller.ts
     const newUser = await postUserController(userData);
+    console.log(newUser);
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -75,11 +76,8 @@ export async function DELETE(req: Request) {
     if (id) {
       // if id, delete the specific user
       try {
-        await deleteUserController(id);
-        return NextResponse.json(
-          { message: "User deleted successfully" },
-          { status: 200 }
-        );
+        const deletedUser = await deleteUserController(id);
+        return NextResponse.json(deletedUser, { status: 200 });
       } catch {
         return NextResponse.json({ error: "ID not found" }, { status: 400 });
       }

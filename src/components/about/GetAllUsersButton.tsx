@@ -15,7 +15,6 @@ const GetAllUsersButton = () => {
 
     try {
       const users: User[] = await getAllUsers();
-      console.log(users);
     } catch (err) {
       setError("Failed to get all users");
       console.error(err);

@@ -15,7 +15,6 @@ const GetOneUserButton = () => {
 
     try {
       const user: User = await getOneUser("cm2f3a8ra0000sl8zdb10q3d1");
-      console.log(user);
     } catch (err) {
       setError("Failed to get user by id");
       console.error(err);

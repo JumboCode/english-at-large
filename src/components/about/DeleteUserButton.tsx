@@ -14,7 +14,7 @@ const DeleteUserButton = () => {
 
     try {
       // delete User by id
-      await deleteUser("cm2f3d47n0001sl8z4mv0xh8x");
+      await deleteUser("cm2gxn935000313rswgxpnmu2");
     } catch (err) {
       setError("Failed to delete user");
       console.error(err);
