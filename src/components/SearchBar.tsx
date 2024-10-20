@@ -2,8 +2,8 @@
 import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
 import FilterIcon from "../assets/icons/Filter";
-import CreateBookButton from "./about/CreateBookButton";
 import CommonButton from "./common/button/CommonButton";
+import AddIcon from "@/assets/icons/Add";
 
 const SearchBar = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -32,6 +32,7 @@ const SearchBar = () => {
         <CommonButton label={"Filter"} leftIcon={<FilterIcon />} />
         <CommonButton
           label="Create Book"
+          leftIcon={<AddIcon />}
           onClick={() => {}}
           altTextStyle="text-white"
           altStyle="bg-dark-blue"
