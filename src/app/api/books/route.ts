@@ -2,32 +2,32 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Book } from "@prisma/client";
 // import { validateBookData } from "@/lib/util/types";
-import { deleteBookController, getAllBooksController, getOneBookController, postBookController, putBookController } from "./controller";
+import {
+  deleteBookController,
+  getAllBooksController,
+  getOneBookController,
+  postBookController,
+  putBookController,
+} from "./controller";
 
 export async function GET(req: Request) {
   console.log("IN GET", req);
   try {
     const { searchParams } = new URL(req.url);
-    const bookIdParam = searchParams.get('id'); // Assuming the ID is passed as a query parameter
+    const bookIdParam = searchParams.get("id"); // Assuming the ID is passed as a query parameter
 
     if (bookIdParam) {
       const bookId = Number(bookIdParam); // Convert the string to a number
 
       // Check if the conversion was successful
       if (isNaN(bookId)) {
-        return NextResponse.json(
-          { error: "Invalid book ID" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Invalid book ID" }, { status: 400 });
       }
 
       // If a valid ID is provided, fetch a single book
       const book = await getOneBookController(bookId);
       if (!book) {
-        return NextResponse.json(
-          { error: "Book not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Book not found" }, { status: 404 });
       }
       return NextResponse.json(book);
     } else {
@@ -42,8 +42,6 @@ export async function GET(req: Request) {
     );
   }
 }
-
-
 
 // POST - Create a new book
 export async function POST(req: Request) {
@@ -72,7 +70,7 @@ export async function PUT(req: Request) {
 
     const updatedBook = putBookController(bookData);
 
-    return NextResponse.json(updatedBook, {status: 200});
+    return NextResponse.json(updatedBook, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to update book" },
@@ -88,8 +86,7 @@ export async function DELETE(req: Request) {
 
     const deletedBook = deleteBookController(bookData);
 
-    return NextResponse.json(deletedBook, {status: 200});
-    
+    return NextResponse.json(deletedBook, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to delete book" },

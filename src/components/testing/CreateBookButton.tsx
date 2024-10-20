@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createBook } from "@/lib/api/books"; // Adjust the path as necessary
-import { emptyBook, newEmptyBook } from "@/lib/util/types";
-import { Book } from "@prisma/client";
+import { newEmptyBook } from "@/lib/util/types";
 
 const CreateBookButton = () => {
   console.log("Create Book Button");

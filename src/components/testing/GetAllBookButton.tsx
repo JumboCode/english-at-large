@@ -4,12 +4,10 @@ import { getBooks } from "@/lib/api/books"; // Adjust the path as necessary
 // import { emptyBook } from "@/lib/util/types";
 
 const GetAllBookButton = () => {
-  console.log("IN getOne BOOK BUTTOn")
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleGetAllBook = async () => {
-
     setLoading(true);
     setError(null);
 
@@ -25,7 +23,7 @@ const GetAllBookButton = () => {
     } finally {
       setLoading(false);
     }
-    console.log("inside handleGetONeBOok")
+    console.log("inside handleGetONeBOok");
   };
 
   return (

@@ -11,7 +11,7 @@ import { validateBookData } from "../util/types";
  * @remarks
  * - TODO: add filtering if needed
  */
-export async function getBooks() {
+export async function getAllBooks() {
   try {
     const response = await axios.get("/api/books");
     return response.data; //JSOn
@@ -29,7 +29,6 @@ export async function getOneBook(bookId: number) {
     throw new Error("Failed to fetch books");
   }
 }
-
 
 /**
  * Utility function for creating a books
@@ -79,6 +78,5 @@ export async function deleteBook(book: Book) {
     console.error("Failed to create book: ", error);
   }
 }
-
 
 // Add other CRUD functions as needed (updateBook, deleteBook, etc.)
