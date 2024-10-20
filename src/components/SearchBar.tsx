@@ -3,6 +3,7 @@ import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
 import FilterIcon from "../assets/icons/Filter";
 import CreateBookButton from "./about/CreateBookButton";
+import CommonButton from "./common/button/CommonButton";
 
 const SearchBar = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -28,11 +29,13 @@ const SearchBar = () => {
         <SearchIcon />
       </div>
       <div className="flex flex-row items-center gap-3">
-        <button className="flex flex-row items-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue bg-white">
-          <FilterIcon />
-          <p className="text-dark-blue text-sm">Filter</p>
-        </button>
-        <CreateBookButton />
+        <CommonButton label={"Filter"} leftIcon={<FilterIcon />} />
+        <CommonButton
+          label="Create Book"
+          onClick={() => {}}
+          altTextStyle="text-white"
+          altStyle="bg-dark-blue"
+        />
       </div>
     </div>
   );
