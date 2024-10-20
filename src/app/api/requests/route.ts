@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-// import { Book } from "@prisma/client";
-//import { validateBookData } from "@/lib/util/types";
 import { Request as BookRequest } from "@prisma/client" ;
-import { postController } from "./controllers";
-import { getController } from "./controllers";
-import { putController } from "./controllers";
-import { deleteController } from "./controllers";
+import { postController } from "./controller";
+import { getController } from "./controller";
+import { putController } from "./controller";
+import { deleteController } from "./controller";
 
 // GET - Fetch all requests
 export async function GET() {
   try {
-    const get = getController();
-    return NextResponse.json(get);
+    const response = getController();
+    return NextResponse.json(response);
   } catch (error) {
     return error;
   }
@@ -26,12 +23,13 @@ export async function POST(req: Request) {
 
     // controller defined in controller.ts
     const newRequest = postController(requestData);
-
-    return NextResponse.json(newRequest, { status: 201 });
+    
+    return NextResponse.json(newRequest);
   } catch (error) {
-    throw error; // throws error to the front end for better debugging, swap this out for below code
-    // when passing to client
-    return error;
+    return NextResponse.json(
+      { error: "Failed to create user" },
+      { status: 500 }
+    );
   }
 }
 
@@ -51,11 +49,19 @@ export async function PUT(req: Request) {
 // DELETE - Delete a request
 export async function DELETE(req: Request) {
   try {
-    const requestData: BookRequest = await req.json();
-
-    deleteController(requestData);
-
-    return NextResponse.json({ message: "Request deleted successfully" });
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id") as unknown;
+    console.log(id as number)
+    
+    if(id != null){
+      //+id casts id from a string to a number 
+      deleteController(+id);
+      return NextResponse.json({ message: "Request deleted successfully" });
+    } else {
+      return NextResponse.json(
+        { error: "No ID provided" },
+        { status: 400 });
+    }
   } catch (error) {
     return error;
   }

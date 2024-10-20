@@ -19,7 +19,7 @@ export const getController = async () => {
 
 
 /**
- * Utility controller that validates requests fields, then creates a Request in backend.
+ * Utility controller that validates requests fields, then creates a BookRequest in backend.
  *
  * @returns requestData (with id) if request is valid, error otherwise
  * @params requestData without an "id" field
@@ -27,6 +27,7 @@ export const getController = async () => {
  *  - This controller can later be modified to call other backend functions as needed.
  */
 export const postController = async (requestData: Omit<BookRequest, "id">) => {
+  
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
 
   if (!validateRequestData(requestData)) {
@@ -40,13 +41,13 @@ export const postController = async (requestData: Omit<BookRequest, "id">) => {
     data: requestData,
   });
 
-  return  NextResponse.json(newRequest);
+  return  newRequest;
 };
 
 
  
 /**
- * Utility controller that updates the book.
+ * Utility controller that updates the request.
  *
  * @returns requestData if request is valid, error otherwise
  * @params requestData without an "id" field
@@ -72,23 +73,15 @@ export const postController = async (requestData: Omit<BookRequest, "id">) => {
   };
 
   /**
- * Utility controller that checks the book id and deletes if possible.
+ * Utility controller that deletes a request.
  *
- * @params requestData without an "id" field
+ * @params the id for the request to delete
  * @remarks
  *  - This controller can later be modified to call other backend functions as needed.
  */
-  export const deleteController = async (requestData: BookRequest) => {
-
-    if (!validateRequestData(requestData)) {
-      return NextResponse.json(
-        { error: "Missing required request properties" },
-        { status: 400 }
-      );
-    }
+  export const deleteController = async (id: number) => {
     
-
     await prisma.request.delete({
-    	where: { id: requestData.id },
+    	where: { id: id },
     });
   };

@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
-import { getRequests } from "../../lib/api/requests"; // Adjust the path as necessary
-import { emptyRequest } from "@/lib/util/types";
-import { Request as BookRequest } from "@prisma/client";
+import { getRequests } from "../../lib/api/requests"; 
 
 const GetRequestButton = () => {
   const [loading, setLoading] = useState(false);
@@ -14,7 +12,8 @@ const GetRequestButton = () => {
 
     try {
       console.log("request");
-      await getRequests();
+      const newRequest = await getRequests();
+      console.log(newRequest);
       alert("Request gotten successfully!");
     } catch (err) {
       console.log("error");
@@ -28,7 +27,7 @@ const GetRequestButton = () => {
   return (
     <div>
       <button onClick={handleGetRequest} disabled={loading}>
-        {loading ? "Getting..." : "Got Request"}
+        {loading ? "Getting..." : "Get Request"}
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>

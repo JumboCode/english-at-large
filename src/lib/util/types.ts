@@ -1,6 +1,5 @@
 import { Book, BookLevel, BookStatus, BookType } from "@prisma/client";
 import { Request as BookRequest} from "@prisma/client";
-import {User} from "@prisma/client"
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
@@ -63,12 +62,12 @@ export const emptyBook: Book = {
  */
 export const emptyRequest: BookRequest = {
     id: 0, // Autoincremented, so can be 0 for dummy purposes
-    userId:    "0",    // Foreign key to User
+    userId:    "cm2f3a8ra0000sl8zdb10q3d1 ",    // Foreign key to User
     bookId:    0,        // Foreign key to Book
     status:    "",
     createdAt: new Date(),
     message:   "empty",
-    bookTitle: "empty"
+    bookTitle: "updated book"
 };
 
 /**
@@ -86,7 +85,7 @@ export function validateRequestData(requestData: Partial<BookRequest>): boolean 
         const requiredFields = ["userId", "bookId"] as const;
       
         for (const field of requiredFields) {
-          if (!requestData[field]) {
+          if (requestData[field] == null) {
             return false;
           }
         }

@@ -1,42 +1,42 @@
 "use client";
 import { useState } from "react";
-import { createRequest } from "@/lib/api/requests"; 
+import { updateRequest } from "@/lib/api/requests"; 
 import { emptyRequest } from "@/lib/util/types";
 import { Request as BookRequest } from "@prisma/client";
 
-const CreateRequestButton = () => {
+const UpdateRequestButton = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleCreateRequest = async () => {
+  const handleUpdateRequest = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      console.log("request");
-      await createRequest(emptyRequest as Omit<BookRequest, "id">);
+      console.log("update request");
+      await updateRequest(emptyRequest as Omit<BookRequest, "id">);
       
-      alert("Request created successfully!");
+      alert("Request updated successfully!");
     } catch (err) {
       console.log("error");
-      setError("Failed to create request");
+      setError("Failed to update request");
       console.error(err);
     } finally {
-      console.log("finally");
       setLoading(false);
     }
   };
 
+  
   return (
     <div>
-      <button onClick={handleCreateRequest} disabled={loading}>
-        {loading ? "Creating..." : "Create Request"}
+      <button onClick={handleUpdateRequest} disabled={loading}>
+        {loading ? "Updating..." : "Update Request"}
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };
 
-export default CreateRequestButton;
+export default UpdateRequestButton;
 
