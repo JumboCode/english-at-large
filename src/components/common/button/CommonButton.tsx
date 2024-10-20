@@ -8,7 +8,7 @@ interface ButtonProps {
   altStyle?: string; // will be tailwind styling later
 }
 
-const Button = (props: ButtonProps) => {
+const CommonButton = (props: ButtonProps) => {
   const { label, onClick, icon, altStyle } = props;
 
   // if icon isn't passed in, nothing will show
@@ -24,4 +24,4 @@ const Button = (props: ButtonProps) => {
   );
 };
 
-export default Button;
+export default CommonButton;

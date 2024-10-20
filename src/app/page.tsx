@@ -13,7 +13,7 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <a
           className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-          href="/about"
+          href="/backendTest"
         >
           <p className="text-center">Click to go to test backend page</p>
         </a>
