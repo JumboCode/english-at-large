@@ -13,10 +13,10 @@ const CreateBookButton = () => {
     setError(null);
 
     try {
+      console.log("book");
       // Replace these with your book details
       // cast as book w/o id since we can't have an existing id when creating a book
       await createBook(emptyBook as Omit<Book, "id">);
-      console.log("book");
       alert("Book created successfully!");
     } catch (err) {
       console.log("error bro");
