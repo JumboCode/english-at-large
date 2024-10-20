@@ -1,5 +1,6 @@
 import SearchBar from "@/components/SearchBar";
 import Image from "next/image";
+import AddNewBookForm from "@/components/AddNewBookForm";
 /*
  * Home Page
  * ...it's the home page.
@@ -15,12 +16,12 @@ export default function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <a
           className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-          href="/about"
+          href="/backendTest"
         >
           <p className="text-center">Click to go to test backend page</p>
         </a>
+        {/* <AddNewBookForm /> */}
       </main>
-
       {/* Footer from Next.js. Can get rid of this in the future, but there's some useful links to tutorials so*/}
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
