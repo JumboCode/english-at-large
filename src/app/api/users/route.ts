@@ -16,12 +16,9 @@ export async function GET(req: Request) {
   try {
     if (id) {
       // if id, fetch the specific user
-      try {
-        const user = await getOneUserController(id);
-        return NextResponse.json(user);
-      } catch {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
+
+      const user = await getOneUserController(id);
+      return NextResponse.json(user);
     } else {
       // if no id, fetch all users
       const users: User[] = await getAllUsersController();
@@ -75,12 +72,14 @@ export async function DELETE(req: Request) {
 
     if (id) {
       // if id, delete the specific user
-      try {
-        const deletedUser = await deleteUserController(id);
-        return NextResponse.json(deletedUser, { status: 200 });
-      } catch {
-        return NextResponse.json({ error: "ID not found" }, { status: 400 });
-      }
+      const deletedUser = await deleteUserController(id);
+      if (!deletedUser)
+        return NextResponse.json(
+          { error: "UserID not found!" },
+          { status: 404 }
+        );
+
+      return NextResponse.json(deletedUser, { status: 200 });
     } else {
       return NextResponse.json({ error: "No ID provided" }, { status: 400 });
     }

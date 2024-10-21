@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { createBook } from "@/lib/api/books"; // Adjust the path as necessary
 import { newEmptyBook } from "@/lib/util/types";
+import AddIcon from "@/assets/icons/Add";
 
 const CreateBookButton = () => {
   console.log("Create Book Button");
@@ -28,13 +29,9 @@ const CreateBookButton = () => {
 
   return (
     <div>
-      <button
-        className="flex flex-row items-center gap-2 min-w-max p-3 rounded-lg border border-dark-blue bg-dark-blue"
-        onClick={handleCreateBook}
-        disabled={loading}
-      >
+      <button onClick={handleCreateBook} disabled={loading}>
         <AddIcon />
-        <p className="text-sm">{loading ? "Creating..." : "Create Book"}</p>
+        <p>{loading ? "Creating..." : "Create Book"}</p>
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>

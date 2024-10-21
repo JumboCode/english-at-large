@@ -1,20 +1,29 @@
 import { NextResponse } from "next/server";
-import { Request as BookRequest } from "@prisma/client" ;
-import { postController } from "./controller";
-import { getController } from "./controller";
-import { putController } from "./controller";
-import { deleteController } from "./controller";
+import { Request as BookRequest } from "@prisma/client";
+import { getOneRequestController, postRequestController } from "./controller";
+import { getAllRequestsController } from "./controller";
+import { putRequestController } from "./controller";
+import { deleteRequestController } from "./controller";
 
 // GET - Fetch all requests
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get("id");
   try {
-    const response = getController();
-    return NextResponse.json(response);
+    if (id) {
+      // if id, fetch the specific user
+      const request = await getOneRequestController(+id);
+      return NextResponse.json(request);
+    } else {
+      // if no id, fetch all users
+      const requests: BookRequest[] = await getAllRequestsController();
+      return NextResponse.json(requests);
+    }
   } catch (error) {
     return error;
   }
 }
- 
+
 // POST - Create a new request
 export async function POST(req: Request) {
   try {
@@ -22,12 +31,11 @@ export async function POST(req: Request) {
     const requestData: Omit<BookRequest, "id"> = await req.json();
 
     // controller defined in controller.ts
-    const newRequest = postController(requestData);
-    
+    const newRequest = postRequestController(requestData);
     return NextResponse.json(newRequest);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { error: `Failed to create user: ${error}` },
       { status: 500 }
     );
   }
@@ -38,7 +46,7 @@ export async function PUT(req: Request) {
   try {
     const requestData: BookRequest = await req.json();
     // controller defined in controllers.ts
-    const updated = putController(requestData);
+    const updated = putRequestController(requestData);
 
     return NextResponse.json(updated);
   } catch (error) {
@@ -51,16 +59,14 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id") as unknown;
-    console.log(id as number)
-    
-    if(id != null){
-      //+id casts id from a string to a number 
-      deleteController(+id);
+    console.log(id as number);
+
+    if (id != null) {
+      //+id casts id from a string to a number
+      deleteRequestController(+id);
       return NextResponse.json({ message: "Request deleted successfully" });
     } else {
-      return NextResponse.json(
-        { error: "No ID provided" },
-        { status: 400 });
+      return NextResponse.json({ error: "No ID provided" }, { status: 400 });
     }
   } catch (error) {
     return error;

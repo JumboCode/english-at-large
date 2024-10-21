@@ -11,6 +11,28 @@ import { validateRequestData } from "../util/types";
  * @remarks
  * - TODO: add filtering if needed
  */
+export const getOneRequest = async (
+  requestId: number
+): Promise<BookRequest | undefined> => {
+  try {
+    const response = await axios.get(`/api/requests?id=${requestId}`);
+    console.log("response", response.data);
+
+    return response.data; //JSOn
+  } catch (error) {
+    throw new Error("Failed to fetch requests");
+  }
+};
+
+/**
+ * Utility function for fetching all requests
+ *
+ * @param none
+ * @returns array of request (of type Requests)
+ *
+ * @remarks
+ * - TODO: add filtering if needed
+ */
 export async function getRequests() {
   try {
     const response = await axios.get("/api/requests");
@@ -33,13 +55,11 @@ export async function getRequests() {
  */
 export async function createRequest(request: Omit<BookRequest, "id">) {
   try {
-
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
     }
     const response = await axios.post("/api/requests", request);
-    
-    
+
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);
@@ -61,15 +81,12 @@ export async function updateRequest(request: Omit<BookRequest, "id">) {
       throw new Error("Missing request fields");
     }
     const response = await axios.put("/api/requests", request);
-    
-    
+
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);
   }
 }
-
-
 
 /**
  * Utility function for deleting a request

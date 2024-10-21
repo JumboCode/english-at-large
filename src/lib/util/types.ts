@@ -86,6 +86,15 @@ export const emptyRequest: BookRequest = {
   bookTitle: "updated book",
 };
 
+export const newEmptyRequest: Omit<BookRequest, "id"> = {
+  userId: "cm2f3a8ra0000sl8zdb10q3d1", // Foreign key to User
+  bookId: 1, // Foreign key to Book
+  status: "",
+  createdAt: new Date(),
+  message: "empty",
+  bookTitle: "updated book",
+};
+
 /**
  * Utility function for checking if a request is valid (no fields are empty, etc.)
  *
@@ -100,7 +109,7 @@ export function validateRequestData(
   const requiredFields = ["userId", "bookId"] as const;
 
   for (const field of requiredFields) {
-    if (requestData[field] == null) {
+    if (requestData[field] === null || requestData[field] === "") {
       return false;
     }
   }

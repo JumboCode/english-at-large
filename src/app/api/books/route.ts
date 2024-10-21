@@ -53,9 +53,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(newBook, { status: 201 });
   } catch (error) {
-    throw error; // throws error to the front end for better debugging, swap this out for below code
-    // when passing to client
-
     return NextResponse.json(
       { error: "Failed to create book" },
       { status: 500 }

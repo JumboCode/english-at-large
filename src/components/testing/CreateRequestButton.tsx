@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
-import { createRequest } from "@/lib/api/requests"; 
-import { emptyRequest } from "@/lib/util/types";
+import { createRequest } from "@/lib/api/requests";
+import { emptyRequest, newEmptyRequest } from "@/lib/util/types";
 import { Request as BookRequest } from "@prisma/client";
 
 const CreateRequestButton = () => {
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,8 +14,8 @@ const CreateRequestButton = () => {
 
     try {
       console.log("request");
-      await createRequest(emptyRequest as Omit<BookRequest, "id">);
-      
+      await createRequest(newEmptyRequest);
+
       alert("Request created successfully!");
     } catch (err) {
       console.log("error");
@@ -39,4 +38,3 @@ const CreateRequestButton = () => {
 };
 
 export default CreateRequestButton;
-

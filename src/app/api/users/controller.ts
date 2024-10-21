@@ -1,9 +1,8 @@
 import { User } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { validateUserData } from "../../../lib/util/types";
-import { NextResponse } from "next/server";
 
-export const getAllUsersController = async () => {
+export const getAllUsersController = async (): Promise<User[]> => {
   try {
     const users = await prisma.user.findMany();
     return users;
@@ -13,7 +12,7 @@ export const getAllUsersController = async () => {
   }
 };
 
-export const getOneUserController = async (id: string) => {
+export const getOneUserController = async (id: string): Promise<User> => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
@@ -25,12 +24,14 @@ export const getOneUserController = async (id: string) => {
       return user;
     }
   } catch (error) {
-    console.error("Error fetchin user: ", error);
+    console.error("Error fetching user: ", error);
     throw error;
   }
 };
 
-export const postUserController = async (userData: Omit<User, "id">) => {
+export const postUserController = async (
+  userData: Omit<User, "id">
+): Promise<User> => {
   try {
     // Validate required fields
     if (!validateUserData(userData)) {
@@ -49,13 +50,10 @@ export const postUserController = async (userData: Omit<User, "id">) => {
   }
 };
 
-export const putUserController = async (userData: User) => {
+export const putUserController = async (userData: User): Promise<User> => {
   try {
     if (!userData.id || !validateUserData(userData)) {
-      return NextResponse.json(
-        { error: "Missing id, and name or owner" },
-        { status: 400 }
-      );
+      throw new Error("Missing id, and name or owner");
     }
 
     const updatedUser = await prisma.user.update({
@@ -70,7 +68,7 @@ export const putUserController = async (userData: User) => {
   }
 };
 
-export const deleteUserController = async (id: string) => {
+export const deleteUserController = async (id: string): Promise<User> => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
