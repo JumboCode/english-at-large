@@ -21,7 +21,6 @@ const GetOneBookButton = () => {
     } finally {
       setLoading(false);
     }
-    console.log("inside handleGetONeBOok");
   };
 
   return (

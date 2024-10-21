@@ -12,43 +12,53 @@ import { NextResponse } from "next/server";
  *  - This controller can later be modified to call other backend functions as needed.
  */
 export const postBookController = async (bookData: Omit<Book, "id">) => {
-  console.log("In postBookController")
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
-  if (!validateBookData(bookData)) {
-    return NextResponse.json(
-      { error: "Missing required book properties" },
-      { status: 400 }
-    );
+  try {
+    if (!validateBookData(bookData)) {
+      return NextResponse.json(
+        { error: "Missing required book properties" },
+        { status: 400 }
+      );
+    }
+  
+    const newBook = await prisma.book.create({
+      data: bookData,
+    });
+  
+    return newBook;
+  } catch (error) {
+    console.error("Eror Posting Books: ", error);
+    throw error;
   }
-  console.log(bookData)
-
-  const newBook = await prisma.book.create({
-    data: bookData,
-  });
-
-  console.log(newBook)
-
-  return newBook;
 };
 
 export const getAllBooksController = async () => {
-  const Books = await prisma.book.findMany()
-  return Books;
+  try {
+    const Books = await prisma.book.findMany()
+    return Books;
+  } catch(error) {
+    console.error("Error fetching books: ", error);
+    throw error;
+  }
 }
 
 export const getOneBookController = async (bookId: number) => {
-  if (!bookId) {
-    return NextResponse.json(
-      { error: "Missing id" },
-      { status: 400 }
-    );
+  try {
+    if (!bookId) {
+      return NextResponse.json(
+        { error: "Missing id" },
+        { status: 400 }
+      );
+    }
+  
+    const findBook = await prisma.book.findUnique({
+      where: { id: bookId }
+    });
+    return findBook;
+  } catch (error) {
+    console.error("Error fetching book: ", error);
+    throw error;
   }
-
-  const findBook = await prisma.book.findUnique({
-    where: { id: bookId }
-  });
-
-  return findBook;
 }
 
 /**
@@ -60,7 +70,7 @@ export const getOneBookController = async (bookId: number) => {
  *  - N/A
  */
 export const putBookController = async (bookData: Book) => {
-    console.log("in putBookController");
+  try {
     if (!bookData.id || !validateBookData(bookData)) {
       return NextResponse.json(
         { error: "Missing id, and name or owner" },
@@ -72,8 +82,10 @@ export const putBookController = async (bookData: Book) => {
       where: { id: bookData.id },
       data: bookData,
     });
-
     return updatedBook;
+  } catch(error) {
+    console.error("Error Putting Book: ", error);
+  }
 }
 
 /**
@@ -84,17 +96,19 @@ export const putBookController = async (bookData: Book) => {
  * @remarks
  *  - N/A
  */
-export const deleteBookController = async (bookData: Book) => {
-  console.log("in deleteBookController");
-
-    if (!bookData.id) {
+export const deleteBookController = async (bookId: number) => {
+  try {
+    if (!bookId) {
       return NextResponse.json({ error: "Missing id" }, { status: 400 });
     }
 
     await prisma.book.delete({
-      where: { id: bookData.id },
+      where: { id: bookId },
     });
 
     return NextResponse.json({ message: "Book deleted successfully" });
-    
+  } catch (error) {
+    console.error("Error deleting book", error);
+    throw error;
+  }
 }

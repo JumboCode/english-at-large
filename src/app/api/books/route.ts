@@ -11,7 +11,6 @@ import {
 } from "./controller";
 
 export async function GET(req: Request) {
-  console.log("IN GET", req);
   try {
     const { searchParams } = new URL(req.url);
     const bookIdParam = searchParams.get("id"); // Assuming the ID is passed as a query parameter
@@ -82,9 +81,11 @@ export async function PUT(req: Request) {
 // DELETE - Delete a book
 export async function DELETE(req: Request) {
   try {
-    const bookData: Book = await req.json();
+    const { searchParams } = new URL(req.url);
+    const bookIdParam = searchParams.get("id");
+    const bookId = Number(bookIdParam);
 
-    const deletedBook = deleteBookController(bookData);
+    const deletedBook = deleteBookController(bookId);
 
     return NextResponse.json(deletedBook, { status: 200 });
   } catch (error) {

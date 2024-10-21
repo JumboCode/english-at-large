@@ -1,6 +1,5 @@
 import { Book } from "@prisma/client";
-import axios, { AxiosRequestConfig } from "axios";
-import { validateBookData } from "../util/types";
+import axios from "axios";
 
 /**
  * Utility function for fetching all books
@@ -9,26 +8,32 @@ import { validateBookData } from "../util/types";
  * @returns array of books (of type Books)
  *
  * @remarks
- * - TODO: add filtering if needed
  */
-export async function getAllBooks() {
+export const getAllBooks = async (): Promise<Book[] | undefined> => {
   try {
     const response = await axios.get("/api/books");
     return response.data; //JSOn
   } catch (error) {
     throw new Error("Failed to fetch books");
   }
-}
+};
 
-export async function getOneBook(bookId: number) {
-  console.log("getOneBook in books");
+/**
+ * Utility function for fetching one books
+ *
+ * @param bookId
+ * @returns one book (of type Books)
+ *
+ * @remarks
+ */
+export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
   try {
     const response = await axios.get(`/api/books/?id=${bookId}`); // Using template literals for cleaner URL construction
     return response.data;
   } catch (error) {
     throw new Error("Failed to fetch books");
   }
-}
+};
 
 /**
  * Utility function for creating a books
@@ -39,44 +44,47 @@ export async function getOneBook(bookId: number) {
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function createBook(book: Omit<Book, "id">) {
+export const createBook = async (
+book: Omit<Book, "id">
+): Promise<Book | undefined> => {
   try {
-    if (!validateBookData(book)) {
-      throw new Error("Missing book fields");
-    }
     const response = await axios.post("/api/books", book);
     return response.data;
   } catch (error) {
     console.error("Failed to create book: ", error);
   }
-}
+};
 
-export async function updateBook(book: Book) {
+/**
+ * Utility function for updating a book
+ *
+ * @param book
+ * @returns the updated book
+ *
+ * @remarks
+ */
+export const updateBook = async (book: Book): Promise<Book | undefined> => {
   try {
-    if (!validateBookData(book)) {
-      throw new Error("Missing book fields");
-    }
     const response = await axios.put("/api/books", book);
     return response.data;
   } catch (error) {
     console.error("Failed to create book: ", error);
   }
-}
+};
 
-export async function deleteBook(book: Book) {
+/**
+ * Utility function for deleting a book
+ *
+ * @param bookId
+ * @returns nothing
+ *
+ * @remarks
+ */
+export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
   try {
-    if (!validateBookData(book)) {
-      throw new Error("Missing book fields");
-    }
-
-    const config: AxiosRequestConfig = {
-      data: book,
-    };
-    const response = await axios.delete("/api/books", config);
+    const response = await axios.delete(`/api/books?id=${bookId}`);
     return response.data;
   } catch (error) {
     console.error("Failed to create book: ", error);
   }
-}
-
-// Add other CRUD functions as needed (updateBook, deleteBook, etc.)
+};

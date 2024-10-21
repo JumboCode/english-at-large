@@ -13,17 +13,14 @@ const GetAllBookButton = () => {
 
     try {
       const gotBooks = await getBooks();
-      console.log("HERE");
       console.log(gotBooks.length);
       alert("Book getAll successfully!");
     } catch (err) {
-      console.log("error bro");
       setError("Failed to fetch book");
       console.error(err);
     } finally {
       setLoading(false);
     }
-    console.log("inside handleGetONeBOok");
   };
 
   return (

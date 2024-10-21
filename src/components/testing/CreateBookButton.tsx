@@ -4,7 +4,6 @@ import { createBook } from "@/lib/api/books"; // Adjust the path as necessary
 import { newEmptyBook } from "@/lib/util/types";
 
 const CreateBookButton = () => {
-  console.log("Create Book Button");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +17,6 @@ const CreateBookButton = () => {
       await createBook(newEmptyBook);
       alert("Book created successfully!");
     } catch (err) {
-      console.log("error bro");
       setError("Failed to create book");
       console.error(err);
     } finally {
