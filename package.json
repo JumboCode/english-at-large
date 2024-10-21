@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.0.52",
     "@clerk/nextjs": "^5.7.5",
     "@prisma/client": "^5.20.0",
     "@vercel/postgres": "^0.9.0",
