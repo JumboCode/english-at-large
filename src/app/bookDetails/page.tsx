@@ -6,14 +6,15 @@ import bookIcon from "./bookmark_add.svg";
 import Tag from "@/components/tag";
 import BookDetail from "@/components/details";
 import placeHolder from "./placeholder.jpg";
+import { Book } from "@prisma/client";
 
 const BookDetails = () => {
   const handleClick = () => {
     alert("Button clicked!");
   };
 
-// TODO: make not static!!!
-  const book = {
+  // TODO: make not static!!!
+  const book: Book = {
     title: "STORY OF AVA AND HANNAH",
     author: "Jenn and Clarence",
     tags: ["Non-Fiction", "Adventure", "Bestseller"],
@@ -50,12 +51,7 @@ const BookDetails = () => {
           />
         </div>
         <div className="relative my-20 mx-40 font-[family-name:var(--font-rubik)]">
-        <Image
-            src={book.image}
-            alt="Book Cover"
-            width={150}
-            height={200}
-          />
+          <Image src={book.image} alt="Book Cover" width={150} height={200} />
         </div>
       </div>
 
@@ -92,7 +88,8 @@ const BookDetails = () => {
           <BookDetail label="ISBN" value={book.details.ISBN} />
           <BookDetail label="Publisher" value={book.details.Publisher} />
           <BookDetail label="Release" value={book.details.Release} />
-          <BookDetail label="Copies" value={book.details.Copies} />
+          <BookDetail label="Copies" value={book.details.Copies} />{" "}
+          {/* hardcode this for now. TODO: book groups */}
         </div>
       </div>
     </div>
