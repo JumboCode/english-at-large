@@ -35,16 +35,6 @@ export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
   }
 };
 
-export async function getOneBook(bookId: number) {
-  console.log("getOneBook in books");
-  try {
-    const response = await axios.get(`/api/books/?id=${bookId}`); // Using template literals for cleaner URL construction
-    return response.data;
-  } catch (error) {
-    throw new Error("Failed to fetch books");
-  }
-}
-
 /**
  * Utility function for creating a books
  *
