@@ -11,6 +11,7 @@ import GetAllBookButton from "@/components/testing/GetAllBookButton";
 import GetOneBookButton from "@/components/testing/GetOneBookButton";
 import UpdateBookButton from "@/components/testing/UpdateBookButton";
 
+
 const About = () => {
   return (
     <div>
@@ -34,6 +35,10 @@ const About = () => {
           <UpdateBookButton />
           <DeleteBookButton />
         </div>
+      </div>
+
+      <div>
+        <a href="/login"> Go to login page </a>
       </div>
     </div>
   );
