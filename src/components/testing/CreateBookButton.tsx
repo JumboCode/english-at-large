@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createBook } from "@/lib/api/books"; // Adjust the path as necessary
-import { emptyBook } from "@/lib/util/types";
-import { Book } from "@prisma/client";
+import { newEmptyBook } from "@/lib/util/types";
 
 const CreateBookButton = () => {
   const [loading, setLoading] = useState(false);
@@ -13,13 +12,11 @@ const CreateBookButton = () => {
     setError(null);
 
     try {
-      console.log("book");
       // Replace these with your book details
       // cast as book w/o id since we can't have an existing id when creating a book
-      await createBook(emptyBook as Omit<Book, "id">);
+      await createBook(newEmptyBook);
       alert("Book created successfully!");
     } catch (err) {
-      console.log("error bro");
       setError("Failed to create book");
       console.error(err);
     } finally {
@@ -29,8 +26,12 @@ const CreateBookButton = () => {
 
   return (
     <div>
-      <button onClick={handleCreateBook} disabled={loading}>
-        {loading ? "Creating..." : "Create Book"}
+      <button
+        className="flex flex-row items-center gap-2 min-w-max p-3 rounded-lg border border-dark-blue bg-dark-blue"
+        onClick={handleCreateBook}
+        disabled={loading}
+      >
+        <p className="text-sm">{loading ? "Creating..." : "Create Book"}</p>
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
