@@ -13,6 +13,11 @@ const NavBar = () => {
         <a href="/profile">
           <p>My Profile</p>
         </a>
+        <a
+          href="/bookDetails"
+        >
+          <p>Book Details</p>
+        </a>
       </div>
     </div>
   );

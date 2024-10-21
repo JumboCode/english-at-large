@@ -14,6 +14,11 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+const rubik = localFont({
+        src: "./fonts/Rubik-VariableFont_wght.ttf",
+        variable: "--font-rubik",
+        weight: "100 900",
+      });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,7 +34,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} antialiased`}
         >
           <NavBar />
           {children}

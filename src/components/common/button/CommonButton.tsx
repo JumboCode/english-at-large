@@ -17,8 +17,8 @@ const CommonButton = (props: ButtonProps) => {
       className={`text-white w-20 h-10 rounded-md bg-blue-800 hover:bg-blue-900 flex items-center ${altStyle}`}
     >
       <button onClick={onClick} className="flex justify-center items-center">
-        {label}
         {icon ? icon : null}
+        {label}
       </button>
     </div>
   );
