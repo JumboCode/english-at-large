@@ -14,7 +14,7 @@ const Button = (props: ButtonProps) => {
   // if icon isn't passed in, nothing will show
   return (
     <div // added conditional styling. use the `` and ${} syntax for inserting variables into string
-      className={`text-white w-20 h-10 rounded-md bg-blue-800 hover:bg-blue-900 flex items-center ${altStyle}`}
+      className={`font-[family-name:var(--font-geist-sans)]text-white w-20 h-10 rounded-md bg-blue-800 hover:bg-blue-900 flex items-center ${altStyle}`}
     >
       <button onClick={onClick} className="flex justify-center items-center">
         {label}

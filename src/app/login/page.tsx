@@ -2,13 +2,16 @@
 import Button from "@/components/common/button/CommonButton";
 import LoginForm from "@/components/login/LoginForm";
 
-export default function Login() {
+const Login = () => {
 
     return (
-      <div>
+      <div className="font-[family-name:var(--font-geist-sans)]">
         <p> testing </p>
         <LoginForm />
+        <Button onClick="" label="Login"/>
       </div>
     );
-  }
+}
+
+export default Login; 
   
