@@ -36,10 +36,6 @@ const About = () => {
           <DeleteBookButton />
         </div>
       </div>
-
-      <div>
-        <a href="/login"> Go to login page </a>
-      </div>
     </div>
   );
 };

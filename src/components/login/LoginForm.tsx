@@ -1,49 +1,47 @@
 "use client";
-import React from 'react'; 
+import React from "react";
 
 const LoginForm = () => {
-    const [checked, setChecked] = React.useState(false); 
+  const [checked, setChecked] = React.useState(false);
 
-    const handleChange = () => {
-        setChecked(!checked); 
-    }; 
+  const handleChange = () => {
+    setChecked(!checked);
+  };
 
   return (
     <div>
       <form className="flex flex-col gap-y-4">
-        <h1> Welcome back! </h1>
-        <p> Sign in to English at Large Catalog </p>
-
-        <label htmlFor="email" className="block text-lg">
+        <label htmlFor="email" className="text-l font-bold">
           Email
         </label>
         <input
           type="text"
           id="email"
-          className="border-2 border-black border-solid rounded-md"
+          className="flex flex-row justify-between items-center -mt-3 text-sm px-4 py-2 border border-medium-grey-border rounded-lg bg-white cursor-text"
+          placeholder="Enter your email"
         />
 
-        <label htmlFor="Password" className="block text-lg">
+        <label htmlFor="Password" className="text-l font-bold">
           Password
         </label>
         <input
           type="text"
           id="password"
-          className="border-2 border-black border-solid rounded-md"
+          className="flex flex-row justify-between items-center -mt-3 text-sm mt-0 px-4 py-2 border border-medium-grey-border rounded-lg bg-white cursor-text"
+          placeholder="Enter your password"
         />
       </form>
-      <label> 
-        <input 
-            type="checkbox"
-            checked={checked}
-            onChange={handleChange}
-        /> 
-        <p> Remember for 7 days </p>
-      </label>
 
-      <a href = "/forgot-password"> 
-        <p> Forgot password? </p>
-      </a>
+      <div className="flex flex-row justify-between pt-10 font-bold">
+        <div className="flex gap-1">
+            <input type="checkbox" checked={checked} onChange={handleChange} />
+            <label/> Remember for 7 days <label/> 
+        </div>
+
+        <a href="/forgot-password">
+          <p> Forgot password? </p>
+        </a>
+      </div>
     </div>
   );
 };

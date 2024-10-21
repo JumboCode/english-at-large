@@ -1,37 +1,21 @@
 "use client";
-import React from 'react'; 
-
-import CommonButton from '@/components/common/button/CommonButton'; 
+import React from "react";
 
 const ForgotPasswordForm = () => {
-    const handleReset = () => {
-        return (<div/>); 
-    }
-    const toLogin = () => {
-        <a href="/login"/> 
-    }
   return (
     <div>
       <form className="flex flex-col gap-y-4">
-        Forgot password? 
-        <p> All good. Enter your account's email and we'll 
-            send you a link to reset your password. </p>
-
-        <label htmlFor="email" className="block text-lg">
+        <label htmlFor="email" className="font-bold text-l">
           Email
         </label>
         <input
           type="text"
           id="email"
-          className="border-2 border-black border-solid rounded-md"
+          className="flex flex-row justify-between items-center text-sm px-4 py-2 -mt-3 border border-medium-grey-border rounded-lg bg-white cursor-text"
+          placeholder="Enter your email"
         />
-
-        <CommonButton label="Send reset link" onClick={handleReset} /> 
-
       </form>
-      <a href = "/login"> 
-        <CommonButton label="Back to login" onClick={toLogin}/>
-      </a>
+
     </div>
   );
 };

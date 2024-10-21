@@ -13,6 +13,9 @@ const NavBar = () => {
         <a href="/profile">
           <p>My Profile</p>
         </a>
+        <a href="/login">
+          Login
+        </a>
       </div>
     </div>
   );
