@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { Book } from "@prisma/client";
 // import { validateBookData } from "@/lib/util/types";
 import {
@@ -11,7 +10,6 @@ import {
 } from "./controller";
 
 export async function GET(req: Request) {
-  console.log("IN GET", req);
   try {
     const { searchParams } = new URL(req.url);
     const bookIdParam = searchParams.get("id"); // Assuming the ID is passed as a query parameter
@@ -37,7 +35,7 @@ export async function GET(req: Request) {
     }
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch books" },
+      { error: `Failed to fetch books: ${error}` },
       { status: 500 }
     );
   }
@@ -54,7 +52,7 @@ export async function POST(req: Request) {
     return NextResponse.json(newBook, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to create book" },
+      { error: `Failed to create book: ${error}` },
       { status: 500 }
     );
   }
@@ -70,7 +68,7 @@ export async function PUT(req: Request) {
     return NextResponse.json(updatedBook, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to update book" },
+      { error: `Failed to update book: ${error}` },
       { status: 500 }
     );
   }
@@ -79,14 +77,16 @@ export async function PUT(req: Request) {
 // DELETE - Delete a book
 export async function DELETE(req: Request) {
   try {
-    const bookData: Book = await req.json();
+    const { searchParams } = new URL(req.url);
+    const bookIdParam = searchParams.get("id");
+    const bookId = Number(bookIdParam);
 
-    const deletedBook = deleteBookController(bookData);
+    const deletedBook = deleteBookController(bookId);
 
     return NextResponse.json(deletedBook, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete book" },
+      { error: `Failed to delete book: ${error}` },
       { status: 500 }
     );
   }

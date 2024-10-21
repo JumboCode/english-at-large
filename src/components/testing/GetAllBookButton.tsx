@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { getBooks } from "@/lib/api/books"; // Adjust the path as necessary
+import { getAllBooks } from "@/lib/api/books"; // Adjust the path as necessary
 // import { emptyBook } from "@/lib/util/types";
 
 const GetAllBookButton = () => {
@@ -12,18 +12,14 @@ const GetAllBookButton = () => {
     setError(null);
 
     try {
-      const gotBooks = await getBooks();
-      console.log("HERE");
-      console.log(gotBooks.length);
+      await getAllBooks();
       alert("Book getAll successfully!");
     } catch (err) {
-      console.log("error bro");
       setError("Failed to fetch book");
       console.error(err);
     } finally {
       setLoading(false);
     }
-    console.log("inside handleGetONeBOok");
   };
 
   return (

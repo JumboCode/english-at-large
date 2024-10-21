@@ -5,7 +5,6 @@ import { emptyBook } from "@/lib/util/types";
 // import { Book } from "@prisma/client";
 
 const DeleteBookButton = () => {
-  console.log("IN DELETE BOOK BUTTOn")
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,13 +13,11 @@ const DeleteBookButton = () => {
     setError(null);
 
     try {
-      console.log("book");
       // Replace these with your book details
       // cast as book w/o id since we can't have an existing id when creating a book
-      await deleteBook(emptyBook);
+      await deleteBook(3);
       alert("Book deleted successfully!");
     } catch (err) {
-      console.log("error bro");
       setError("Failed to delete book");
       console.error(err);
     } finally {
