@@ -2,6 +2,8 @@ import { User } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { validateUserData } from "../../../lib/util/types";
 import { NextResponse } from "next/server";
+import clerkClient from "@/clerk";
+
 
 export const getAllUsersController = async () => {
   try {
@@ -38,11 +40,17 @@ export const postUserController = async (userData: Omit<User, "id">) => {
     }
 
     // Create the new user in the database
-    const newUser = await prisma.user.create({
-      data: userData,
+    // const newUser = await prisma.user.create({
+    //   data: userData,
+    // });
+
+    // return newUser;
+
+    clerkClient.invitations.createInvitation({
+      emailAddress: "owen.prendergast@tufts.edu",
+      redirectUrl: "http://localhost:3000/",
     });
 
-    return newUser;
   } catch (error) {
     console.error("Error in postUserController:", error);
     throw error; // Let the calling function handle the error and response

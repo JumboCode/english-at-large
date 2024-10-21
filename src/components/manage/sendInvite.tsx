@@ -1,43 +1,76 @@
-import React from 'react'
-// import { Clerk } from "@clerk/clerk-sdk-node";
-//import { Clerk } from '@clerk/nextjs';
-import { Clerk } from "@clerk/clerk-sdk-node";
-
-
-
-
+"use client";
+import React, { useState } from "react";
+import clerkClient from "@/clerk";
+import { createUser } from "@/lib/api/users";
+import { newEmptyUser } from "@/lib/util/types";
 
 function SendInvite() {
-    const clerkClient = new Clerk();
-n
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [userKind, setUserKind] = useState<string>("");
 
+  const handleUserKind = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserKind(event.target.value);
+  };
 
   const sendEmail = () => {
     console.log("submitted the form!");
-  }
+    console.log(name);
+    console.log(email);
+    console.log(userKind);
+
+    // clerkClient.invitations.createInvitation({
+    //   emailAddress: email,
+    //   redirectUrl: "http://localhost:3000/",
+    // });
+    createUser(newEmptyUser);
+  };
 
   return (
     <div>
-    <form onSubmit={sendEmail}> 
       <p>Full Name: </p>
-      <input type="text" name="fullname" className="text-black"/>
+      <input
+        type="text"
+        name="fullname"
+        className="text-black"
+        onChange={(event) => {
+          setName(event.target.value);
+        }}
+      />
       <p>Email: </p>
-      <input type="text" name="email" className="text-black"/>
-      </ form>
+      <input
+        type="text"
+        name="email"
+        className="text-black"
+        onChange={(event) => {
+          setEmail(event.target.value);
+        }}
+      />
       <p>Invite as </p>
-      
-      <input type="radio" id="tutor" name="usertype" value="Tutor" className="text-white"/>
-      <label htmlFor="tutor">Tutor</ label>
-      <br></br>
-      <input type="radio" id="admin" name="usertype" value="Admin"/>
-      <label htmlFor="admin">Admin</ label>
-      <br></br>
+
+      <input
+        type="radio"
+        id="tutor"
+        name="usertype"
+        value="Tutor"
+        onChange={handleUserKind}
+      />
+      <label htmlFor="tutor">Tutor</label>
+      <br />
+      <input
+        type="radio"
+        id="admin"
+        name="usertype"
+        value="Admin"
+        onChange={handleUserKind}
+      />
+      <label htmlFor="admin">Admin</label>
+      <br />
       <button>Cancel</button>
-      <br></br>
-      <button>Send Invite</button>
-      <input type='submit'/>
-</div>
-  )
+      <br />
+      <button onClick={sendEmail}>Send Invite</button>
+    </div>
+  );
 }
 
 // const response = await clerkClient.invitations.createInvitation({
@@ -50,9 +83,9 @@ n
 //       },
 //     },
 //   })
-  
-  //console.log(response)
-  /*
+
+//console.log(response)
+/*
   _Invitation {
     id: 'inv_123',
     emailAddress: 'invite@example.com',
@@ -64,4 +97,4 @@ n
   }
   */
 
-export default SendInvite
+export default SendInvite;
