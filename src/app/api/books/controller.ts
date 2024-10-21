@@ -11,55 +11,53 @@ import { NextResponse } from "next/server";
  * @remarks
  *  - This controller can later be modified to call other backend functions as needed.
  */
-export const postBookController = async (bookData: Omit<Book, "id">) => {
+export const postBookController = async (
+  bookData: Omit<Book, "id">
+): Promise<Book> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   try {
     if (!validateBookData(bookData)) {
-      return NextResponse.json(
-        { error: "Missing required book properties" },
-        { status: 400 }
-      );
+      throw new Error("Missing required book properties");
     }
-  
+
     const newBook = await prisma.book.create({
       data: bookData,
     });
-  
+
     return newBook;
   } catch (error) {
-    console.error("Eror Posting Books: ", error);
+    console.error("Error Posting Books: ", error);
     throw error;
   }
 };
 
-export const getAllBooksController = async () => {
+export const getAllBooksController = async (): Promise<Book[]> => {
   try {
-    const Books = await prisma.book.findMany()
+    const Books = await prisma.book.findMany();
     return Books;
-  } catch(error) {
+  } catch (error) {
     console.error("Error fetching books: ", error);
     throw error;
   }
-}
+};
 
-export const getOneBookController = async (bookId: number) => {
+export const getOneBookController = async (bookId: number): Promise<Book> => {
   try {
     if (!bookId) {
-      return NextResponse.json(
-        { error: "Missing id" },
-        { status: 400 }
-      );
+      throw new Error("Missing book id");
     }
-  
+
     const findBook = await prisma.book.findUnique({
-      where: { id: bookId }
+      where: { id: bookId },
     });
-    return findBook;
+
+    if (findBook) return findBook;
+    else throw new Error("Book not found!");
   } catch (error) {
     console.error("Error fetching book: ", error);
     throw error;
   }
-}
+};
 
 /**
  * Utility controller that validates book fields, then updates a Book in backend.
@@ -69,24 +67,24 @@ export const getOneBookController = async (bookId: number) => {
  * @remarks
  *  - N/A
  */
-export const putBookController = async (bookData: Book) => {
+export const putBookController = async (bookData: Book): Promise<Book> => {
   try {
     if (!bookData.id || !validateBookData(bookData)) {
-      return NextResponse.json(
-        { error: "Missing id, and name or owner" },
-        { status: 400 }
-      );
+      throw new Error("Missing id, and name or owner");
     }
 
     const updatedBook = await prisma.book.update({
       where: { id: bookData.id },
       data: bookData,
     });
-    return updatedBook;
-  } catch(error) {
+
+    if (updatedBook) return updatedBook;
+    else throw new Error("Book not found!");
+  } catch (error) {
     console.error("Error Putting Book: ", error);
+    throw error;
   }
-}
+};
 
 /**
  * Utility controller that validates book fields, then updates a Book in backend.
@@ -96,19 +94,18 @@ export const putBookController = async (bookData: Book) => {
  * @remarks
  *  - N/A
  */
-export const deleteBookController = async (bookId: number) => {
+export const deleteBookController = async (bookId: number): Promise<Book> => {
   try {
-    if (!bookId) {
-      return NextResponse.json({ error: "Missing id" }, { status: 400 });
-    }
+    if (!bookId) throw new Error("Invalid ID");
 
-    await prisma.book.delete({
+    const deletedBook = await prisma.book.delete({
       where: { id: bookId },
     });
 
-    return NextResponse.json({ message: "Book deleted successfully" });
+    if (deletedBook) return deletedBook;
+    else throw new Error("Book not found!");
   } catch (error) {
     console.error("Error deleting book", error);
     throw error;
   }
-}
+};

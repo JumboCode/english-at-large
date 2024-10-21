@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { Book } from "@prisma/client";
 // import { validateBookData } from "@/lib/util/types";
 import {
@@ -36,7 +35,7 @@ export async function GET(req: Request) {
     }
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch books" },
+      { error: `Failed to fetch books: ${error}` },
       { status: 500 }
     );
   }
@@ -52,11 +51,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json(newBook, { status: 201 });
   } catch (error) {
-    throw error; // throws error to the front end for better debugging, swap this out for below code
-    // when passing to client
-
     return NextResponse.json(
-      { error: "Failed to create book" },
+      { error: `Failed to create book: ${error}` },
       { status: 500 }
     );
   }
@@ -72,7 +68,7 @@ export async function PUT(req: Request) {
     return NextResponse.json(updatedBook, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to update book" },
+      { error: `Failed to update book: ${error}` },
       { status: 500 }
     );
   }
@@ -90,7 +86,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json(deletedBook, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete book" },
+      { error: `Failed to delete book: ${error}` },
       { status: 500 }
     );
   }
