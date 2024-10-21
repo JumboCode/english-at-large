@@ -70,54 +70,6 @@ export const newEmptyBook: Omit<Book, "id"> = {
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
-/////                              REQUESTS                                /////
-/////                                                                      /////
-////////////////////////////////////////////////////////////////////////////////
-/**
- * "Empty book" with dummy data.
- */
-export const emptyRequest: BookRequest = {
-  id: 0, // Autoincremented, so can be 0 for dummy purposes
-  userId: "cm2f3a8ra0000sl8zdb10q3d1 ", // Foreign key to User
-  bookId: 0, // Foreign key to Book
-  status: "",
-  createdAt: new Date(),
-  message: "empty",
-  bookTitle: "updated book",
-};
-
-export const newEmptyRequest: Omit<BookRequest, "id"> = {
-  userId: "cm2f3a8ra0000sl8zdb10q3d1", // Foreign key to User
-  bookId: 1, // Foreign key to Book
-  status: "",
-  createdAt: new Date(),
-  message: "empty",
-  bookTitle: "updated book",
-};
-
-/**
- * Utility function for checking if a request is valid (no fields are empty, etc.)
- *
- * @param requestData - Partial request data to be validated.
- *
- * */
-
-export function validateRequestData(
-  requestData: Partial<BookRequest>
-): boolean {
-  // Don't validate ID since sometimes you'll need to have
-  const requiredFields = ["userId", "bookId"] as const;
-
-  for (const field of requiredFields) {
-    if (requestData[field] === null || requestData[field] === "") {
-      return false;
-    }
-  }
-  return true; // No errors
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/////                                                                      /////
 /////                                 USERS                                /////
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { getAllBooks } from "@/lib/api/books"; // Adjust the path as necessary
+import { getBooks } from "@/lib/api/books"; // Adjust the path as necessary
 // import { emptyBook } from "@/lib/util/types";
 
 const GetAllBookButton = () => {
@@ -12,7 +12,7 @@ const GetAllBookButton = () => {
     setError(null);
 
     try {
-      const gotBooks = await getAllBooks();
+      const gotBooks = await getBooks();
       console.log("HERE");
       console.log(gotBooks.length);
       alert("Book getAll successfully!");
