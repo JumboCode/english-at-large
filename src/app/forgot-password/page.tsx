@@ -1,12 +1,12 @@
 "use client";
-import Button from "@/components/common/button/CommonButton";
+import ForgotPasswordForm from "@/components/forgot-password/ForgotPasswordForm"
 
 export default function ForgotPassword() {
 
     return (
       <div>
-        <p> forgot password page </p>
+        {/* <p> forgot password page </p>  */}
+        <ForgotPasswordForm /> 
       </div>
     );
   }
-  
