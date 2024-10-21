@@ -1,6 +1,5 @@
 import SearchBar from "@/components/SearchBar";
 import Image from "next/image";
-import AddNewBookForm from "@/components/AddNewBookForm";
 /*
  * Home Page
  * ...it's the home page.

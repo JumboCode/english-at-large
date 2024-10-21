@@ -1,5 +1,5 @@
 import { Book } from "@prisma/client";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { validateBookData } from "../util/types";
 
 /**
@@ -11,10 +11,20 @@ import { validateBookData } from "../util/types";
  * @remarks
  * - TODO: add filtering if needed
  */
-export async function getBooks() {
+export async function getAllBooks() {
   try {
     const response = await axios.get("/api/books");
     return response.data; //JSOn
+  } catch (error) {
+    throw new Error("Failed to fetch books");
+  }
+}
+
+export async function getOneBook(bookId: number) {
+  console.log("getOneBook in books");
+  try {
+    const response = await axios.get(`/api/books/?id=${bookId}`); // Using template literals for cleaner URL construction
+    return response.data;
   } catch (error) {
     throw new Error("Failed to fetch books");
   }
@@ -35,6 +45,34 @@ export async function createBook(book: Omit<Book, "id">) {
       throw new Error("Missing book fields");
     }
     const response = await axios.post("/api/books", book);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create book: ", error);
+  }
+}
+
+export async function updateBook(book: Book) {
+  try {
+    if (!validateBookData(book)) {
+      throw new Error("Missing book fields");
+    }
+    const response = await axios.put("/api/books", book);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create book: ", error);
+  }
+}
+
+export async function deleteBook(book: Book) {
+  try {
+    if (!validateBookData(book)) {
+      throw new Error("Missing book fields");
+    }
+
+    const config: AxiosRequestConfig = {
+      data: book,
+    };
+    const response = await axios.delete("/api/books", config);
     return response.data;
   } catch (error) {
     console.error("Failed to create book: ", error);
