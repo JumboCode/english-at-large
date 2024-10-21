@@ -142,7 +142,7 @@ export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
  *
  * @remarks
  * - This function does **not** validate the `id` field. This is to account for
- *   cases where the ID has not been assigned yet (e.g., when creating a new book).
+ *   cases where the ID has not been assigned yet (e.g., when creating a new user).
  */
 
 export function validateUserData(userData: Partial<User>): boolean {
