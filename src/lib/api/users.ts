@@ -60,6 +60,25 @@ export const createUser = async (
   }
 };
 
+export const inviteUser = async (name: string, email: string, kind: string) => {
+  try {
+    if (is_empty(name)||is_empty(email)||is_empty(kind)) {
+      throw new Error("Missing user fields");
+    }
+    const response = await axios.post("/api/invite", {name: name, email: email, kind: kind});
+    return response.data;
+  } catch (error) {
+    console.error("Failed to invite user: ", error);
+  }
+
+}
+
+function is_empty(str: string) {
+  return str === "";
+}
+
+
+
 /**
  * Utility function for updating a user
  *

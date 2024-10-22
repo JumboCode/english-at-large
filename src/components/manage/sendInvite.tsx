@@ -1,10 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import clerkClient from "@/clerk";
-import { createUser } from "@/lib/api/users";
-import { newEmptyUser } from "@/lib/util/types";
+import { inviteUser } from "@/lib/api/users";
 
-function SendInvite() {
+export default function SendInvite() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [userKind, setUserKind] = useState<string>("");
@@ -15,15 +13,11 @@ function SendInvite() {
 
   const sendEmail = () => {
     console.log("submitted the form!");
-    console.log(name);
-    console.log(email);
-    console.log(userKind);
+    // console.log(name);
+    // console.log(email);
+    // console.log(userKind);
 
-    // clerkClient.invitations.createInvitation({
-    //   emailAddress: email,
-    //   redirectUrl: "http://localhost:3000/",
-    // });
-    createUser(newEmptyUser);
+    inviteUser(name, email, userKind);
   };
 
   return (
@@ -96,5 +90,3 @@ function SendInvite() {
     revoked: undefined
   }
   */
-
-export default SendInvite;

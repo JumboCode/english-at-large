@@ -40,22 +40,18 @@ export const postUserController = async (userData: Omit<User, "id">) => {
     }
 
     // Create the new user in the database
-    // const newUser = await prisma.user.create({
-    //   data: userData,
-    // });
-
-    // return newUser;
-
-    clerkClient.invitations.createInvitation({
-      emailAddress: "owen.prendergast@tufts.edu",
-      redirectUrl: "http://localhost:3000/",
+    const newUser = await prisma.user.create({
+      data: userData,
     });
 
+    return newUser;
   } catch (error) {
     console.error("Error in postUserController:", error);
     throw error; // Let the calling function handle the error and response
   }
 };
+
+
 
 export const putUserController = async (userData: User) => {
   try {
