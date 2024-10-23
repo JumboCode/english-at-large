@@ -1,5 +1,5 @@
 import SearchBar from "@/components/SearchBar";
-import Image from "next/image";
+
 /*
  * Home Page
  * ...it's the home page.
