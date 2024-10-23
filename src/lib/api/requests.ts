@@ -11,16 +11,15 @@ import { validateRequestData } from "../util/types";
  * @remarks
  * - TODO: add filtering if needed
  */
+
 export const getOneRequest = async (
   requestId: number
 ): Promise<BookRequest | undefined> => {
   try {
     const response = await axios.get(`/api/requests?id=${requestId}`);
-    console.log("response", response.data);
-
-    return response.data; //JSOn
+    return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch requests");
+    console.error("Failed to fetch requests", error);
   }
 };
 
@@ -33,7 +32,7 @@ export const getOneRequest = async (
  * @remarks
  * - TODO: add filtering if needed
  */
-export async function getRequests() {
+export const getRequests = async (): Promise<BookRequest[] | undefined> => {
   try {
     const response = await axios.get("/api/requests");
     console.log("response", response.data);
@@ -53,7 +52,7 @@ export async function getRequests() {
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function createRequest(request: Omit<BookRequest, "id">) {
+export const createRequest = async (request: Omit<BookRequest, "id">): Promise<BookRequest[] | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
@@ -75,7 +74,7 @@ export async function createRequest(request: Omit<BookRequest, "id">) {
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function updateRequest(request: Omit<BookRequest, "id">) {
+export const updateRequest = async (request: any): Promise<BookRequest[] | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
@@ -97,7 +96,7 @@ export async function updateRequest(request: Omit<BookRequest, "id">) {
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export async function deleteRequest(id: number) {
+export const deleteRequest= async (id: number): Promise<BookRequest[] | undefined> => {
   try {
     const response = await axios.delete("api/requests/?id=" + id);
     return response.data;

@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createRequest } from "@/lib/api/requests";
-import { emptyRequest, newEmptyRequest } from "@/lib/util/types";
-import { Request as BookRequest } from "@prisma/client";
+import { newEmptyRequest } from "@/lib/util/types";
 
 const CreateRequestButton = () => {
   const [loading, setLoading] = useState(false);

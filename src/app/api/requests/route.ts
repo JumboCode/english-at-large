@@ -58,16 +58,10 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id") as unknown;
-    console.log(id as number);
+    const id = searchParams.get("id") as string;
 
-    if (id != null) {
-      //+id casts id from a string to a number
-      deleteRequestController(+id);
-      return NextResponse.json({ message: "Request deleted successfully" });
-    } else {
-      return NextResponse.json({ error: "No ID provided" }, { status: 400 });
-    }
+    //+id casts id from a string to a number
+    deleteRequestController(+id);
   } catch (error) {
     return error;
   }

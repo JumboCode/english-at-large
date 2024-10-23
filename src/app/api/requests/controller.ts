@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { Book, Request as BookRequest } from "@prisma/client";
+import { Request as BookRequest } from "@prisma/client";
 import { validateRequestData } from "@/lib/util/types";
 
 /**
@@ -62,18 +61,15 @@ export const postRequestController = async (
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   try {
     if (!validateRequestData(requestData)) {
-      console.log("failed");
       throw new Error("Missing required request properties");
     }
-
-    console.log(requestData);
-
     const newRequest = await prisma.request.create({
       data: requestData,
     });
 
     return newRequest;
   } catch (error) {
+    console.error("Error in postRequestController:", error);
     throw error;
   }
 };
@@ -91,16 +87,20 @@ export const putRequestController = async (
 ): Promise<BookRequest> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   // handle id validation as well since validateBookData doesn't validate ID
+  try {
+    if (!validateRequestData(requestData)) {
+      throw new Error("Missing required request properties");
+    }
 
-  if (!validateRequestData(requestData)) {
-    throw new Error("Missing required request properties");
+    const updatedRequest = await prisma.request.update({
+      where: { id: requestData.id },
+      data: requestData,
+    });
+    return updatedRequest;
+  } catch (error) {
+    console.error("Error updating requests", error);
+    throw error;
   }
-
-  const updatedRequest = await prisma.request.update({
-    where: { id: requestData.id },
-    data: requestData,
-  });
-  return updatedRequest;
 };
 
 /**
@@ -114,9 +114,17 @@ export const putRequestController = async (
 export const deleteRequestController = async (
   id: number
 ): Promise<BookRequest> => {
-  const deletedBook = await prisma.request.delete({
-    where: { id: id },
-  });
-
-  return deletedBook;
+  try {
+    const deletedBook = await prisma.request.delete({
+      where: { id: id },
+    });
+    if (!deletedBook) {
+      throw new Error("Book not found!");
+    } else {
+      return deletedBook;
+    }
+  } catch (error) {
+    console.error("Error deleting request", error);
+    throw error;
+  }
 };
