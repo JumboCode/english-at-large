@@ -12,7 +12,7 @@ const GetOneBookButton = () => {
     setError(null);
 
     try {
-      const book = await getOneBook("yes");
+      const book = await getOneBook(0);
       if (book) alert("Book getOne successfully!");
       else throw error;
     } catch (err) {
