@@ -11,28 +11,34 @@ export default function SignUp() {
   const [password, setPassword] = useState<string>("");
   const [confirm, setConfirm] = useState<string>("");
   const { isLoaded, signUp } = useSignUp();
+  const [signUpAttempt, setSignUpAttempt] = useState<SignUpResource | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string>("")
 
   // console.log("isLoaded:", isLoaded);
   // console.log("signUp:", signUp);
 
   const inviteToken = useSearchParams().get("__clerk_ticket");
 
-  useEffect(() => {
+  // useEffect(() => {
     const clerkSignup = async () => {
       if (isLoaded) {
         console.log("signing up");
-        const signUpAttempt = await (signUp as SignUpResource).create({
+        const attempt = await (signUp as SignUpResource).create({
           strategy: "ticket",
           ticket: inviteToken || "",
         });
 
-        console.log(signUpAttempt);
-        setEmail(signUpAttempt.emailAddress || "");
+        
+        console.log(attempt);
+        console.log("status: ", attempt.status);
+        setEmail(attempt.emailAddress || "");
+        setSignUpAttempt(attempt);
+
       }
     };
 
-    clerkSignup();
-  });
+    // clerkSignup();
+  // }, []);
 
   //User clicks on link to invitation -> Clerk
   //
@@ -41,6 +47,35 @@ export default function SignUp() {
     if (password != confirm) {
       alert("Passwords do not match!");
     } else {
+        console.log(signUpAttempt);  
+          // const attempt12 = signUpAttempt;
+          try {
+            if (signUpAttempt != null && signUp != null){
+              const attempt = await signUp.update({ password });
+              console.log("status: ", attempt.status);
+              console.log("hasPassword: ", attempt.hasPassword);
+              console.log("Mi-pass:", password)
+            }
+            
+           
+          } catch (error) {
+            setErrorMessage("Make sure your password has at least 8 characters, a number, a capital letter, ")
+            console.error("Error updating password:", error);
+          }
+
+         
+        
+            
+          // console.log("status: ", attempt.status);
+          // console.log("status: ", attempt.hasPassword);
+
+
+        // const attempt = await signUp.update({password: password})
+        
+        // console.log("status: ", attempt.status);
+        // console.log("status: ", attempt.hasPassword)
+      
+      //call neon (axios) to register user
       console.log("Passwords match. Form submitted");
     }
 
@@ -55,7 +90,9 @@ export default function SignUp() {
   if (!inviteToken) {
     return <p>no invite found</p>;
   } else if (email == "") {
-    return <p>loading</p>;
+    return <div><p>loading</p>
+            <button onClick={clerkSignup}> Clerk Sign-up</button>
+            </div>;
   } else {
     return (
       <div>
@@ -85,26 +122,3 @@ export default function SignUp() {
     );
   }
 }
-
-// export const User: Omit<User, "id" | "createdAt" | "updatedAt"> = {
-//     name: "Bob",
-//     email: "bob@gmail.com",
-//     role: "Admin",
-//   };
-
-/*
-
-model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String?  @unique
-  role      UserRole
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relation to Request
-  requests Request[] // One user can have many requests
-
-  @@map("users")
-}
-*/

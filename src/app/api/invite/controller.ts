@@ -17,7 +17,8 @@ export const postInviteController = async (name: string, email: string, kind: st
         publicMetadata: {
             name: name,
             accountType: kind
-        }
+        }, 
+        ignoreExisting: true
         // Link that user will click on
       });
 
