@@ -5,10 +5,10 @@ import { inviteUser } from "@/lib/api/users";
 export default function SendInvite() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [userKind, setUserKind] = useState<string>("");
+  const [role, setRole] = useState<string>("");
 
   const handleUserKind = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserKind(event.target.value);
+    setRole(event.target.value);
   };
 
   const sendEmail = () => {
@@ -17,7 +17,7 @@ export default function SendInvite() {
     // console.log(email);
     // console.log(userKind);
 
-    inviteUser(name, email, userKind);
+    inviteUser(name, email, role);
   };
 
   return (

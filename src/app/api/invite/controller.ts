@@ -1,13 +1,13 @@
 import clerkClient from "@/clerk";
 
 
-export const postInviteController = async (name: string, email: string, kind: string) => {
+export const postInviteController = async (name: string, email: string, role: string) => {
     try {
         console.log(name)
         console.log(email)
-        console.log(kind)
+        console.log(role)
         // Validate required fields
-      if (is_empty(name)||is_empty(email)||is_empty(kind)) {
+      if (is_empty(name)||is_empty(email)||is_empty(role)) {
         throw new Error("Missing required user properties");
       }
   
@@ -16,7 +16,7 @@ export const postInviteController = async (name: string, email: string, kind: st
         redirectUrl: "http://localhost:3000/invite", 
         publicMetadata: {
             name: name,
-            accountType: kind
+            role: role
         }, 
         ignoreExisting: true
         // Link that user will click on
