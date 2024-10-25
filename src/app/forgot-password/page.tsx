@@ -6,19 +6,22 @@ import Image from "next/image";
 
 const ForgotPassword = () => {
   const handleReset = () => {
-    return <div />;
-  };
-  const toLogin = () => {
-    <a href="/login" />;
+    return;
   };
 
   return (
-    <div className="font-family-name:var(--font-geist-sans)] grid grid-cols-5 items-center">
-      <div className="col-span-3">
-        <Image aria-hidden src={books} alt="books" layout="responsive" />
+    <div className="font-family-name:var(--font-geist-sans)] grid grid-cols-7 items-center">
+      <div className="hidden sm:block container object-cover col-span-4">
+        <Image
+          aria-hidden
+          src={books}
+          alt="books"
+          layout="responsive"
+          style={{ maxHeight: "100vh" }}
+        />
       </div>
 
-      <div className="container mx-auto px-20 object-fill col-span-2">
+      <div className="container mx-auto px-20 object-fill col-span-3">
         <div className="text-2xl font-bold flex flex-col-3">
           <h1>Forgot password?</h1>
         </div>
@@ -39,11 +42,9 @@ const ForgotPassword = () => {
             altTextStyle="text-white"
             altStyle="bg-dark-blue mt-10 w-full"
           />
-
           <a href="/login">
             <CommonButton
               label="Back to login"
-              onClick={toLogin}
               altTextStyle="text-dark-blue"
               altStyle="bg-white outline-dark-blue mt-3 w-full"
             />
