@@ -11,12 +11,12 @@ const ForgotPassword = () => {
 
   return (
     <div className="font-family-name:var(--font-geist-sans)] grid grid-cols-7 items-center">
-      <div className="hidden sm:block container object-cover h-full min-h-screen col-span-4">
+      <div className="hidden sm:block container object-cover relative h-full min-h-screen col-span-4">
         <Image
           aria-hidden
           src={books}
           alt="books"
-          layout="responsive"
+          layout="fill"
           style={{ maxHeight: "100vh" }}
         />
       </div>
@@ -29,7 +29,7 @@ const ForgotPassword = () => {
         <div className="text-m pb-10 text-zinc-500">
           <p>
             {" "}
-            All good. Enter your account's email and we'll send you a
+            All good. Enter your account&apos;s email and we&apos;ll send you a
             link to reset your password.{" "}
           </p>
         </div>

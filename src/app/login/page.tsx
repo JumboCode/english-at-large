@@ -8,13 +8,13 @@ import Image from "next/image";
 const Login = () => {
   return (
     <div className="font-[family-name:var(--font-geist-sans)] left-0 grid grid-cols-7 items-center">
-      <div className="hidden sm:block container relative h-full min-h-screen col-span-4">
+      <div className="hidden sm:block container object-cover relative h-full min-h-screen col-span-4">
         <Image
           aria-hidden
           src={books}
           alt="books"
           layout="fill"
-          className="object-cover"
+          style={{ maxHeight: "100vh" }}
         />
       </div>
 
