@@ -2,8 +2,6 @@ import { User } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { validateUserData } from "../../../lib/util/types";
 import { NextResponse } from "next/server";
-import clerkClient from "@/clerk";
-
 
 export const getAllUsersController = async () => {
   try {
