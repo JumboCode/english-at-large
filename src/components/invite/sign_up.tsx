@@ -5,7 +5,7 @@ import { UserRole } from "@prisma/client";
 import { emptyUser } from "@/lib/util/types";
 import { useSignUp } from "@clerk/nextjs";
 import { SignUpResource } from "@clerk/types";
-import { createUser } from "../../lib/api/users";
+import { createUser } from '../../lib/api/users';
 import { useUser } from "@clerk/nextjs";
 
 export default function SignUp() {
@@ -13,21 +13,19 @@ export default function SignUp() {
   const [password, setPassword] = useState<string>("");
   const [confirm, setConfirm] = useState<string>("");
   const { isLoaded, signUp, setActive } = useSignUp();
-  const [signUpAttempt, setSignUpAttempt] = useState<SignUpResource | null>(
-    null
-  );
+  const [signUpAttempt, setSignUpAttempt] = useState<SignUpResource | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { user } = useUser();
-  // useEffect(() => {
-  //   ;
-  // });
+  const [attemptedSignup, setAttemptedSignup] = useState(false);
+  
+  const inviteToken = useSearchParams().get("__clerk_ticket");
 
   useEffect(() => {
-    if (user !== null && user !== undefined) {
+    if (user) {
       const metadata = user.publicMetadata ?? {};
 
       const newUser = { ...emptyUser };
-      newUser.name = metadata["name"] ? String(metadata["name"]) : "";
+      newUser.name = (metadata["name"] ? String(metadata["name"]) : "");
 
       const role = metadata["role"];
       console.log("THEROLE:", role);
@@ -40,55 +38,57 @@ export default function SignUp() {
       }
 
       newUser.email = user.primaryEmailAddress?.emailAddress ?? "";
-
-      // console.log("Name: ", newUser.name)
-      // console.log("Role: ", newUser.role)
-      // console.log("Email: ", newUser.email)
+      console.log("Name: ", newUser.name);
+      console.log("Role: ", newUser.role);
+      console.log("Email: ", newUser.email);
 
       createUser(newUser);
     } else {
-      console.log("no active user");
+      console.error("no active user");
     }
   }, [user]);
 
-  const inviteToken = useSearchParams().get("__clerk_ticket");
-
-  let count = 0;
   const clerkSignup = async () => {
-    if (isLoaded) {
-      count++;
-      console.log("signing up");
-      const attempt = await (signUp as SignUpResource).create({
+    if (!isLoaded || attemptedSignup || !inviteToken) return;
+
+    try {
+      const attempt = await signUp.create({
         strategy: "ticket",
-        ticket: inviteToken || "",
+        ticket: inviteToken,
       });
 
-      console.log(attempt);
-      console.log("status: ", attempt.status);
       setEmail(attempt.emailAddress || "");
-      setSignUpAttempt(attempt);
+      if (attempt.status === "complete") {
+        await setActive({ session: attempt.createdSessionId });
+      } else {
+        setErrorMessage("Sign-up incomplete, please try again.");
+      }
+
+      setAttemptedSignup(true); // Ensure only one attempt
+
+    } catch (error) {
+      console.error("Error during signup:", error);
+      setErrorMessage("Invite token invalid or already used. Please check your invite.");
+      setAttemptedSignup(true); // Prevent further attempts
     }
   };
-  //javier.la200426@gmail.com
-  if (inviteToken) {
-    clerkSignup();
-  }
+
+  useEffect(() => {
+    if (!attemptedSignup) {
+      clerkSignup();
+    }
+  }, [attemptedSignup, isLoaded]);
 
   const on_submit = async () => {
-    if (password != confirm) {
+    if (password !== confirm) {
       alert("Passwords do not match!");
     } else {
-      const passwordRegex =
-        /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+      const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
       if (passwordRegex.test(password)) {
         try {
           if (signUpAttempt != null && signUp != null) {
             const attempt = await signUp.update({ password });
-            // console.log("status: ", attempt.status);
-            // console.log("hasPassword: ", attempt.hasPassword);
-            // console.log("Mi-pass:", password)
-
             if (attempt.status === "complete") {
               await setActive({ session: attempt.createdSessionId });
             }
@@ -97,56 +97,44 @@ export default function SignUp() {
           setErrorMessage("");
         } catch (error) {
           console.error("Error updating password:", error);
-          setErrorMessage("error setting clerk password");
+          setErrorMessage("Error setting Clerk password");
         }
       } else {
-        setErrorMessage(
-          "Make sure your password has at least 8 characters, including a number, a lowercase, a capital, and a special character."
-        );
+        setErrorMessage("Make sure your password has at least 8 characters, including a number, a lowercase letter, an uppercase letter, and a special character.");
       }
     }
   };
 
   if (!inviteToken) {
-    return <p>no invite found</p>;
-  } else if (email == "") {
-    clerkSignup();
-
-    return (
-      <div>
-        <p>loading</p>
-
-        <p>Count: {count}</p>
-      </div>
-    );
+    return <p>No invite found.</p>;
+  } else if (email === "") {
+    return <div><p>Loading...</p></div>;
   } else {
     return (
       <div>
-        <p>Count: {count}</p>
-        <p>Email: </p>
-        <p>{email}</p>
-        <p>Password: </p>
+        <p>Email: {email}</p>
+        <p>Password:</p>
         <input
-          type="text"
-          name="email"
+          type="password"
+          name="password"
           className="text-black"
           onChange={(event) => {
             setPassword(event.target.value);
           }}
         />
-        <p>Password: </p>
+        <p>Confirm Password:</p>
         <input
-          type="text"
-          name="email"
+          type="password"
+          name="confirm"
           className="text-black"
           onChange={(event) => {
             setConfirm(event.target.value);
           }}
         />
-        <br></br>
+        <br />
         <p>{errorMessage}</p>
-        <br></br>
-        <button onClick={on_submit}> Sign-up</button>
+        <br />
+        <button onClick={on_submit}>Sign Up</button>
       </div>
     );
   }
