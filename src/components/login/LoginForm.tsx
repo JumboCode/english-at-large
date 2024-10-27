@@ -27,7 +27,7 @@ const LoginForm = () => {
         <input
           type="text"
           id="password"
-          className="flex flex-row justify-between items-center -mt-3 text-sm mt-0 px-4 py-2 border border-medium-grey-border rounded-lg bg-white cursor-text"
+          className="flex flex-row justify-between items-center -mt-3 text-sm px-4 py-2 border border-medium-grey-border rounded-lg bg-white cursor-text"
           placeholder="Enter your password"
         />
       </form>
