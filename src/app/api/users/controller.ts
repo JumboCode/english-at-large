@@ -37,7 +37,7 @@ export const postUserController = async (userData: Omit<User, "id">) => {
       throw new Error("Missing required user properties");
     }
 
-    // Create the new user in the datry tabase
+    // Create the new user in the database
     const newUser = await prisma.user.create({
       data: userData,
     });

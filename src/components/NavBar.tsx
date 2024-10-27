@@ -7,13 +7,12 @@ const NavBar = () => {
         <p>English At Large</p>
       </a>
       <div className="flex flex-row: gap-5">
-        <a href="dashboard/requests">
+        <a href="/requests">
           <p>Requests</p>
         </a>
-        <a href="dashboard/profile">
+        <a href="/profile">
           <p>My Profile</p>
         </a>
-        <a href="/">Logout</a>
       </div>
     </div>
   );

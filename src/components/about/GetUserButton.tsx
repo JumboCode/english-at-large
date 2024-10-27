@@ -2,20 +2,21 @@
 
 "use client";
 import { useState } from "react";
-import { getAllUsers } from "@/lib/api/users";
+import { getOneUser } from "@/lib/api/users";
+import { User } from "@prisma/client";
 
-const GetAllUsersButton = () => {
+const GetOneUserButton = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGetUsers = async () => {
+  const handleGetUser = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      await getAllUsers();
+      const user: User = await getOneUser("cm2f3a8ra0000sl8zdb10q3d1");
     } catch (err) {
-      setError("Failed to get all users");
+      setError("Failed to get user by id");
       console.error(err);
     } finally {
       setLoading(false);
@@ -24,12 +25,12 @@ const GetAllUsersButton = () => {
 
   return (
     <div>
-      <button onClick={handleGetUsers} disabled={loading}>
-        {loading ? "Getting..." : "Get All Users"}
+      <button onClick={handleGetUser} disabled={loading}>
+        {loading ? "Getting..." : "Get Single User"}
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };
 
-export default GetAllUsersButton;
+export default GetOneUserButton;

@@ -43,6 +43,7 @@ export async function POST(req: Request) {
 
     // controller defined in controller.ts
     const newUser = await postUserController(userData);
+    console.log(newUser);
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     return NextResponse.json(
