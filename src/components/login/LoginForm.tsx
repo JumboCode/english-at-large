@@ -32,7 +32,7 @@ const LoginForm = () => {
         />
       </form>
 
-      <div className="flex flex-row justify-between pt-10 font-bold">
+      <div className="flex flex-row justify-between pt-10 text-sm font-bold">
         <div className="flex gap-1">
             <input type="checkbox" checked={checked} onChange={handleChange} />
             <label/> Remember for 7 days <label/> 
