@@ -10,6 +10,11 @@ import DeleteBookButton from "@/components/testing/DeleteBookButton";
 import GetAllBookButton from "@/components/testing/GetAllBookButton";
 import GetOneBookButton from "@/components/testing/GetOneBookButton";
 import UpdateBookButton from "@/components/testing/UpdateBookButton";
+import CreateRequestButton from "@/components/testing/CreateRequestButton";
+import DeleteRequestButton from "@/components/testing/DeleteRequestButton";
+import GetRequestButton from "@/components/testing/GetRequestButton";
+import UpdateRequestButton from "@/components/testing/UpdateRequestButton";
+import GetOneRequestButton from "@/components/testing/GetOneRequestButton";
 
 const About = () => {
   return (
@@ -33,6 +38,17 @@ const About = () => {
           <GetOneBookButton />
           <UpdateBookButton />
           <DeleteBookButton />
+        </div>
+      </div>
+
+      <div className="flex flex-col">
+        <div className="text-lg">Request CRUD</div>
+        <div className="flex row-span-3 gap-4">
+          <CreateRequestButton />
+          <GetRequestButton />
+          <GetOneRequestButton />
+          <UpdateRequestButton />
+          <DeleteRequestButton />
         </div>
       </div>
     </div>
