@@ -13,7 +13,6 @@ export async function POST(req: Request) {
         
       // controller defined in controller.ts
       const invite = await postInviteController(name, email, role);
-      console.log(invite);
       return NextResponse.json(invite, { status: 201 });
     } catch (error) {
       return NextResponse.json(

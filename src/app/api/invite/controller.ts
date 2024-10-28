@@ -3,10 +3,6 @@ import clerkClient from "@/clerk";
 
 export const postInviteController = async (name: string, email: string, role: string) => {
     try {
-        console.log(name)
-        console.log(email)
-        console.log(role)
-        // Validate required fields
       if (is_empty(name)||is_empty(email)||is_empty(role)) {
         throw new Error("Missing required user properties");
       }

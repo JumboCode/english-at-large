@@ -6,18 +6,20 @@ export default function SendInvite() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
+  const [statusText, setStatusText] = useState("");
 
   const handleUserKind = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRole(event.target.value);
   };
 
-  const sendEmail = () => {
-    console.log("submitted the form!");
-    // console.log(name);
-    // console.log(email);
-    // console.log(userKind);
-
-    inviteUser(name, email, role);
+  const sendEmail = async () => {
+    try {
+      await inviteUser(name, email, role);
+      setStatusText("Invite sent!");
+    } catch (error) {
+      console.error("Error creating invite: ", error);
+      setStatusText("Invite failed, please try again!");
+    }
   };
 
   return (
@@ -63,30 +65,7 @@ export default function SendInvite() {
       <button>Cancel</button>
       <br />
       <button onClick={sendEmail}>Send Invite</button>
+      <p>{statusText}</p>
     </div>
   );
 }
-
-// const response = await clerkClient.invitations.createInvitation({
-//     emailAddress: 'invite@example.com',
-//     redirectUrl: 'https://www.example.com/my-sign-up',
-//     publicMetadata: {
-//       example: 'metadata',
-//       example_nested: {
-//         nested: 'metadata',
-//       },
-//     },
-//   })
-
-//console.log(response)
-/*
-  _Invitation {
-    id: 'inv_123',
-    emailAddress: 'invite@example.com',
-    publicMetadata: { example: 'metadata', example_nested: [Object] },
-    createdAt: 1705531674576,
-    updatedAt: 1705531674576,
-    status: 'pending',
-    revoked: undefined
-  }
-  */
