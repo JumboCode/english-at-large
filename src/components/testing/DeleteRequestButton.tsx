@@ -3,7 +3,6 @@ import { useState } from "react";
 import { deleteRequest } from "@/lib/api/requests";
 
 const DeleteRequestButton = () => {
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,9 +11,8 @@ const DeleteRequestButton = () => {
     setError(null);
 
     try {
-      console.log("delete request");
-      await deleteRequest(0);
-      
+      await deleteRequest(9);
+
       alert("Request deleted successfully!");
     } catch (err) {
       console.log("error");
@@ -36,4 +34,3 @@ const DeleteRequestButton = () => {
 };
 
 export default DeleteRequestButton;
-

@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { updateRequest } from "@/lib/api/requests";
 import { emptyRequest } from "@/lib/util/types";
-import { Request as BookRequest } from "@prisma/client";
 
 const UpdateRequestButton = () => {
   const [loading, setLoading] = useState(false);
@@ -13,8 +12,7 @@ const UpdateRequestButton = () => {
     setError(null);
 
     try {
-      console.log("update request");
-      await updateRequest(emptyRequest as Omit<BookRequest, "id">);
+      await updateRequest(emptyRequest);
 
       alert("Request updated successfully!");
     } catch (err) {

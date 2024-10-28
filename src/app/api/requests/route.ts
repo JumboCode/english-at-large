@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { Request as BookRequest } from "@prisma/client";
-import { getOneRequestController, postRequestController } from "./controller";
-import { getAllRequestsController } from "./controller";
-import { putRequestController } from "./controller";
-import { deleteRequestController } from "./controller";
+import {
+  getOneRequestController,
+  postRequestController,
+  getAllRequestsController,
+  putRequestController,
+  deleteRequestController,
+} from "./controller";
 
 // GET - Fetch all requests
 export async function GET(req: Request) {
@@ -20,7 +23,10 @@ export async function GET(req: Request) {
       return NextResponse.json(requests);
     }
   } catch (error) {
-    return error;
+    return NextResponse.json(
+      { error: `Failed to fetch requests: ${error}` },
+      { status: 500 }
+    );
   }
 }
 
@@ -31,11 +37,11 @@ export async function POST(req: Request) {
     const requestData: Omit<BookRequest, "id"> = await req.json();
 
     // controller defined in controller.ts
-    const newRequest = postRequestController(requestData);
+    const newRequest = await postRequestController(requestData);
     return NextResponse.json(newRequest);
   } catch (error) {
     return NextResponse.json(
-      { error: `Failed to create user: ${error}` },
+      { error: `Failed to create request: ${error}` },
       { status: 500 }
     );
   }
@@ -46,11 +52,14 @@ export async function PUT(req: Request) {
   try {
     const requestData: BookRequest = await req.json();
     // controller defined in controllers.ts
-    const updated = putRequestController(requestData);
+    const updated = await putRequestController(requestData);
 
     return NextResponse.json(updated);
   } catch (error) {
-    return error;
+    return NextResponse.json(
+      { error: `Failed to update request: ${error}` },
+      { status: 500 }
+    );
   }
 }
 
@@ -59,10 +68,15 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id") as string;
-
+    console.log(searchParams);
     //+id casts id from a string to a number
-    deleteRequestController(+id);
+    const deletedRequest = await deleteRequestController(+id);
+
+    return NextResponse.json(deletedRequest, { status: 200 });
   } catch (error) {
-    return error;
+    return NextResponse.json(
+      { error: `Failed to delete request: ${error}` },
+      { status: 500 }
+    );
   }
 }

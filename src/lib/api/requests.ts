@@ -41,7 +41,7 @@ export const getRequests = async (): Promise<BookRequest[] | undefined> => {
   } catch (error) {
     throw new Error("Failed to fetch requests");
   }
-}
+};
 
 /**
  * Utility function for creating a requests
@@ -52,7 +52,9 @@ export const getRequests = async (): Promise<BookRequest[] | undefined> => {
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export const createRequest = async (request: Omit<BookRequest, "id">): Promise<BookRequest[] | undefined> => {
+export const createRequest = async (
+  request: Omit<BookRequest, "id">
+): Promise<BookRequest[] | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
@@ -63,7 +65,7 @@ export const createRequest = async (request: Omit<BookRequest, "id">): Promise<B
   } catch (error) {
     console.error("Failed to create request: ", error);
   }
-}
+};
 
 /**
  * Utility function for updating a requests
@@ -74,7 +76,9 @@ export const createRequest = async (request: Omit<BookRequest, "id">): Promise<B
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export const updateRequest = async (request: any): Promise<BookRequest[] | undefined> => {
+export const updateRequest = async (
+  request: BookRequest
+): Promise<BookRequest[] | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
@@ -85,7 +89,7 @@ export const updateRequest = async (request: any): Promise<BookRequest[] | undef
   } catch (error) {
     console.error("Failed to create request: ", error);
   }
-}
+};
 
 /**
  * Utility function for deleting a request
@@ -96,11 +100,14 @@ export const updateRequest = async (request: any): Promise<BookRequest[] | undef
  * @remarks
  * - error handling (incorrect types, etc) is on both client and server side
  */
-export const deleteRequest= async (id: number): Promise<BookRequest[] | undefined> => {
+export const deleteRequest = async (
+  id: number
+): Promise<BookRequest[] | undefined> => {
   try {
-    const response = await axios.delete("api/requests/?id=" + id);
+    console.log(id);
+    const response = await axios.delete(`/api/requests?id=${id}`);
     return response.data;
   } catch (error) {
-    console.error("Failed to create request: ", error);
+    console.error("Failed to delete request: ", error);
   }
-}
+};
