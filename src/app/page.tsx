@@ -28,7 +28,7 @@ export default function Home() {
           </a>
           <a
             className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-            href="dashboard/backendTest"
+            href="dashboard/display"
           >
             <p className="text-center">Click to go to test display page</p>
           </a>

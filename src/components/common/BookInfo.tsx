@@ -18,11 +18,18 @@ const BookInfo = (props: BookProps) => {
     book
   } = props;
 
+  const click = () => {
+    console.log("click");
+  }
+
   // if icon isn't passed in, nothing will show
   return (
     <div>
-      <label></label>
-      
+      <button onClick={click}>
+        {book.title}
+        {book.author}
+        {book.isbn}
+      </button>
     </div>
   );
 };
