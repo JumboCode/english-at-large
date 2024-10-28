@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { validateBookData } from "@/lib/util/types";
 import { Book } from "@prisma/client";
-
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
  *
