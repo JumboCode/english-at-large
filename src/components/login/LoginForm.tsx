@@ -1,19 +1,17 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 const LoginForm = () => {
-  const [checked, setChecked] = React.useState(false);
+  const [checked, setChecked] = useState(false);
 
   const handleChange = () => {
-    setChecked(!checked);
+    setChecked((prev) => !prev);
   };
 
   return (
-    <div>
+    <>
       <form className="flex flex-col gap-y-4">
-        <label htmlFor="email" className="text-l font-bold">
-          Email
-        </label>
+        <label className="text-l font-bold">Email</label>
         <input
           type="text"
           id="email"
@@ -21,11 +19,9 @@ const LoginForm = () => {
           placeholder="Enter your email"
         />
 
-        <label htmlFor="Password" className="text-l font-bold">
-          Password
-        </label>
+        <label className="text-l font-bold">Password</label>
         <input
-          type="text"
+          type="password"
           id="password"
           className="flex flex-row justify-between items-center -mt-3 text-sm px-4 py-2 border border-medium-grey-border rounded-lg bg-white cursor-text"
           placeholder="Enter your password"
@@ -33,16 +29,16 @@ const LoginForm = () => {
       </form>
 
       <div className="flex flex-row justify-between pt-10 text-sm font-bold">
-        <div className="flex gap-1">
-            <input type="checkbox" checked={checked} onChange={handleChange} />
-            <label/> Remember for 7 days <label/> 
+        <div className="flex gap-1 items-center">
+          <input type="checkbox" checked={checked} onChange={handleChange} />
+          <label onClick={handleChange} className="cursor-pointer">
+            Remember for 7 days
+          </label>
         </div>
 
-        <a href="/forgot-password">
-          <p> Forgot password? </p>
-        </a>
+        <a href="/forgot-password">Forgot password?</a>
       </div>
-    </div>
+    </>
   );
 };
 
