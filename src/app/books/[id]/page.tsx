@@ -2,36 +2,18 @@
 import React, { useEffect, useState } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-import bookIcon from "./bookmark_add.svg";
+import bookIcon from "../../../assets/icons/bookmark_add.svg";
 import Tag from "@/components/tag";
 import BookDetail from "@/components/details";
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
 
 const BookDetails = ({ params }: { params: { id: string } }) => {
-  console.log(params);
   const [book, setBook] = useState<Book | null>(null);
-
-  //   const placeHolderBook = {
-  //     title: "STORY OF AVA AND HANNAH",
-  //     author: "Jenn and Clarence",
-  //     skills: ["Non-Fiction", "Adventure", "Bestseller"],
-  //     description: `Once there was a girl named Hannah. But actually 4 days earlier
-  //         there was a girl named Ava. And they both lived in the greater Philly area but
-  //         didn't know each other until college! What a small world.`,
-  //     image: placeHolder,
-  //     details: {
-  //       isbn: "123-456-789",
-  //       publisher: "English At Large",
-  //       releaseDate: "January 1, 2024",
-  //       copies: "10",
-  //     },
-  //   };
 
   useEffect(() => {
     const fetchBook = async () => {
       const book = await getOneBook(+params.id);
-      console.log(book);
       setBook(book || null);
     };
     fetchBook();
@@ -59,7 +41,7 @@ const BookDetails = ({ params }: { params: { id: string } }) => {
                 <CommonButton
                   label="Borrow"
                   onClick={handleClick}
-                  altStyle="w-40 h-10 bg-[#202D74] pl-10"
+                  altStyle="w-40 h-10 bg-[#202D74]"
                   altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                   leftIcon={
                     <Image
@@ -73,8 +55,9 @@ const BookDetails = ({ params }: { params: { id: string } }) => {
             </div>
 
             <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
+              {/* TODO: This will be implemented once the books have images! */}
               {/* <Image
-                src={placeHolder}
+                src={TODO:}
                 alt="Book Cover"
                 width={150}
                 height={190}
