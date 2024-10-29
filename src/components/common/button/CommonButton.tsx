@@ -3,24 +3,44 @@ import React from "react";
 
 interface ButtonProps {
   label: string;
-  onClick: () => void;
-  icon?: React.ReactElement;
-  altStyle?: string; // will be tailwind styling later
+  onClick?: () => void;
+  leftIcon?: React.ReactElement;
+  rightIcon?: React.ReactElement;
+  altStyle?: string;
+  altTextStyle?: string;
+  disabled?: boolean;
 }
 
+/**
+ * Our internal button component which includes options for icons and adheres to our own styling system.
+ * @param props: label
+ * @param optional props: left/right icons, alternate Tailwind classes for the text and the
+ * @returns a React Components.
+ * @TODO: add in loading components
+ */
 const CommonButton = (props: ButtonProps) => {
-  const { label, onClick, icon, altStyle } = props;
+  const {
+    label,
+    onClick,
+    leftIcon,
+    rightIcon,
+    altStyle,
+    altTextStyle,
+    disabled,
+  } = props;
 
   // if icon isn't passed in, nothing will show
   return (
-    <div // added conditional styling. use the `` and ${} syntax for inserting variables into string
-      className={`text-white w-20 h-10 rounded-md bg-blue-800 hover:bg-blue-900 flex items-center ${altStyle}`}
+    <button
+      onClick={onClick}
+      className={`flex flex-row items-center justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue bg-white" ${altStyle}`}
+      disabled={disabled}
     >
-      <button onClick={onClick} className="flex justify-center items-center">
-        {label}
-        {icon ? icon : null}
-      </button>
-    </div>
+      {leftIcon ? leftIcon : null}
+      <p className={`text-dark-blue text-sm ${altTextStyle}`}>{label}</p>
+
+      {rightIcon ? rightIcon : null}
+    </button>
   );
 };
 

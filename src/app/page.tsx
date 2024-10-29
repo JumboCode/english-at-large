@@ -1,5 +1,5 @@
-import Image from "next/image";
-import AddNewBookForm from "@/components/AddNewBookForm";
+import SearchBar from "@/components/SearchBar";
+
 /*
  * Home Page
  * ...it's the home page.
@@ -9,64 +9,26 @@ import AddNewBookForm from "@/components/AddNewBookForm";
  */
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <a
-          className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-          href="/backendTest"
-        >
-          <p className="text-center">Click to go to test backend page</p>
-        </a>
-        {/* <AddNewBookForm /> */}
-      </main>
-      {/* Footer from Next.js. Can get rid of this in the future, but there's some useful links to tutorials so*/}
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div>
+      <SearchBar />
+
+      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+        <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+          <a
+            className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
+            href="dashboard/backendTest"
+          >
+            <p className="text-center">Click to go to test backend page</p>
+          </a>
+          <a
+            className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
+            href="login"
+          >
+            <p className="text-center">Click to go to login page</p>
+          </a>
+          {/* <AddNewBookForm /> */}
+        </main>
+      </div>
     </div>
   );
 }
