@@ -5,7 +5,6 @@ import Image from "next/image";
 import bookIcon from "./bookmark_add.svg";
 import Tag from "@/components/tag";
 import BookDetail from "@/components/details";
-import placeHolder from "./placeholder.jpg";
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
 
@@ -36,16 +35,10 @@ const BookDetails = ({ params }: { params: { id: string } }) => {
       setBook(book || null);
     };
     fetchBook();
-  }, []);
+  }, [params.id]);
+
   const handleClick = () => {
     alert("Button clicked!");
-  };
-
-  const imageStyle = {
-    minHeight: "190px",
-    minWidth: "150px",
-    maxHeight: "190px",
-    maxWidth: "150px",
   };
 
   if (book === null) return null;
