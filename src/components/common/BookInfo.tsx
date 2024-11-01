@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
 import { Book } from "@prisma/client"
+//import imageToAdd from "../../assets/images/harry_potter.jpg";
+//import Image from "next/image"
 
 interface BookProps {
     book: Book
@@ -22,13 +24,17 @@ const BookInfo = (props: BookProps) => {
     console.log("click");
   }
 
+  //const image = <Image src ={imageToAdd}  alt="Image" className="object-cover"/>;
+
   // if icon isn't passed in, nothing will show
+  //{image}
   return (
     <div>
       <button onClick={click}>
         {book.title}
         {book.author}
         {book.isbn}
+        
       </button>
     </div>
   );
