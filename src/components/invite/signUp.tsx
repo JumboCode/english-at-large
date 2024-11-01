@@ -8,7 +8,6 @@ import { createUser } from "../../lib/api/users";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
-
 export const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -21,26 +20,25 @@ export const SignUp = () => {
   const inviteToken = useSearchParams().get("__clerk_ticket");
 
   useEffect(() => {
-  // const createNeonUser = () => {
+    // const createNeonUser = () => {
     if (user) {
       const metadata = user.publicMetadata ?? {};
 
       const newUser = {
-        ...emptyUser, 
-        name: metadata["name"] ? String(metadata["name"]) : "" , 
-        role: (metadata["role"] as UserRole),
-        email: user.primaryEmailAddress?.emailAddress ?? "", 
-      } 
+        ...emptyUser,
+        name: metadata["name"] ? String(metadata["name"]) : "",
+        role: metadata["role"] as UserRole,
+        email: user.primaryEmailAddress?.emailAddress ?? "",
+      };
 
       createUser(newUser);
-    } 
-  // };
+    }
+    // };
   }, [user]);
 
   const clerkSignup = useCallback(async () => {
-    
     if (!inviteToken) router.push("/login");
-    
+
     if (!isLoaded || attemptedSignup || !inviteToken) return;
 
     try {
@@ -62,7 +60,7 @@ export const SignUp = () => {
       );
       setAttemptedSignup(true); // Prevent further attempts
       setTimeout(() => {
-        router.push("/login")
+        router.push("/login");
       }, 3000);
     }
   }, [attemptedSignup, inviteToken, isLoaded, setActive, signUp, router]);
@@ -81,7 +79,7 @@ export const SignUp = () => {
           await setActive({ session: attempt.createdSessionId }); //wait until user is created
 
           // for (let i = 0; i < 20; i++) {
-          //   user?.reload(); 
+          //   user?.reload();
 
           //   if(isSignedIn) { //USER DOES NOT LOAD
           //     console.log("User changed to Active")
@@ -132,8 +130,6 @@ export const SignUp = () => {
       </div>
     );
   }
-}
-
-
+};
 
 export default SignUp;

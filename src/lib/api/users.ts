@@ -71,7 +71,6 @@ export const inviteUser = async (name: string, email: string, role: string) => {
     console.error("Failed to invite user: ", error);
     throw error;
   }
-
 }
 
 
