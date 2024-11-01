@@ -1,15 +1,16 @@
 "use client";
 import React, { useState } from "react";
+import { UserRole } from "@prisma/client";
 import { inviteUser } from "@/lib/api/users";
 
 export default function SendInvite() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<string>("");
+  const [role, setRole] = useState<UserRole>(UserRole.Tutor);
   const [statusText, setStatusText] = useState("");
 
   const handleUserKind = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRole(event.target.value);
+    setRole(event.target.value as UserRole);
   };
 
   const sendEmail = async () => {
@@ -48,7 +49,7 @@ export default function SendInvite() {
         type="radio"
         id="tutor"
         name="usertype"
-        value="Tutor"
+        value={UserRole.Tutor}
         onChange={handleUserKind}
       />
       <label htmlFor="tutor">Tutor</label>
@@ -57,7 +58,7 @@ export default function SendInvite() {
         type="radio"
         id="admin"
         name="usertype"
-        value="Admin"
+        value={UserRole.Admin}
         onChange={handleUserKind}
       />
       <label htmlFor="admin">Admin</label>

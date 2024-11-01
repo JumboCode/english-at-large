@@ -9,7 +9,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 
-export default function SignUp() {
+export const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -133,3 +133,7 @@ export default function SignUp() {
     );
   }
 }
+
+
+
+export default SignUp;

@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import SignUp from "../../components/invite/sign_up";
+import SignUp from "../../components/invite/signUp";
 
 export default function Manage() {
   return (

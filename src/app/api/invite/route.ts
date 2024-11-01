@@ -11,8 +11,8 @@ export async function POST(req: Request) {
     const role = data["role"];
 
     // controller defined in controller.ts
-    const invite = await postInviteController(name, email, role);
-    return NextResponse.json(invite, { status: 201 });
+    await postInviteController(name, email, role);
+    return NextResponse.json({}, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to send invite" },

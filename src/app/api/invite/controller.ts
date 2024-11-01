@@ -1,3 +1,4 @@
+// getting our initialized clerk client from clerk.ts that manages our clerk session, using our secret key
 import clerkClient from "@/clerk";
 
 export const postInviteController = async (
@@ -6,7 +7,7 @@ export const postInviteController = async (
   role: string
 ) => {
   try {
-    if (is_empty(name) || is_empty(email) || is_empty(role)) {
+    if (!name || !email || !role) {
       throw new Error("Missing required user properties");
     }
 
@@ -21,13 +22,9 @@ export const postInviteController = async (
       // Link that user will click on
     });
 
-    return true;
+    return;
   } catch (error) {
     console.error("Error in postInviteController:", error);
     throw error; // Let the calling function handle the error and response
   }
 };
-
-function is_empty(str: string) {
-  return str === "";
-}
