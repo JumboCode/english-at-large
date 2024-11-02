@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../assets/icons/bookmark_add.svg";
@@ -8,7 +8,17 @@ import BookDetail from "@/components/details";
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
 
-const BookDetails = ({ params }: { params: { id: string } }) => {
+type Params = Promise<{ id: string }>;
+
+/**
+ *
+ * @param props - found the URL
+ * @returns the book details page
+ * @notes uses Next.js 15's asynchronous pages. find out more here:
+ * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
+ */
+const BookDetails = (props: { params: Params }) => {
+  const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
 
   useEffect(() => {
