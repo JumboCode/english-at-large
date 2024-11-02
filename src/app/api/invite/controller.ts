@@ -13,7 +13,7 @@ export const postInviteController = async (
 
     clerkClient.invitations.createInvitation({
       emailAddress: email,
-      redirectUrl: "http://localhost:3000/invite",
+      redirectUrl: "http://localhost:3000/signup",
       publicMetadata: {
         name: name,
         role: role,
@@ -25,6 +25,19 @@ export const postInviteController = async (
     return;
   } catch (error) {
     console.error("Error in postInviteController:", error);
+    throw error; // Let the calling function handle the error and response
+  }
+};
+
+export const getClerkUserController = async (userId: string) => {
+  try {
+    if (!userId) {
+      throw new Error("Missing user ID");
+    }
+
+    return await clerkClient.users.getUser(userId as string);
+  } catch (error) {
+    console.error("Error in getClerkController:", error);
     throw error; // Let the calling function handle the error and response
   }
 };
