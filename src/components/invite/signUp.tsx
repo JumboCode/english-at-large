@@ -20,7 +20,6 @@ export const SignUp = () => {
   const inviteToken = useSearchParams().get("__clerk_ticket");
 
   useEffect(() => {
-    // const createNeonUser = () => {
     if (user) {
       const metadata = user.publicMetadata ?? {};
 
@@ -33,7 +32,6 @@ export const SignUp = () => {
 
       createUser(newUser);
     }
-    // };
   }, [user]);
 
   const clerkSignup = useCallback(async () => {
@@ -77,22 +75,6 @@ export const SignUp = () => {
         const attempt = await signUp.update({ password }); //finishes sign up in clerk
         if (attempt.status === "complete") {
           await setActive({ session: attempt.createdSessionId }); //wait until user is created
-
-          // for (let i = 0; i < 20; i++) {
-          //   user?.reload();
-
-          //   if(isSignedIn) { //USER DOES NOT LOAD
-          //     console.log("User changed to Active")
-          //     break;
-          //   }
-
-          //   await new Promise((resolve) => setTimeout(resolve, 500)); // wait 1000ms
-          //   console.log("time in loop: ", i)
-          // }
-          // if (!user) {
-          //   throw "timeout: user took too long to load in CLERK"
-          // }
-          // createNeonUser(); //creates user in neon
         }
       }
     } catch (error) {
