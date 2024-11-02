@@ -28,3 +28,16 @@ export const postInviteController = async (
     throw error; // Let the calling function handle the error and response
   }
 };
+
+export const getClerkUserController = async (userId: string) => {
+  try {
+    if (!userId) {
+      throw new Error("Missing user ID");
+    }
+
+    return await clerkClient.users.getUser(userId as string);
+  } catch (error) {
+    console.error("Error in getClerkController:", error);
+    throw error; // Let the calling function handle the error and response
+  }
+};

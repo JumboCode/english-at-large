@@ -5,11 +5,12 @@ import InfoIcon from "@/assets/icons/Info";
 import { useState, useEffect, useCallback } from "react";
 import SuccessfulSignUp from "@/components/SuccessfulSignup";
 import { useSignUp, useUser } from "@clerk/nextjs";
-import { createUser } from "@/lib/api/users";
+import { createUser, getClerkUser } from "@/lib/api/users";
 import { emptyUser } from "@/lib/util/types";
 import { UserRole } from "@prisma/client";
 import { useSearchParams, useRouter } from "next/navigation";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
+import { sleep } from "@/lib/util/utilFunctions";
 
 interface SignupFormData {
   firstName: string;
@@ -21,7 +22,6 @@ interface SignupFormData {
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
-  const { user } = useUser();
   const router = useRouter();
   const inviteToken = useSearchParams().get("__clerk_ticket");
 
@@ -96,16 +96,34 @@ const SignUp = () => {
           password: formData.password,
         });
 
-        console.log(attempt);
         if (attempt.status === "complete") {
           await setActive({ session: attempt.createdSessionId });
 
-          // Now create the user in your database
+          // Wait for user data to be fully loaded
+          const waitForMetadata = async () => {
+            for (
+              let attempts = 0;
+              attempt.createdUserId && attempts < 5;
+              attempts++
+            ) {
+              const freshUser = await getClerkUser(attempt.createdUserId);
+
+              if (freshUser?.publicMetadata?.role) {
+                return freshUser.publicMetadata;
+              }
+              sleep(500);
+            }
+            throw new Error("Metadata not available after waiting");
+          };
+
+          const metadata = await waitForMetadata();
+
+          // Now create the user database
           if (attempt.createdUserId) {
             const newUser = {
               ...emptyUser,
               name: `${formData.firstName} ${formData.lastName}`,
-              role: (user?.publicMetadata?.role as UserRole) || "Tutor",
+              role: (metadata.role as UserRole) || "Tutor",
               email: formData.email,
             };
             console.log(newUser);

@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 import axios from "axios";
 import { validateUserData } from "../util/types";
+import { UserResource } from "@clerk/types";
 
 /**
  * Utility function for fetching all users
@@ -37,6 +38,17 @@ export const getOneUser = async (id: string): Promise<User | undefined> => {
   }
 };
 
+export const getClerkUser = async (
+  clerkId: string
+): Promise<UserResource | undefined> => {
+  try {
+    const response = await axios.get("api/invite/?id=" + clerkId);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get clerk user: ", error);
+  }
+};
+
 /**
  * Utility function for creating a user
  *
@@ -62,17 +74,16 @@ export const createUser = async (
 
 export const inviteUser = async (name: string, email: string, role: string) => {
   try {
-    if (!name ||!email ||!role) {
+    if (!name || !email || !role) {
       throw new Error("Missing user fields");
     }
-    await axios.post("/api/invite", {name: name, email: email, role: role});
+    await axios.post("/api/invite", { name: name, email: email, role: role });
     return;
   } catch (error) {
     console.error("Failed to invite user: ", error);
     throw error;
   }
-}
-
+};
 
 /**
  * Utility function for updating a user
