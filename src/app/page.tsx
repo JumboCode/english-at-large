@@ -33,7 +33,12 @@ export default function Home() {
           >
             <p className="text-center">Click to go to signup page</p>
           </a>
-          
+          <a
+            className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
+            href="manage"
+          >
+            <p className="text-center">Click to go to user management page</p>
+          </a>
           {/* <AddNewBookForm /> */}
         </div>
       </div>

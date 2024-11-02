@@ -1,6 +1,6 @@
 "use client";
 import CommonButton from "@/components/common/button/CommonButton";
-import LoginForm from "@/components/login/LoginForm";
+import LoginForm from "@/components/auth/LoginForm";
 import books from "@/images/books.jpg";
 
 import Image from "next/image";
