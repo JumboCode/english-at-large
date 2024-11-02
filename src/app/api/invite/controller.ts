@@ -13,7 +13,7 @@ export const postInviteController = async (
 
     clerkClient.invitations.createInvitation({
       emailAddress: email,
-      redirectUrl: "http://localhost:3000/invite",
+      redirectUrl: "http://localhost:3000/signup",
       publicMetadata: {
         name: name,
         role: role,
