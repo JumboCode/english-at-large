@@ -125,7 +125,7 @@ export function validateRequestData(
 export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   name: "Bob",
   email: "bob@gmail.com",
-  role: "Admin",
+  role: "Tutor",
 };
 
 export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
@@ -133,6 +133,7 @@ export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   email: "u1@gmail.com",
   role: "Admin",
 };
+
 
 /**
  * Utility function for checking if a user is valid (no fields are empty, etc.)
