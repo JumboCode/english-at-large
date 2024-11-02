@@ -15,6 +15,7 @@ enum UserRole {
 
 model User {
   id        String   @id @default(cuid())
+  clerkId   String   @default("placeholder")
   name      String?
   email     String?  @unique
   role      UserRole

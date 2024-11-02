@@ -126,14 +126,15 @@ export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   name: "Bob",
   email: "bob@gmail.com",
   role: "Tutor",
+  clerkId: "placeholder",
 };
 
 export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   name: "U12",
   email: "u1@gmail.com",
   role: "Admin",
+  clerkId: "placeholder",
 };
-
 
 /**
  * Utility function for checking if a user is valid (no fields are empty, etc.)
@@ -149,7 +150,7 @@ export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
 export function validateUserData(userData: Partial<User>): boolean {
   // Don't validate ID since sometimes you'll need to have
   // TODO: add bookGroup back in
-  const requiredFields = ["name", "email", "role"] as const;
+  const requiredFields = ["name", "email", "role", "clerkId"] as const;
 
   for (const field of requiredFields) {
     if (!userData[field]) {

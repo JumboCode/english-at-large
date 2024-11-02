@@ -125,6 +125,7 @@ const SignupForm = () => {
               name: `${formData.firstName} ${formData.lastName}`,
               role: (metadata.role as UserRole) || "Tutor",
               email: formData.email,
+              clerkId: attempt.createdUserId,
             };
             await createUser(newUser);
             setIsSignUpSuccessful(true);
