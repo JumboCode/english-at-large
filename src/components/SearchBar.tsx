@@ -6,8 +6,12 @@ import CommonButton from "./common/button/CommonButton";
 import AddIcon from "@/assets/icons/Add";
 import FilterPopup from "./common/FilterPopup";
 
-const SearchBar = () => {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+interface SearchBarProps {
+  filterOnPress: () => void;
+}
+
+const SearchBar = (props: SearchBarProps) => {
+  const { filterOnPress } = props;
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const clickBar = () => {
@@ -16,13 +20,13 @@ const SearchBar = () => {
     }
   };
 
-  const toggleFilterPopup = () => {
-    setIsFilterOpen(!isFilterOpen);
-  };
+  // const toggleFilterPopup = () => {
+  //   setIsFilterOpen(!isFilterOpen);
+  // };
 
   return (
     <div>
-      <FilterPopup isOpen={isFilterOpen} toggle={toggleFilterPopup} />
+      {/* <FilterPopup isOpen={isFilterOpen} toggle={toggleFilterPopup} /> */}
       <div className="flex flex-row gap-6 items-center min-w-full justify-between px-16 py-6 bg-white border border-light-grey-border border-l-0 border-r-0">
         <div
           className="flex flex-row justify-between items-center px-4 py-[10px] w-full min-w-max border border-medium-grey-border rounded-lg bg-white cursor-text"
@@ -37,7 +41,7 @@ const SearchBar = () => {
           <SearchIcon />
         </div>
         <div className="flex flex-row items-center gap-3">
-          <CommonButton label={"Filter"} leftIcon={<FilterIcon />} onClick={toggleFilterPopup}/>
+          <CommonButton label={"Filter"} leftIcon={<FilterIcon />} onClick={filterOnPress}/>
           <CommonButton
             label="Create Book"
             leftIcon={<AddIcon />}
