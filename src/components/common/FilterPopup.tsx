@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { BookSkills, BookLevel } from "@prisma/client";
-import Head from "next/head";
 
 interface FilterPopupProps {
   isOpen: boolean
@@ -90,7 +89,7 @@ const FilterPopup = (props: FilterPopupProps) => {
               {levelsList.map((levelSkill, index) => {
                 return (<li key={index}>
                   { saveFilters.includes(levelSkill) ? (
-                    <button onClick={() => removeFilter(levelSkill)} className="bg-black text-white-200 px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">
+                    <button onClick={() => removeFilter(levelSkill)} className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center">
                       {levelSkill.replace("_", " ")}
                     </button>
                   ) : (
@@ -108,7 +107,7 @@ const FilterPopup = (props: FilterPopupProps) => {
               {skillsList.map((bookSkill, index) => {
                 return (<li key={index}>
                   { saveFilters.includes(bookSkill) ? (
-                    <button onClick={() => removeFilter(bookSkill)} className="bg-black text-white-200 px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">
+                    <button onClick={() => removeFilter(bookSkill)} className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center">
                       {bookSkill.replace("_", " ")}
                     </button>
                   ) : (
