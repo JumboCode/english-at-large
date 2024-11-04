@@ -1,15 +1,20 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
 import FilterIcon from "../assets/icons/Filter";
 import CommonButton from "./common/button/CommonButton";
 import AddIcon from "@/assets/icons/Add";
-import AddNewBookForm from "./AddNewBookForm";
 
-const SearchBar = () => {
+interface searchBarProps {
+  setShowBookForm: (arg0: boolean) => void;
+}
+
+const SearchBar = (props: searchBarProps) => {
+  const {setShowBookForm} = props;
+
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  let [bookFormShown, showBookForm] = useState(false);
+  // const [bookFormShown, showBookForm] = useState(false);
 
   const clickBar = () => {
     if (searchInputRef.current) {
@@ -36,13 +41,10 @@ const SearchBar = () => {
         <CommonButton
           label="Create Book"
           leftIcon={<AddIcon />}
-          onClick={() => {showBookForm(true)}}
+          onClick={() => {setShowBookForm(true)}}
           altTextStyle="text-white"
           altStyle="bg-dark-blue"
         />
-      </div>
-      <div>
-        {bookFormShown ? <AddNewBookForm showBookForm={showBookForm}/> : ""} 
       </div>
     </div>
   );
