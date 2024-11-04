@@ -51,7 +51,7 @@ const book = () => {
           <li
           key={index}
         >
-          {(levels.length == 0 || levels.includes(book.level)) ? (
+          {(levels.length == 0 || levels.includes(book.level.replace("_"," "))) ? (
             
             // Implement Later: " && (skills.length == 0 || skills.filter(element => book.skills.includes(element)))"
           <div>
