@@ -3,7 +3,7 @@
 import React from 'react'
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
-import { Book } from "@prisma/client";
+import { Book, BookLevel, BookSkills } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from '@/components/common/FilterPopup';
@@ -15,9 +15,15 @@ const book = () => {
     const [skills, setSkills] = useState<string[]>([]);
     const [levels, setLevels] = useState<string[]>([]);
 
+    const [filters, setFilters] = useState<(BookSkills | BookLevel)[]>([]);
+
     const toggleFilterPopup = () => {
       setIsFilterOpen(!isFilterOpen);
     };
+    
+    const filtered = () => {
+      
+    }
 
     useEffect (() => {
         const fetchData = async () => {
@@ -39,7 +45,7 @@ const book = () => {
   return (
     <div>
       <SearchBar filterOnPress={toggleFilterPopup} />
-      <FilterPopup isOpen={isFilterOpen} toggle={toggleFilterPopup} skills={skills} setSkills={setSkills} levels={levels} setLevels={setLevels}/>
+      <FilterPopup isOpen={isFilterOpen} toggle={toggleFilterPopup} filters={filters} setFilters={setFilters}/>
     <div className="p-4 bg-gray-100">
       <div className = "text-left">
         <div className = "whitespace-normal"> 
@@ -51,7 +57,7 @@ const book = () => {
           <li
           key={index}
         >
-          {(levels.length == 0 || levels.includes(book.level.replace("_"," "))) ? (
+          {(levels.length == 0 || levels.includes(book.level.replace("_"," "))) && (skills.length == 0 || skills.filter(element => book.skills.includes())) ? (
             
             // Implement Later: " && (skills.length == 0 || skills.filter(element => book.skills.includes(element)))"
           <div>

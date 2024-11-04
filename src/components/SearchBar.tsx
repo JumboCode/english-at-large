@@ -4,7 +4,6 @@ import SearchIcon from "../assets/icons/Search";
 import FilterIcon from "../assets/icons/Filter";
 import CommonButton from "./common/button/CommonButton";
 import AddIcon from "@/assets/icons/Add";
-import FilterPopup from "./common/FilterPopup";
 
 interface SearchBarProps {
   filterOnPress: () => void;
