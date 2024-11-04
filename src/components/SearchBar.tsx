@@ -1,11 +1,15 @@
 "use client";
 import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
-import FilterIcon from "../assets/icons/Filter";
-import CommonButton from "./common/button/CommonButton";
-import AddIcon from "@/assets/icons/Add";
 
-const SearchBar = () => {
+interface ButtonProps {
+  button: React.ReactNode;
+  button2: React.ReactNode;
+  placeholderText: string;
+}
+
+const SearchBar = (props: ButtonProps) => {
+  const { button, button2, placeholderText } = props;
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const clickBar = () => {
@@ -24,19 +28,13 @@ const SearchBar = () => {
           ref={searchInputRef}
           className="w-full focus:outline-none text-black placeholder-medium-grey-border text-base"
           name="search bar"
-          placeholder="Search for books"
+          placeholder={placeholderText}
         />
         <SearchIcon />
       </div>
       <div className="flex flex-row items-center gap-3">
-        <CommonButton label={"Filter"} leftIcon={<FilterIcon />} />
-        <CommonButton
-          label="Create Book"
-          leftIcon={<AddIcon />}
-          onClick={() => {}}
-          altTextStyle="text-white"
-          altStyle="bg-dark-blue"
-        />
+        {button}
+        {button2}
       </div>
     </div>
   );
