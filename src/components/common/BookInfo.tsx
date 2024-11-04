@@ -27,7 +27,7 @@ const BookInfo = (props: BookProps) => {
   const image = 
     <Image 
     src ={imageToAdd} 
-    style={{ width: '150px', height: 'auto' }}  
+    style={{ width: '200px', height: 'auto' }}  
     alt="Image" 
     />;
 
@@ -36,30 +36,34 @@ const BookInfo = (props: BookProps) => {
   return (
     <div>
       <button onClick={click} className="flex items-start space-x-4">
-        <div>{image}</div>
+        <div className = "flex flex-wrap">{image}</div>
         <div>
           
           <div className="text-left mt-4 mb-4 ml-4 mr-4">
             <h3 className="text-lg font-semibold">{book.title}</h3>
             <p className="text-sm">{"by"} {book.author} </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-4 mr-4">
-            <div className="bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
-              <text>{book.booktype}</text>
+         
+          <div className="grid grid-cols-2 gap-4">
+            <div className = "flex flex-wrap gap-4 mt-2">
+              <div className="bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
+                <text>{book.booktype}</text>
+              </div>
+              <div className="bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
+                <text>{book.level.replace("_", " ")}</text>
+              </div>
+              <div className="flex flex-wrap gap-4">
+                  {book.skills.map((skill, index) => (
+                    <div
+                      key={index}
+                      className="bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center"
+                    >
+                      {skill.replace("_", " ")}
+                    </div>
+                  ))}
+              </div>
             </div>
-            <div className="bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
-              <text>{book.level.replace("_", " ")}</text>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 flex flex-wrap gap-4">
-              {book.skills.map((skill, index) => (
-                <div
-                  key={index}
-                  className="inline-block bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center"
-                >
-                  {skill.replace("_", " ")}
-                </div>
-              ))}
-            </div>
+            
           </div>
         </div>
       </button>
