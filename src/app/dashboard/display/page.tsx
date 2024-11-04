@@ -29,7 +29,7 @@ const book = () => {
               }
               console.log(books);
             } catch (err) {
-              console.error("Failed to get all users");
+              console.error("Failed to get all books");
             }
           };
         fetchData();
@@ -41,16 +41,25 @@ const book = () => {
       <SearchBar filterOnPress={toggleFilterPopup} />
       <FilterPopup isOpen={isFilterOpen} toggle={toggleFilterPopup} skills={skills} setSkills={setSkills} levels={levels} setLevels={setLevels}/>
     <div className="p-4 bg-gray-100">
-     <ul className="space-y-2">
+      <div className = "text-left">
+        <div className = "whitespace-normal"> 
+          <text className= "text-sm text-slate-500">{books.length} {"titles"}</text>
+        </div>
+      </div>
+     <ul  className="grid grid-cols-1 md:grid-cols-2 gap-4">
        {books.map((book, index) => (
           <li
           key={index}
         >
           {(levels.length == 0 || levels.includes(book.level)) ? (
+            
             // Implement Later: " && (skills.length == 0 || skills.filter(element => book.skills.includes(element)))"
-          <div className="p-4 bg-black shadow-md rounded-md hover:bg-blue-100 transition duration-200">
-            <BookInfo book={book} />
+          <div>
+            <div className="p-4 bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">
+              <BookInfo book={book} />
+            </div>
           </div>
+          
           ) : (
             <div></div>
           )}

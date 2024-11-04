@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { Book } from "@prisma/client"
-//import imageToAdd from "../../assets/images/harry_potter.jpg";
-//import Image from "next/image"
+import imageToAdd from "../../assets/images/harry_potter.jpg";
+import Image from "next/image"
 
 interface BookProps {
     book: Book
@@ -24,17 +24,44 @@ const BookInfo = (props: BookProps) => {
     console.log("click");
   }
 
-  //const image = <Image src ={imageToAdd}  alt="Image" className="object-cover"/>;
+  const image = 
+    <Image 
+    src ={imageToAdd} 
+    style={{ width: '150px', height: 'auto' }}  
+    alt="Image" 
+    />;
 
   // if icon isn't passed in, nothing will show
   //{image}
   return (
     <div>
-      <button onClick={click}>
-        {book.title}
-        {book.author}
-        {book.isbn}
-        
+      <button onClick={click} className="flex items-start space-x-4">
+        <div>{image}</div>
+        <div>
+          
+          <div className="text-left mt-4 mb-4 ml-4 mr-4">
+            <h3 className="text-lg font-semibold">{book.title}</h3>
+            <p className="text-sm">{"by"} {book.author} </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-4 mr-4">
+            <div className="bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
+              <text>{book.booktype}</text>
+            </div>
+            <div className="bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
+              <text>{book.level.replace("_", " ")}</text>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 flex flex-wrap gap-4">
+              {book.skills.map((skill, index) => (
+                <div
+                  key={index}
+                  className="inline-block bg-white-200 text-black-800 px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center"
+                >
+                  {skill.replace("_", " ")}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </button>
     </div>
   );
