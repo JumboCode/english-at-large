@@ -45,10 +45,11 @@ export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
  * - error handling (incorrect types, etc) is on both client and server side
  */
 export const createBook = async (
-book: Omit<Book, "id">
+  book: Omit<Book, "id">
 ): Promise<Book | undefined> => {
   try {
     const response = await axios.post("/api/books", book);
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Failed to create book: ", error);

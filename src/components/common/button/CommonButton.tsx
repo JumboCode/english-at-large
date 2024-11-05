@@ -3,7 +3,7 @@ import React from "react";
 
 interface ButtonProps {
   label: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
   altStyle?: string;

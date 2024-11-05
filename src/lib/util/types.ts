@@ -77,12 +77,14 @@ export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   name: "Bob",
   email: "bob@gmail.com",
   role: "Admin",
+  clerkId: "",
 };
 
 export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   name: "U12",
   email: "u1@gmail.com",
   role: "Admin",
+  clerkId: "",
 };
 
 /**
@@ -107,4 +109,33 @@ export function validateUserData(userData: Partial<User>): boolean {
   }
 
   return true;
+}
+
+/**
+ * This type allows us to define and use change events similar to HTML ChangeEvents
+ * @notes you'll need to define the type (T) that it's storing. 
+ * use to handle useStates of complex types like Book:
+ * @example  
+ * const bookChangeHandler = (
+    e:
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+      | CustomChangeEvent<BookSkills[]>
+  ) => {
+    const { name, value } = e.target;
+    const book = { ...newBook, [name]: value };
+    setNewBook((prevBook) => ({
+      ...prevBook,
+      [name]: value,
+    }));
+  };
+ *
+ */
+export interface CustomChangeEvent<T> {
+  target: {
+    name: string;
+    value: T; // Use T for the value
+  };
+  preventDefault?: () => void;
 }
