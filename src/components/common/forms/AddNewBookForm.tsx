@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
-// import { createBook } from "@/lib/api/books";
+
 interface addNewBookFormProps {
   setShowBookForm: (arg0: boolean) => void;
 }
@@ -15,7 +15,6 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
-  // const status = Object.values(BookStatus);
   const types = Object.values(BookType);
 
   const [newBook, setNewBook] = useState<Omit<Book, "id">>(newEmptyBook);
