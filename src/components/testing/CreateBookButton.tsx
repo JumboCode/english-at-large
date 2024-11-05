@@ -26,12 +26,8 @@ const CreateBookButton = () => {
 
   return (
     <div>
-      <button
-        className="flex flex-row items-center gap-2 min-w-max p-3 rounded-lg border border-dark-blue bg-dark-blue"
-        onClick={handleCreateBook}
-        disabled={loading}
-      >
-        <p className="text-sm">{loading ? "Creating..." : "Create Book"}</p>
+      <button onClick={handleCreateBook} disabled={loading}>
+        <p>{loading ? "Creating..." : "Create Book"}</p>
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>

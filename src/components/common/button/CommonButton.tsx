@@ -34,7 +34,7 @@ const CommonButton = (props: ButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`flex flex-row items-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue bg-white" ${altStyle}`}
+      className={`flex flex-row items-center justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue bg-white" ${altStyle}`}
       disabled={disabled}
     >
       {leftIcon ? leftIcon : null}
