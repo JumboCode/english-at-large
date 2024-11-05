@@ -1,50 +1,81 @@
 "use client";
 import { useState } from "react";
-import { BookSkills, BookLevel } from "@prisma/client";
+import { BookSkills, BookLevel, BookStatus } from "@prisma/client";
 
 interface FilterPopupProps {
   isOpen: boolean
   toggle: () => void
-  filters: (BookSkills | BookLevel)[]
-  setFilters: (filter: (BookSkills | BookLevel)[]) => void;
-  // skills: string[]
-  // setSkills: (filter: string[]) => void
-  // levels: string[]
-  // setLevels: (level: string[]) => void
+  skills: BookSkills[]
+  setSkills: (skill: BookSkills[]) => void
+  levels: BookLevel[]
+  setLevels: (level: BookLevel[]) => void
+  status: BookStatus[]
+  setStatus: (status: BookStatus[]) => void
+  sortBook: string
+  setSortBook: (sort : string) => void
 }
 
 const FilterPopup = (props: FilterPopupProps) => {
-  const { isOpen, toggle, filters, setFilters } = props;
-  const [saveFilters, setSaveFilters] = useState<(BookSkills | BookLevel)[]>([]);
+  const { isOpen, toggle, skills, setSkills, levels, setLevels, status, setStatus, sortBook, setSortBook } = props;
+  const [saveSkills, setSaveSkills] = useState<BookSkills[]>([]);
+  const [saveLevels, setSaveLevels] = useState<BookLevel[]>([]);
+  const [saveStatus, setSaveStatus] = useState<BookStatus[]>([]);
+  const [saveSortBook, setSaveSortBook] = useState<string>("By Title");
+
   const skillsList = Object.values(BookSkills);
   const levelsList = Object.values(BookLevel);
+  // const statusList = Object.values(BookStatus);
 
-  const addFilter = (filter: (BookSkills | BookLevel)) => {
-    setSaveFilters([...saveFilters, filter]);
+  const addSkills = (skill: BookSkills) => {
+    setSaveSkills([...saveSkills, skill]);
   }
 
-  const removeFilter = (filter: (BookSkills | BookLevel)) => {
-    setSaveFilters(saveFilters.filter(word => word != filter));
+  const removeSkills = (skill: BookSkills) => {
+    setSaveSkills(saveSkills.filter(word => word != skill));
+  }
+
+  const addLevel = (level: BookLevel) => {
+    setSaveLevels([...saveLevels, level]);
+  }
+
+  const removeLevel = (level: BookLevel) => {
+    setSaveLevels(saveLevels.filter(word => word != level))
+  }
+
+  const addStatus = (status: BookStatus) => {
+    setSaveStatus([...saveStatus, status]);
+  }
+
+  const removeStatus = (status: BookStatus) => {
+    setSaveStatus(saveStatus.filter(word => word != status));
+  }
+
+  const replaceSort = (sorting: string) => {
+    setSaveSortBook(sorting);
+  }
+
+  const reset = () => {
+    setSaveSkills([]);
+    setSaveLevels([]);
+    setSaveStatus([]);
+    setSaveSortBook("By Title");
   }
 
   const exit = () => {
-    setSaveFilters(filters);
+    setSaveSkills(skills);
+    setSaveLevels(levels);
+    setSaveStatus(status);
+    setSaveSortBook(sortBook);
     toggle();
   }
 
   const submit = () => {
-    setFilters(saveFilters);
+    setSkills(saveSkills);
+    setLevels(saveLevels);
+    setStatus(saveStatus);
+    setSortBook(saveSortBook);
     toggle();
   }
-
-
-  // const addLevel = (level: string) => {
-  //   setLevels([...levels, level]);
-  // }
-
-  // const removeLevel = (level: string) => {
-  //   setLevels(levels.filter(word => word != level))
-  // }
 
 
   return (
@@ -72,15 +103,35 @@ const FilterPopup = (props: FilterPopupProps) => {
 
             <h2 className="text-black text-l font-semibold ml-4 mb-3 s">Sort By</h2>
             <div className = "flex flex-wrap gap-2 ml-4">
-              <button className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center"> Date Added</button>
-              <button className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">By Title</button>
-              <button className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">By Author</button>
+              { saveSortBook == "Date Added" ? (
+                <button className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center"> Date Added</button>
+              ): (
+                <button onClick={() => replaceSort("Date Added")} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center"> Date Added</button>
+              )}
+              { saveSortBook == "By Title" ? (
+                <button className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center"> By Title</button>
+              ): (
+                <button onClick={() => replaceSort("By Title")} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center"> By Title</button>
+              )}
+              { saveSortBook == "By Author" ? (
+                <button className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center"> By Author</button>
+              ): (
+                <button onClick={() => replaceSort("By Author")} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center"> By Author</button>
+              )}
             </div>
             <hr className="h-px ml-4 my-3 mr-4 bg-gray-200 border-0 dark:bg-gray-700"></hr>
 
             <h2 className="text-black text-l font-semibold ml-4 mb-3 s">Availability</h2>
               <div className = "flex flex-wrap gap-2 ml-4">
-                <button className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center"> Available Now</button>
+                { saveStatus.includes("Available") ? (
+                    <button onClick={() => removeStatus("Available")} className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center">
+                      Available Now
+                    </button>
+                  ) : (
+                    <button onClick={() => addStatus("Available")} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">
+                      Available Now
+                    </button>
+                  )}
               </div>
             <hr className="h-px ml-4 my-3 mr-4 bg-gray-200 border-0 dark:bg-gray-700"></hr>
             
@@ -88,12 +139,12 @@ const FilterPopup = (props: FilterPopupProps) => {
             <ul className="flex flex-wrap gap-2 ml-4">
               {levelsList.map((levelSkill, index) => {
                 return (<li key={index}>
-                  { saveFilters.includes(levelSkill) ? (
-                    <button onClick={() => removeFilter(levelSkill)} className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center">
+                  { saveLevels.includes(levelSkill) ? (
+                    <button onClick={() => removeLevel(levelSkill)} className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center">
                       {levelSkill.replace("_", " ")}
                     </button>
                   ) : (
-                    <button onClick={() => addFilter(levelSkill)} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">
+                    <button onClick={() => addLevel(levelSkill)} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">
                       {levelSkill.replace("_", " ")}
                     </button>
                   )}
@@ -106,12 +157,12 @@ const FilterPopup = (props: FilterPopupProps) => {
             <ul className="flex flex-wrap gap-2 ml-4">
               {skillsList.map((bookSkill, index) => {
                 return (<li key={index}>
-                  { saveFilters.includes(bookSkill) ? (
-                    <button onClick={() => removeFilter(bookSkill)} className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center">
+                  { saveSkills.includes(bookSkill) ? (
+                    <button onClick={() => removeSkills(bookSkill)} className="bg-blue-900 text-white px-4 py-2 rounded-full shadow-sm border border-blue-900 items-center">
                       {bookSkill.replace("_", " ")}
                     </button>
                   ) : (
-                    <button onClick={() => addFilter(bookSkill)} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">
+                    <button onClick={() => addSkills(bookSkill)} className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center">
                       {bookSkill.replace("_", " ")}
                     </button>
                   )}
@@ -121,7 +172,7 @@ const FilterPopup = (props: FilterPopupProps) => {
             <hr className="h-px ml-4 my-3 mr-4 bg-gray-200 border-0 dark:bg-gray-700"></hr>
             
             <div className="grid grid-cols-2 gap-4">
-              <button onClick={() => {setSaveFilters([])}} className="bg-white-200 text-blue-800 px-4 py-2 rounded-md shadow-sm border border-blue-900 text-center ml-4">
+              <button onClick={reset} className="bg-white-200 text-blue-800 px-4 py-2 rounded-md shadow-sm border border-blue-900 text-center ml-4">
                 Reset
               </button>
               <button onClick={submit} className="bg-blue-900 text-white px-4 py-2 rounded-md shadow-sm border border-blue-900 text-center mr-4">
