@@ -49,7 +49,6 @@ export const createBook = async (
 ): Promise<Book | undefined> => {
   try {
     const response = await axios.post("/api/books", book);
-    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Failed to create book: ", error);

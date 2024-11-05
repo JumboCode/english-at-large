@@ -3,29 +3,14 @@ import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
 import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
-import SelectableTagButton from "./SelectableTagButton";
 import { createBook } from "@/lib/api/books";
+import MultiSelectTagButton from "./MultiSelectTagButton";
 // import { createBook } from "@/lib/api/books";
 interface addNewBookFormProps {
   setShowBookForm: (arg0: boolean) => void;
 }
 
 const AddNewBookForm = (props: addNewBookFormProps) => {
-  /* export const newEmptyBook: Omit<Book, "id"> = {
-  title: "Untitled Book",
-  author: "",
-  isbn: "000-0-00-000000-0",
-  publisher: "",
-  level: BookLevel.Beginner,
-  booktype: BookType.Reference,
-  scanLink: "http://example.com/scan",
-  description: "",
-  notes: "",
-  status: BookStatus.Available,
-  skills: [],
-  releaseDate: null,
-}; */
-
   const { setShowBookForm } = props;
 
   const skills = Object.values(BookSkills);
@@ -62,7 +47,6 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
     try {
       const createdBook = await createBook(newBook);
       if (createdBook) {
-        console.log("created book:", createdBook);
         setShowBookForm(false);
       } else {
         throw new Error("Failed to create book!");
@@ -142,13 +126,13 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
           ></textarea>
         </div>
         <div>
-          <label htmlFor="ISBN " className="block text-lg ml-[5%] font-bold">
+          <label htmlFor="isbn" className="block text-lg ml-[5%] font-bold">
             ISBN Number
           </label>
           <input
             type="text"
-            id="ISBN"
-            name="ISBN"
+            id="isbn"
+            name="isbn"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
           />
@@ -171,7 +155,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
               Release Date
             </label>
             <input
-              type="text"
+              type="date"
               id="releaseDate"
               name="releaseDate"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
@@ -201,12 +185,12 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             </select>
           </div>
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="type" className="text-lg font-bold">
+            <label htmlFor="bookType" className="text-lg font-bold">
               Type
             </label>
             <select
-              id="type"
-              name="type"
+              id="bookType"
+              name="bookType"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
               onChange={bookChangeHandler}
             >
@@ -227,7 +211,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
           <div className="flex space-x-4 mx-[5%]">
             {skills.map((bookSkill, index) => {
               return (
-                <SelectableTagButton<BookSkills>
+                <MultiSelectTagButton<BookSkills>
                   key={index}
                   label={bookSkill}
                   value={newBook.skills}

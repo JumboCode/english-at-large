@@ -1,3 +1,4 @@
+"use client";
 interface TagButtonProps {
   label: string;
   isSelected?: boolean;

@@ -51,6 +51,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(newBook, { status: 201 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: `Failed to create book: ${error}` },
       { status: 500 }
@@ -63,7 +64,7 @@ export async function PUT(req: Request) {
   try {
     const bookData: Book = await req.json();
 
-    const updatedBook = putBookController(bookData);
+    const updatedBook = await putBookController(bookData);
 
     return NextResponse.json(updatedBook, { status: 200 });
   } catch (error) {

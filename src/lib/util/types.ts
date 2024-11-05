@@ -42,7 +42,7 @@ export const emptyBook: Book = {
   isbn: "000-0-00-000000-0",
   publisher: "",
   level: BookLevel.Beginner,
-  booktype: BookType.Reference,
+  bookType: BookType.Reference,
   scanLink: "http://example.com/scan",
   description: "",
   notes: "",
@@ -55,13 +55,13 @@ export const emptyBook: Book = {
  * "Empty book" with dummy data.
  */
 export const newEmptyBook: Omit<Book, "id"> = {
-  title: "Untitled Book",
+  title: "",
   author: "",
   isbn: "000-0-00-000000-0",
   publisher: "",
   level: BookLevel.Beginner,
-  booktype: BookType.Reference,
-  scanLink: "http://example.com/scan",
+  bookType: BookType.Reference,
+  scanLink: "",
   description: "",
   notes: "",
   status: BookStatus.Available,
