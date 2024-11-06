@@ -3,7 +3,7 @@ import React from "react";
 
 interface ButtonProps {
   label: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   leftIcon?: React.ReactElement;
   rightIcon?: React.ReactElement;
   altStyle?: string;
@@ -18,6 +18,7 @@ interface ButtonProps {
  * @returns a React Components.
  * @TODO: add in loading components
  */
+
 const CommonButton = (props: ButtonProps) => {
   const {
     label,

@@ -5,13 +5,17 @@ import FilterIcon from "../assets/icons/Filter";
 import CommonButton from "./common/button/CommonButton";
 import AddIcon from "@/assets/icons/Add";
 
-interface SearchBarProps {
+interface searchBarProps {
   filterOnPress: () => void;
+  setShowBookForm: (arg0: boolean) => void;
 }
 
-const SearchBar = (props: SearchBarProps) => {
-  const { filterOnPress } = props;
+const SearchBar = (props: searchBarProps) => {
+  const { setShowBookForm, filterOnPress } = props;
+
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // const [bookFormShown, showBookForm] = useState(false);
 
   const clickBar = () => {
     if (searchInputRef.current) {
@@ -40,11 +44,17 @@ const SearchBar = (props: SearchBarProps) => {
           <SearchIcon />
         </div>
         <div className="flex flex-row items-center gap-3">
-          <CommonButton label={"Filter"} leftIcon={<FilterIcon />} onClick={filterOnPress}/>
+          <CommonButton
+            label={"Filter"}
+            leftIcon={<FilterIcon />}
+            onClick={filterOnPress}
+          />
           <CommonButton
             label="Create Book"
             leftIcon={<AddIcon />}
-            onClick={() => {}}
+            onClick={() => {
+              setShowBookForm(true);
+            }}
             altTextStyle="text-white"
             altStyle="bg-dark-blue"
           />
@@ -53,5 +63,6 @@ const SearchBar = (props: SearchBarProps) => {
     </div>
   );
 };
+/*Lifting state up of showBookForm */
 
 export default SearchBar;

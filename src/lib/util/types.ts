@@ -42,7 +42,7 @@ export const emptyBook: Book = {
   isbn: "000-0-00-000000-0",
   publisher: "",
   level: BookLevel.Beginner,
-  booktype: BookType.Reference,
+  bookType: BookType.Reference,
   scanLink: "http://example.com/scan",
   description: "",
   notes: "",
@@ -55,13 +55,13 @@ export const emptyBook: Book = {
  * "Empty book" with dummy data.
  */
 export const newEmptyBook: Omit<Book, "id"> = {
-  title: "Untitled Book",
+  title: "",
   author: "",
   isbn: "000-0-00-000000-0",
   publisher: "",
   level: BookLevel.Beginner,
-  booktype: BookType.Reference,
-  scanLink: "http://example.com/scan",
+  bookType: BookType.Reference,
+  scanLink: "",
   description: "",
   notes: "",
   status: BookStatus.Available,
@@ -159,4 +159,33 @@ export function validateUserData(userData: Partial<User>): boolean {
   }
 
   return true;
+}
+
+/**
+ * This type allows us to define and use change events similar to HTML ChangeEvents
+ * @notes you'll need to define the type (T) that it's storing. 
+ * use to handle useStates of complex types like Book:
+ * @example  
+ * const bookChangeHandler = (
+    e:
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+      | CustomChangeEvent<BookSkills[]>
+  ) => {
+    const { name, value } = e.target;
+    const book = { ...newBook, [name]: value };
+    setNewBook((prevBook) => ({
+      ...prevBook,
+      [name]: value,
+    }));
+  };
+ *
+ */
+export interface CustomChangeEvent<T> {
+  target: {
+    name: string;
+    value: T; // Use T for the value
+  };
+  preventDefault?: () => void;
 }
