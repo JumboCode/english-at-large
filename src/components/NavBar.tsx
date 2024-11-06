@@ -20,7 +20,7 @@ const NavBar = () => {
   return (
     <div className="bg-[#F6FAFD] flex p-4 justify-between">
       <div className="gap-10 flex">
-        <a href="/">
+        <a href="/dashboard">
           <Image
             src={eal_logo}
             alt="English at Large Logo"
@@ -37,12 +37,15 @@ const NavBar = () => {
             <div className="my-5 p-3 bg-white rounded-md w-40">
               <div className="dropdown-menu font-[family-name:var(--font-rubik)] whitespace-nowrap">
                 <ul className="pb-2">
-                  <a href="dashboard/books" className="dropdown-item">
+                  <a href="/dashboard/books" className="dropdown-item">
                     Books
                   </a>
                 </ul>
                 <ul className="pb-1">
-                  <a href="dashboard/onlineresources" className="dropdown-item">
+                  <a
+                    href="/dashboard/onlineresources"
+                    className="dropdown-item"
+                  >
                     Online Resources
                   </a>
                 </ul>
@@ -66,7 +69,7 @@ const NavBar = () => {
                   </a>
                 </ul>
                 <ul className="pb-1">
-                  <a href="dashboard/holds" className="dropdown-item">
+                  <a href="/dashboard/holds" className="dropdown-item">
                     Holds
                   </a>
                 </ul>
@@ -76,7 +79,7 @@ const NavBar = () => {
         </div>
         <div className="relative group mt-2">
           <a
-            href="dashboard/staff"
+            href="staff"
             className="font-[family-name:var(--font-rubik)] font-semibold"
           >
             Staff
