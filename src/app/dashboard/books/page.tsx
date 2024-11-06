@@ -6,9 +6,11 @@ import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
+import AddNewBookForm from "@/components/common/forms/AddNewBookForm";
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
+  const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
@@ -71,7 +73,14 @@ const BooksPage = () => {
 
   return (
     <div>
-      <SearchBar filterOnPress={toggleFilterPopup} />
+      <SearchBar
+        filterOnPress={toggleFilterPopup}
+        setShowBookForm={setBookFormShown}
+      />
+
+      {bookFormShown ? (
+        <AddNewBookForm setShowBookForm={setBookFormShown} />
+      ) : null}
       <FilterPopup
         isOpen={isFilterOpen}
         toggle={toggleFilterPopup}
