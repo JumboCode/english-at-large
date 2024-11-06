@@ -68,7 +68,6 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id") as string;
-    console.log(searchParams);
     //+id casts id from a string to a number
     const deletedRequest = await deleteRequestController(+id);
 

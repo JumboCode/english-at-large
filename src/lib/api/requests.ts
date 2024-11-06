@@ -35,7 +35,6 @@ export const getOneRequest = async (
 export const getRequests = async (): Promise<BookRequest[] | undefined> => {
   try {
     const response = await axios.get("/api/requests");
-    console.log("response", response.data);
 
     return response.data; //JSOn
   } catch (error) {
@@ -104,7 +103,6 @@ export const deleteRequest = async (
   id: number
 ): Promise<BookRequest[] | undefined> => {
   try {
-    console.log(id);
     const response = await axios.delete(`/api/requests?id=${id}`);
     return response.data;
   } catch (error) {
