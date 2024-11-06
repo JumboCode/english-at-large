@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
 import FilterIcon from "../assets/icons/Filter";
 import CommonButton from "./common/button/CommonButton";
@@ -7,7 +7,7 @@ import AddIcon from "@/assets/icons/Add";
 
 interface searchBarProps {
   filterOnPress: () => void;
-  setShowBookForm: (arg0: boolean) => void;
+  setShowBookForm?: (arg0: boolean) => void;
 }
 
 const SearchBar = (props: searchBarProps) => {
@@ -53,7 +53,7 @@ const SearchBar = (props: searchBarProps) => {
             label="Create Book"
             leftIcon={<AddIcon />}
             onClick={() => {
-              setShowBookForm(true);
+              if (setShowBookForm) setShowBookForm(true);
             }}
             altTextStyle="text-white"
             altStyle="bg-dark-blue"

@@ -13,7 +13,6 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const bookIdParam = searchParams.get("id"); // Assuming the ID is passed as a query parameter
-
     if (bookIdParam) {
       const bookId = Number(bookIdParam); // Convert the string to a number
 
@@ -34,6 +33,7 @@ export async function GET(req: Request) {
       return NextResponse.json(books);
     }
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: `Failed to fetch books: ${error}` },
       { status: 500 }
