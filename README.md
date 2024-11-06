@@ -30,6 +30,40 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+
+## Practices and Techniques:
+
+These are some of the practices and style guidelines to maintain for consistency in this codebase.
+
+### Components
+
+To add a new component, create a new file in components that is the name of the component. Then define the types for the component at the top of the component, then use it to type the component's `props`. To use each field of the props within the component, destructure the `props` field.
+
+```typescript
+interface ComponentProps {
+  prop1: prop1Type;
+  prop2: prop2Type;
+}
+
+/**
+ * Use JSDoc styling right above the header if this component is important.
+ * 
+ * Also, the name of the component should capitalized, and the file should be the same. 
+ * */
+const Component = (props: ComponentProps) => {
+  const { prop1, prop2 } = props;
+}
+```
+
+### Conditional Rendering 
+
+Use it when you can, rather than multiple `return` statements that can be hard to track. If there are many conditions, then either use a switch statement or bite the bullet and use a bunch of ternary operators. Track each state or condition with an enum. If you want to render nothing, then use `null` as the falsy value.
+```typescript
+
+// use null instead of an empty div, etc.
+{ condition ? <div>"render if true"</div> : null}
+
+```
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

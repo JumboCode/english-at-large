@@ -14,10 +14,10 @@ const geistMono = localFont({
   weight: "100 900",
 });
 const rubik = localFont({
-        src: "./fonts/Rubik-VariableFont_wght.ttf",
-        variable: "--font-rubik",
-        weight: "100 900",
-      });
+  src: "./fonts/Rubik-VariableFont_wght.ttf",
+  variable: "--font-rubik",
+  weight: "100 900",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,16 +30,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-    >
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} antialiased`}
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} antialiased`}
+      >
+        <ClerkProvider
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
         >
           {children}
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
