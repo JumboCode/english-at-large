@@ -69,7 +69,7 @@ model Book {
   description String
   publisher   String
   level       BookLevel
-  booktype    BookType
+  bookType    BookType
   skills      BookSkills[]
   scanLink    String?
   releaseDate String?
