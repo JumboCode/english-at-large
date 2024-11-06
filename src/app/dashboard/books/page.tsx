@@ -57,19 +57,20 @@ const BooksPage = () => {
       .filter((book) => filterBooks(book)); // Use filterBooks to filter out the books
   }, [books, filterBooks, sortBooks]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const allBooks = await getAllBooks();
-        if (allBooks) {
-          setBooks(allBooks);
-        }
-      } catch (err) {
-        console.error("Failed to get all books");
+  const fetchData = useCallback(async () => {
+    try {
+      const allBooks = await getAllBooks();
+      if (allBooks) {
+        setBooks(allBooks);
       }
-    };
-    fetchData();
+    } catch (err) {
+      console.error("Failed to get all books");
+    }
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <div>
@@ -79,7 +80,10 @@ const BooksPage = () => {
       />
 
       {bookFormShown ? (
-        <AddNewBookForm setShowBookForm={setBookFormShown} />
+        <AddNewBookForm
+          setShowBookForm={setBookFormShown}
+          onBookAdded={fetchData}
+        />
       ) : null}
       <FilterPopup
         isOpen={isFilterOpen}

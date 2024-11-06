@@ -8,10 +8,11 @@ import MultiSelectTagButton from "./MultiSelectTagButton";
 
 interface addNewBookFormProps {
   setShowBookForm: (arg0: boolean) => void;
+  onBookAdded: () => void;
 }
 
 const AddNewBookForm = (props: addNewBookFormProps) => {
-  const { setShowBookForm } = props;
+  const { setShowBookForm, onBookAdded } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -46,6 +47,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
     try {
       const createdBook = await createBook(newBook);
       if (createdBook) {
+        onBookAdded();
         setShowBookForm(false);
       } else {
         throw new Error("Failed to create book!");
