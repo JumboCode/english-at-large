@@ -12,8 +12,6 @@ import { CustomChangeEvent } from "@/lib/util/types";
 import { updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
 
-// errors -- skills tags not showing as selected but still updating
-
 interface EditBookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   book: Book;
@@ -57,7 +55,7 @@ const EditBookForm = (props: EditBookFormProps) => {
     status: book.status,
   });
 
-  // handles the setState for all HTML input fields
+  // update form data on change
   const bookChangeHandler = (
     e:
       | React.ChangeEvent<HTMLTextAreaElement>
@@ -71,7 +69,7 @@ const EditBookForm = (props: EditBookFormProps) => {
     }));
   };
 
-  // handles the setState for custom form fields
+  // update form data for book skills on change
   const bookSkillsChangeHandler = (e: CustomChangeEvent<BookSkills[]>) => {
     const { name, value } = e.target;
     setFormData((prevBook) => ({
@@ -81,7 +79,6 @@ const EditBookForm = (props: EditBookFormProps) => {
   };
 
   const handleSave = async () => {
-    // e.preventDefault();
     try {
       const newBook = {
         id: book.id,
@@ -100,7 +97,6 @@ const EditBookForm = (props: EditBookFormProps) => {
       };
       const editedBook = await updateBook(newBook);
 
-      // console.log(editedBook);
       if (editedBook) {
         setShowBookForm(false);
       } else {
