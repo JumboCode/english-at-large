@@ -2,14 +2,14 @@
 import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-import bookIcon from "../../../assets/icons/bookmark_add.svg";
-import pencilIcon from "../../../assets/icons/PencilIcon.svg";
-import trashIcon from "../../../assets/icons/TrashIcon.svg";
+import bookmark from "@/assets/icons/Bookmark.svg";
+import pencil from "@/assets/icons/Pencil.svg";
+import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
 import BookDetail from "@/components/details";
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
-import EditBookForm from "@/components/EditBookForm";
+import EditBookForm from "@/components/common/forms/EditBookForm";
 
 type Params = Promise<{ id: string }>;
 
@@ -23,7 +23,7 @@ type Params = Promise<{ id: string }>;
 const BookDetails = (props: { params: Params }) => {
   const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
-  const [showEditBookForm, setShowEditBookForm] = useState(false);
+  const [showBookForm, setShowBookForm] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -39,14 +39,15 @@ const BookDetails = (props: { params: Params }) => {
 
   if (book === null) return null;
 
-  const showForm = (show: boolean) => {
-    setShowEditBookForm(show);
-  };
-
   return (
     <div>
-      {showEditBookForm ? (
-        <EditBookForm book={book} />
+      {showBookForm ? (
+        <EditBookForm
+          setShowBookForm={() => {
+            setShowBookForm(true);
+          }}
+          book={book}
+        />
       ) : (
         <div>
           {book ? (
@@ -64,11 +65,11 @@ const BookDetails = (props: { params: Params }) => {
                       <CommonButton
                         label="Borrow"
                         onClick={handleClick}
-                        altStyle="w-40 h-10 bg-[#202D74] mr-5"
+                        altStyle="w-40 h-10 bg-[#202D74] mr-3"
                         altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                         leftIcon={
                           <Image
-                            src={bookIcon}
+                            src={bookmark}
                             alt="Book Icon"
                             className="w-4 h-4 mr-3"
                           />
@@ -76,27 +77,29 @@ const BookDetails = (props: { params: Params }) => {
                       />
                       <CommonButton
                         label="Edit"
-                        onClick={() => showForm(true)}
-                        altStyle="w-40 h-10 bg-[#202D74] mr-5"
+                        onClick={() => {
+                          setShowBookForm(true);
+                        }}
+                        altStyle="w-40 h-10 bg-[#202D74] mr-3"
                         altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                         leftIcon={
                           <Image
-                            src={pencilIcon}
-                            alt="Edit Icon"
-                            className="mr-3"
+                            src={pencil}
+                            alt="Pencil Icon"
+                            className="w-4 h-4 mr-3"
                           />
                         }
                       />
                       <CommonButton
                         label="Remove"
                         onClick={handleClick}
-                        altStyle="w-40 h-10 bg-[#EC221F] border-[#EC221F]"
+                        altStyle="w-40 h-10 bg-[#EC221F] border-[#EC221F] mr-3"
                         altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                         leftIcon={
                           <Image
-                            src={trashIcon}
-                            alt="Trash Icon"
-                            className="mr-3"
+                            src={trash}
+                            alt="Book Icon"
+                            className="w-4 h-4 mr-3"
                           />
                         }
                       />
@@ -107,12 +110,12 @@ const BookDetails = (props: { params: Params }) => {
                 <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
                   {/* TODO: This will be implemented once the books have images! */}
                   {/* <Image
-                src={TODO:}
-                alt="Book Cover"
-                width={150}
-                height={190}
-                style={imageStyle}
-              /> */}
+                  src={TODO:}
+                  alt="Book Cover"
+                  width={150}
+                  height={190}
+                  style={imageStyle}
+                /> */}
                   <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
                 </div>
               </div>

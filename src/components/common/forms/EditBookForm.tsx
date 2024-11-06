@@ -1,19 +1,19 @@
 "use client";
 import {
-  Book,
   BookSkills,
   BookLevel,
-  BookStatus,
   BookType,
+  Book,
+  BookStatus,
 } from "@prisma/client";
-
+import CommonButton from "../button/CommonButton";
 import { useState } from "react";
+import { CustomChangeEvent } from "@/lib/util/types";
 import { updateBook } from "@/lib/api/books";
-import CommonButton from "./common/button/CommonButton";
-import Tag from "./tag";
-import { useRouter } from "next/navigation";
+import MultiSelectTagButton from "./MultiSelectTagButton";
 
-interface EditProps {
+interface EditBookFormProps {
+  setShowBookForm: (arg0: boolean) => void;
   book: Book;
 }
 
@@ -30,7 +30,9 @@ interface SignupFormData {
   status: BookStatus;
 }
 
-const EditBookForm = (props: EditProps) => {
+const EditBookForm = (props: EditBookFormProps) => {
+  const { setShowBookForm } = props;
+
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
   const types = Object.values(BookType);
@@ -53,40 +55,56 @@ const EditBookForm = (props: EditProps) => {
     status: book.status,
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+  // handles the setState for all HTML input fields
+  const bookChangeHandler = (
+    e:
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: value,
+    const { name, value } = e.target;
+    setFormData((prevBook) => ({
+      ...prevBook,
+      [name]: value,
+    }));
+  };
+
+  // handles the setState for custom form fields
+  const bookSkillsChangeHandler = (e: CustomChangeEvent<BookSkills[]>) => {
+    const { name, value } = e.target;
+    setFormData((prevBook) => ({
+      ...prevBook,
+      [name]: value,
     }));
   };
 
   const handleSave = async () => {
-    const newBook = {
-      id: book.id,
-      title: formData.title,
-      author: formData.author,
-      isbn: formData.isbn,
-      description: formData.description,
-      publisher: formData.publisher,
-      level: formData.level,
-      booktype: formData.booktype,
-      skills: formData.skills,
-      releaseDate: formData.releaseDate,
-      scanLink: book.scanLink,
-      notes: book.notes,
-      status: formData.status,
-    };
-
-    await updateBook(newBook);
-  };
-  const router = useRouter();
-  const handleCancel = () => {
-    router.push("/books/" + book.id);
+    try {
+      const newBook = {
+        id: book.id,
+        title: formData.title,
+        author: formData.author,
+        isbn: formData.isbn,
+        description: formData.description,
+        publisher: formData.publisher,
+        level: formData.level,
+        booktype: formData.booktype,
+        skills: formData.skills,
+        releaseDate: formData.releaseDate,
+        scanLink: book.scanLink,
+        notes: book.notes,
+        status: formData.status,
+      };
+      const editedBook = await updateBook(newBook);
+      console.log(editedBook);
+      if (editedBook) {
+        setShowBookForm(false);
+      } else {
+        throw new Error("Failed to update book!");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -94,21 +112,28 @@ const EditBookForm = (props: EditProps) => {
       <form
         className="flex flex-col space-y-2 [&_input]:p-2 [&_textarea]:p-2 [&_select]:p-2"
         id="create-book-form"
-        onSubmit={handleSave}
       >
         <div>
-          <div className="flex inline justify-between p-5">
+          <div className="flex justify-between p-5">
             <div>
-              <h1 className="font-bold text-3xl inline">Edit Book</h1>
+              <h1 className="font-bold text-3xl inline">Edit New Book</h1>
             </div>
-            <div className="flex inline space-x-5">
-              <CommonButton label="Cancel" onClick={handleCancel} />
-              <button
-                type="submit"
-                className="flex justify-self-center items-center px-3.5 py-3 min-w-max border rounded-lg border-dark-blue bg-[#202D74] hover:bg-[#202D74]/80 text-white text-base font-bold group-invalid:pointer-events-none group-invalid:opacity-30 disabled:pointer-events-none disabled:opacity-30"
-              >
-                Save
-              </button>
+            <div className="flex space-x-5">
+              <CommonButton
+                label="Cancel"
+                onClick={() => {
+                  setShowBookForm(false);
+                }}
+              />
+              <CommonButton
+                label="Save"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSave();
+                }}
+                altTextStyle="text-white"
+                altStyle="bg-dark-blue"
+              />
             </div>
           </div>
           <div className="mx-3 h-[0.5px] bg-black"></div>
@@ -120,9 +145,10 @@ const EditBookForm = (props: EditProps) => {
           <input
             type="text"
             id="title"
+            name="title"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             defaultValue={book.title}
-            onChange={handleInputChange}
+            onChange={bookChangeHandler}
             required
           />
         </div>
@@ -133,9 +159,10 @@ const EditBookForm = (props: EditProps) => {
           <input
             type="text"
             id="author"
+            name="author"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             defaultValue={book.author}
-            onChange={handleInputChange}
+            onChange={bookChangeHandler}
             required
           />
         </div>
@@ -148,26 +175,28 @@ const EditBookForm = (props: EditProps) => {
           </label>
           <textarea
             id="description"
+            name="description"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
             defaultValue={book.description}
-            onChange={handleInputChange}
+            onChange={bookChangeHandler}
             required
           ></textarea>
         </div>
         <div>
-          <label htmlFor="ISBN " className="block text-lg ml-[5%] font-bold">
-            ISBN
+          <label htmlFor="isbn" className="block text-lg ml-[5%] font-bold">
+            ISBN Number
           </label>
           <input
             type="text"
-            id="ISBN"
+            id="isbn"
+            name="isbn"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             defaultValue={book.isbn}
-            onChange={handleInputChange}
+            onChange={bookChangeHandler}
             required
           />
         </div>
-        <div className="flex inline w-[90%] mx-auto space-x-4">
+        <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%]">
             <label htmlFor="publisher" className="text-lg font-bold">
               Publisher
@@ -175,9 +204,10 @@ const EditBookForm = (props: EditProps) => {
             <input
               type="text"
               id="publisher"
+              name="publisher"
               className="border-[1px] border-black border-solid rounded-lg h-8"
               defaultValue={book.publisher}
-              onChange={handleInputChange}
+              onChange={bookChangeHandler}
               required
             />
           </div>
@@ -186,26 +216,16 @@ const EditBookForm = (props: EditProps) => {
               Release Date
             </label>
             <input
-              type="text"
+              type="date"
               id="releaseDate"
+              name="releaseDate"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
               defaultValue={book.releaseDate}
-              onChange={handleInputChange}
+              onChange={bookChangeHandler}
             />
           </div>
         </div>
-        {/* <div>
-          <select
-            name="type"
-            className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
-          >
-            <option value="">Select Book Status</option>
-            {status.map((stat, index) => {
-              return <option key={index}>{stat.replace("_", " ")}</option>;
-            })}
-          </select>
-        </div> */}
-        <div className="flex inline w-[90%] mx-auto space-x-4">
+        <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%]">
             <label htmlFor="level" className="text-lg font-bold">
               Level
@@ -214,8 +234,8 @@ const EditBookForm = (props: EditProps) => {
               id="level"
               name="level"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
-              value={book.level}
-              onChange={handleInputChange}
+              defaultValue={book.level}
+              onChange={bookChangeHandler}
               required
             >
               <option value="">Select level</option>
@@ -229,15 +249,15 @@ const EditBookForm = (props: EditProps) => {
             </select>
           </div>
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="type" className="text-lg font-bold">
+            <label htmlFor="bookType" className="text-lg font-bold">
               Type
             </label>
             <select
-              id="type"
-              name="type"
+              id="bookType"
+              name="bookType"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
-              value={book.booktype}
-              onChange={handleInputChange}
+              defaultValue={book.bookType}
+              onChange={bookChangeHandler}
               required
             >
               <option value="">Select book type</option>
@@ -257,12 +277,12 @@ const EditBookForm = (props: EditProps) => {
           <div className="flex space-x-4 mx-[5%]">
             {skills.map((bookSkill, index) => {
               return (
-                <Tag
+                <MultiSelectTagButton<BookSkills>
                   key={index}
                   label={bookSkill}
-                  // skillsArray={book.skills}
-                  // isSelected={book.skills.includes(bookSkill)}
-                  // setSkillsArray={setSkillArray}
+                  value={book.skills}
+                  onSelect={bookSkillsChangeHandler}
+                  name={"skills"}
                 />
               );
             })}
