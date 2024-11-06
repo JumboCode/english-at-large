@@ -65,7 +65,7 @@ const BookDetails = (props: { params: Params }) => {
                       <CommonButton
                         label="Borrow"
                         onClick={handleClick}
-                        altStyle="w-40 h-10 bg-[#202D74] mr-3"
+                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
                         altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                         leftIcon={
                           <Image
@@ -80,7 +80,7 @@ const BookDetails = (props: { params: Params }) => {
                         onClick={() => {
                           setShowBookForm(true);
                         }}
-                        altStyle="w-40 h-10 bg-[#202D74] mr-3"
+                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
                         altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                         leftIcon={
                           <Image
@@ -93,7 +93,7 @@ const BookDetails = (props: { params: Params }) => {
                       <CommonButton
                         label="Remove"
                         onClick={handleClick}
-                        altStyle="w-40 h-10 bg-[#EC221F] border-[#EC221F] mr-3"
+                        altStyle="w-40 h-10 bg-[#EC221F] border-none mr-3"
                         altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                         leftIcon={
                           <Image
