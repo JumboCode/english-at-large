@@ -11,12 +11,11 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        'text-default-tertiary': "#B3B3B3",
-        'light-grey-border': "#F5F5F5",
-        'medium-grey-border': "#D9D9D9",
-        'dark-blue': "#202D74",
-        'light-blue': "#7890CD",
-        
+        "text-default-tertiary": "#B3B3B3",
+        "light-grey-border": "#F5F5F5",
+        "medium-grey-border": "#D9D9D9",
+        "dark-blue": "#202D74",
+        "light-blue": "#7890CD",
       },
     },
   },

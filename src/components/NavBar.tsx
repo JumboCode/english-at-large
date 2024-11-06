@@ -13,6 +13,9 @@ const NavBar = () => {
         <a href="dashboard/profile">
           <p>My Profile</p>
         </a>
+        <a href="/books">
+          <p>Book Details</p>
+        </a>
         <a href="/">Logout</a>
       </div>
     </div>
