@@ -13,7 +13,7 @@ const SuccessfulSignUp = () => {
   return (
     <div>
       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <main className="flex flex-col gap-8 row-start-2 items-center align-center justify-center sm:items-start">
+        <div className="flex flex-col gap-8 row-start-2 items-center align-center justify-center sm:items-start">
           <CheckIcon className="place-self-center" />
 
           <p className="text-2xl font-bold text-gray-900 items-center place-self-center">
@@ -30,7 +30,7 @@ const SuccessfulSignUp = () => {
             altStyle="border-dark-blue bg-[#202D74] hover:bg-[#202D74]/80 place-self-center"
             altTextStyle="text-white font-bold"
           />
-        </main>
+        </div>
       </div>
     </div>
   );
