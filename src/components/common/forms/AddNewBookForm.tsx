@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
+import axios from 'axios';
 
 interface addNewBookFormProps {
   setShowBookForm: (arg0: boolean) => void;
@@ -42,6 +43,36 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
     }));
   };
 
+  const pullISBN = async() => {
+    setShowBookForm(true);
+    try {
+    const response = await axios.get(`https://openlibrary.org/isbn/${newBook.isbn}.json`);
+    const title = response.data.title;
+    if(response.data.description){
+      const desc = response.data.description.value;
+      console.log(desc);
+    }
+    if(response.data.publishers){
+      const publisher = response.data.publishers;
+      console.log(publisher[0]);
+    }
+    if(response.data.publish_date){
+      const releaseDate = response.data.publish_date;
+      console.log(releaseDate);
+    }
+
+    // setNewBook((prevBook) => ({
+    //   ...prevBook,
+    //   [prevBook.title]: title,
+    //   [prevBook.description]: desc,
+    //   [prevBook.publisher]: publishers,
+    //   // [prevBook.releaseDate]: releaseDate,
+    // }));
+    } catch {
+      throw new Error("Book not found for this ISBN")
+    }
+  }
+
   const addNewBook = async () => {
     try {
       const createdBook = await createBook(newBook);
@@ -60,6 +91,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
       <form
         className="flex flex-col space-y-2 [&_input]:p-2 [&_textarea]:p-2 [&_select]:p-2"
         id="create-book-form"
+        onSubmit={(e) => e.preventDefault()}
       >
         <div>
           <div className="flex justify-between p-5">
@@ -220,6 +252,11 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
               );
             })}
           </div>
+          <CommonButton 
+              label={"ISBN Click"} 
+              onClick={() => {
+                pullISBN();
+              }}/>
         </div>
       </form>
     </div>
