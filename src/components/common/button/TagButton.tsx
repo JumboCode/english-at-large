@@ -13,8 +13,8 @@ const TagButton = ({
   className = "",
 }: TagButtonProps) => (
   <div
-    className={`border-[1px] border-black p-2 rounded-full cursor-pointer select-none ${
-      isSelected ? "bg-blue-200" : ""
+    className={`bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 items-center cursor-pointer ${
+      isSelected ? "bg-blue-900 text-white" : ""
     } ${className}`}
     onClick={onClick}
   >

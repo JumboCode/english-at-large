@@ -41,7 +41,7 @@ export const getAllBooksController = async (): Promise<Book[]> => {
 
 export const getOneBookController = async (bookId: number): Promise<Book> => {
   try {
-    if (!bookId) {
+    if (bookId === undefined || bookId === null) {
       throw new Error("Missing book id");
     }
 
