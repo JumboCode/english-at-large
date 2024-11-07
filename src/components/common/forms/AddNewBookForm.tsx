@@ -28,6 +28,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    console.log(name);
     setNewBook((prevBook) => ({
       ...prevBook,
       [name]: value,
@@ -47,27 +48,35 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
     setShowBookForm(true);
     try {
     const response = await axios.get(`https://openlibrary.org/isbn/${newBook.isbn}.json`);
-    const title = response.data.title;
+    
+    if(response.data.title){
+      const title = response.data.title;
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        title: title,
+      }));
+    }
     if(response.data.description){
       const desc = response.data.description.value;
-      console.log(desc);
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        description: desc,
+      }));
     }
     if(response.data.publishers){
       const publisher = response.data.publishers;
-      console.log(publisher[0]);
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        publisher: publisher,
+      }));
     }
-    if(response.data.publish_date){
-      const releaseDate = response.data.publish_date;
-      console.log(releaseDate);
+    if(response.data.number_of_pages){
+      const numPages : number = response.data.number_of_pages;
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        numPages: numPages,
+      }));
     }
-
-    // setNewBook((prevBook) => ({
-    //   ...prevBook,
-    //   [prevBook.title]: title,
-    //   [prevBook.description]: desc,
-    //   [prevBook.publisher]: publishers,
-    //   // [prevBook.releaseDate]: releaseDate,
-    // }));
     } catch {
       throw new Error("Book not found for this ISBN")
     }
@@ -75,7 +84,9 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
 
   const addNewBook = async () => {
     try {
+      console.log("CREATING BOOK");
       const createdBook = await createBook(newBook);
+      console.log("CREATED BOOK");
       if (createdBook) {
         setShowBookForm(false);
       } else {
@@ -127,6 +138,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             id="title"
             name="title"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
+            value={newBook.title}
             onChange={bookChangeHandler}
           />
         </div>
@@ -153,6 +165,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             id="description"
             name="description"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
+            value={newBook.description}
             onChange={bookChangeHandler}
           ></textarea>
         </div>
@@ -178,6 +191,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
               id="publisher"
               name="publisher"
               className="border-[1px] border-black border-solid rounded-lg h-8"
+              value={newBook.publisher}
               onChange={bookChangeHandler}
             />
           </div>
@@ -236,7 +250,21 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             </select>
           </div>
         </div>
-
+        <div className="flex w-[90%] mx-auto space-x-4">
+          <div className="flex flex-col w-[50%]">
+            <label htmlFor="publisher" className="text-lg font-bold">
+              Page Numbers
+            </label>
+            <input
+              type="number"
+              id="numPages"
+              name="numPages"
+              className="border-[1px] border-black border-solid rounded-lg h-8"
+              value={newBook.numPages || ""}
+              onChange={bookChangeHandler}
+            />
+          </div>
+        </div>
         <div>
           <p className="block text-lg ml-[5%] font-bold">Skills</p>
           <div className="flex space-x-4 mx-[5%]">

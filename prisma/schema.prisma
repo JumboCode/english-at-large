@@ -71,6 +71,7 @@ model Book {
   level       BookLevel
   bookType    BookType
   skills      BookSkills[]
+  numPages    Int?         @default(0)
   scanLink    String?
   releaseDate String?
   notes       String?

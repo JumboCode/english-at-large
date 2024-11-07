@@ -112,6 +112,7 @@ const BookDetails = (props: { params: Params }) => {
                 publisher={book.publisher}
                 releaseDate={book.releaseDate}
                 copies={10}
+                numPages={book.numPages}
               />
             </div>
           </div>
