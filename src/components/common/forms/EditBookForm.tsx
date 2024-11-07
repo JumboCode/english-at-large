@@ -24,7 +24,7 @@ interface SignupFormData {
   description: string;
   publisher: string;
   level: BookLevel;
-  booktype: BookType;
+  bookType: BookType;
   skills: BookSkills[];
   releaseDate: string;
   status: BookStatus;
@@ -49,7 +49,7 @@ const EditBookForm = (props: EditBookFormProps) => {
     description: book.description,
     publisher: book.publisher,
     level: book.level,
-    booktype: book.booktype,
+    bookType: book.bookType,
     skills: book.skills,
     releaseDate: book.releaseDate || "",
     status: book.status,
@@ -88,7 +88,7 @@ const EditBookForm = (props: EditBookFormProps) => {
         description: formData.description,
         publisher: formData.publisher,
         level: formData.level,
-        booktype: formData.booktype,
+        bookType: formData.bookType,
         skills: formData.skills,
         releaseDate: formData.releaseDate,
         scanLink: book.scanLink,
