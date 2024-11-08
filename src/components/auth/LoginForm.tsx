@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
-import { useSignIn } from "@clerk/clerk-react";
+import { useSignIn, useClerk } from "@clerk/clerk-react";
 import { useRouter } from "next/navigation";
 
 
@@ -10,10 +10,14 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { signOut } = useClerk(); // Add this for signing out
+
+
 
   const router = useRouter();
 
-  const { isLoaded, signIn } = useSignIn();
+  const { isLoaded, signIn, setActive } = useSignIn();
   if (!isLoaded) {
     return <div>Loading...</div>;
   }
@@ -23,8 +27,26 @@ const LoginForm = () => {
     setChecked((prev) => !prev);
   };
 
-  const handleLogin = async () => {
+  // Add sign out function
+  const handleSignOut = async () => {
     try {
+      await signOut();
+      console.log("Successfully signed out");
+      //router.push("/login"); // Redirect back to login page
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (isLoading) {
+      console.log("Is loading:", email);
+      return; // Prevent multiple submissions
+    }
+
+    try {
+      setIsLoading(true);
+      
       console.log("El emai:", email);
       console.log("El pass:", password);
 
@@ -34,27 +56,29 @@ const LoginForm = () => {
         password,
       });
 
-      if (result.status === "complete") {
+      if (result.status === "complete") { //if(signIn.createdSessionId))
+        await setActive({ session: result.createdSessionId });
         // Redirect to dashboard or home page after successful sign in
+        router.push("/dashboard");
+        //window.location.href = "/dashboard";
         console.log("1-Succesfully Logged in ", result.status);
+        
       } else {
         // Handle other status cases
-        console.log("Sign in status:", result.status);
+        console.log(result);
+        setError("Something went wrong. Please try again.");
       }    
       
       // Authenticate the user
       // const signIn = await signInWithPassword({ emailAddress: email, password });
 
-      if (signIn.createdSessionId) {
-        console.log("SUCCESS");
-        // Successful login, redirect the user
-        //window.location.href = "/dashboard"; // Adjust the redirect route as needed
-      }
-    } catch (err) {
-      // Handle errors
-      setError(err.errors?.[0]?.message || "Failed to login. Please try again.");
+    } catch (err:any) {
+      console.error("Error:", err);
+      setError(err.errors?.[0]?.message || "An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-    console.log("hello");
+    //console.log("hello");
   };
 
   //const onEmailChange
@@ -97,6 +121,12 @@ const LoginForm = () => {
           label="Login"
           altTextStyle="text-white"
           altStyle="bg-dark-blue mt-10 w-full"
+      />
+        <CommonButton
+        onClick={handleSignOut}
+        label="Sign Out (Test)"
+        altTextStyle="text-white"
+        altStyle="bg-red-500 mt-4 w-full"
       />
     </>
   );
