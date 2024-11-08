@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { UserRole } from "@prisma/client";
 import { inviteUser } from "@/lib/api/users";
+import CommonButton from "../common/button/CommonButton";
+import InviteToast from "./InviteToast";
 
 interface SendInviteProps {
   isOpen: boolean;
@@ -14,7 +16,7 @@ const SendInvite = (props: SendInviteProps) => {
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole>(UserRole.Tutor);
   const [statusText, setStatusText] = useState("");
-
+  const [status, setStatus] = useState<boolean | null>(null);
   const handleUserKind = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRole(event.target.value as UserRole);
   };
@@ -23,71 +25,92 @@ const SendInvite = (props: SendInviteProps) => {
     try {
       await inviteUser(name, email, role);
       setStatusText("Invite sent!");
+      setStatus(true);
     } catch (error) {
       console.error("Error creating invite: ", error);
       setStatusText("Invite failed, please try again!");
+      setStatus(false);
     }
   };
 
-  if (!isOpen) {
-    return <div />;
-  } else {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-        <div className="bg-white py-6 px-12 rounded-lg shadow-lg max-w-2/3">
-          <div className="flex flex-row justify-between">
-            <p className="text-black">Invite user</p>
-            <button className="text-black" onClick={exit}>
-              X
-            </button>
-          </div>
-          <hr />
-          <p className="text-black">Full Name: </p>
-          <input
-            type="text"
-            name="fullname"
-            className="text-black"
-            onChange={(event) => {
-              setName(event.target.value);
-            }}
-          />
-          <p className="text-black">Email: </p>
-          <input
-            type="text"
-            name="email"
-            className="text-black"
-            onChange={(event) => {
-              setEmail(event.target.value);
-            }}
-          />
-          <p className="text-black">Invite as </p>
+  return (
+    <div>
+      {isOpen ? (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white py-6 px-12 rounded-lg shadow-lg min-w-max max-w-large flex flex-col gap-6">
+            <div className="flex flex-row justify-between">
+              <p className="text-black text-semibold text-2xl">Invite user</p>
+              <button className="text-black" onClick={exit}>
+                X
+              </button>
+            </div>
+            <hr />
+            <div>
+              <p className="text-black text-lg font-medium">Full Name </p>
+              <input
+                type="text"
+                name="fullname"
+                className="text-black border border-medium-grey-border p-2 rounded-lg w-96"
+                onChange={(event) => {
+                  setName(event.target.value);
+                }}
+              />
+            </div>
+            <div>
+              <p className="text-black text-lg font-medium">Email </p>
+              <input
+                type="text"
+                name="email"
+                className="text-black border border-medium-grey-border p-2 rounded-lg  w-96"
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+              />
+            </div>
 
-          <input
-            type="radio"
-            id="tutor"
-            name="usertype"
-            value={UserRole.Tutor}
-            onChange={handleUserKind}
-          />
-          <label htmlFor="tutor">Tutor</label>
-          <br />
-          <input
-            type="radio"
-            id="admin"
-            name="usertype"
-            value={UserRole.Admin}
-            onChange={handleUserKind}
-          />
-          <label htmlFor="admin">Admin</label>
-          <br />
-          <button>Cancel</button>
-          <br />
-          <button onClick={sendEmail}>Send Invite</button>
-          <p>{statusText}</p>
+            <div>
+              <p className="text-black text-lg font-medium">Invite as </p>
+              <input
+                type="radio"
+                id="tutor"
+                name="usertype"
+                value={UserRole.Tutor}
+                onChange={handleUserKind}
+              />
+              <label htmlFor="tutor">Tutor</label>
+              <br />
+              <input
+                type="radio"
+                id="admin"
+                name="usertype"
+                value={UserRole.Admin}
+                onChange={handleUserKind}
+              />
+              <label htmlFor="admin">Admin</label>
+            </div>
+            <hr />
+
+            <div className="flex flex-row gap-2">
+              <CommonButton label="Cancel" onClick={exit} altStyle="w-1/2" />
+              <CommonButton
+                label="Send Invite"
+                onClick={() => {
+                  exit();
+                  sendEmail();
+                }}
+                altTextStyle="text-white"
+                altStyle="bg-dark-blue w-1/2"
+              />
+            </div>
+            <p>{statusText}</p>
+          </div>
         </div>
-      </div>
-    );
-  }
+      ) : (
+        <div />
+      )}
+      <InviteToast success={status} />
+    </div>
+  );
 };
 
 export default SendInvite;
