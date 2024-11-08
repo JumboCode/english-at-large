@@ -1,9 +1,11 @@
 "use client";
-import CommonButton from "@/components/common/button/CommonButton";
+// import CommonButton from "@/components/common/button/CommonButton";
 import LoginForm from "@/components/auth/LoginForm";
 import books from "@/images/books.jpg";
 
 import Image from "next/image";
+// import { useState } from "react";
+
 
 const Login = () => {
   return (
@@ -29,12 +31,7 @@ const Login = () => {
 
         <LoginForm />
 
-        <CommonButton
-          onClick={() => {}}
-          label="Login"
-          altTextStyle="text-white"
-          altStyle="bg-dark-blue mt-10 w-full"
-        />
+        
       </div>
     </div>
   );
