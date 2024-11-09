@@ -9,7 +9,8 @@ import Tag from "@/components/tag";
 import BookDetail from "@/components/details";
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
-import EditBookForm from "@/components/common/forms/EditBookForm";
+import BookForm from "@/components/common/forms/BookForm";
+import RemoveModal from "@/components/RemoveModal";
 
 type Params = Promise<{ id: string }>;
 
@@ -24,6 +25,7 @@ const BookDetails = (props: { params: Params }) => {
   const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
   const [showBookForm, setShowBookForm] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -42,11 +44,11 @@ const BookDetails = (props: { params: Params }) => {
   return (
     <div>
       {showBookForm ? (
-        <EditBookForm
+        <BookForm
           setShowBookForm={() => {
             setShowBookForm(true);
           }}
-          book={book}
+          existingBook={book}
         />
       ) : (
         <div>
@@ -92,7 +94,9 @@ const BookDetails = (props: { params: Params }) => {
                       />
                       <CommonButton
                         label="Remove"
-                        onClick={handleClick}
+                        onClick={() => {
+                          setShowRemoveModal(true);
+                        }}
                         altStyle="w-40 h-10 bg-[#EC221F] border-none mr-3"
                         altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                         leftIcon={
@@ -103,6 +107,12 @@ const BookDetails = (props: { params: Params }) => {
                           />
                         }
                       />
+                      {showRemoveModal && (
+                        <RemoveModal
+                          setShowRemoveModal={setShowRemoveModal}
+                          book={book}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -155,6 +165,8 @@ const BookDetails = (props: { params: Params }) => {
                     publisher={book.publisher}
                     releaseDate={book.releaseDate}
                     copies={10}
+                    lineSpacing="space-y-3"
+                    verticalSpacing="ml-7"
                   />
                 </div>
               </div>

@@ -57,7 +57,7 @@ export const emptyBook: Book = {
 export const newEmptyBook: Omit<Book, "id"> = {
   title: "",
   author: "",
-  isbn: "000-0-00-000000-0",
+  isbn: "",
   publisher: "",
   level: BookLevel.Beginner,
   bookType: BookType.Reference,
