@@ -79,7 +79,8 @@ const BookDetails = (props: { params: Params }) => {
                       />
                       <CommonButton
                         label="Edit"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
                           setShowBookForm(true);
                         }}
                         altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
