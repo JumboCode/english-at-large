@@ -44,12 +44,7 @@ const BookDetails = (props: { params: Params }) => {
   return (
     <div>
       {showBookForm ? (
-        <BookForm
-          setShowBookForm={() => {
-            setShowBookForm(true);
-          }}
-          existingBook={book}
-        />
+        <BookForm setShowBookForm={setShowBookForm} existingBook={book} />
       ) : (
         <div>
           {book ? (

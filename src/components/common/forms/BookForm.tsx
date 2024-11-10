@@ -1,7 +1,7 @@
 "use client";
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
@@ -19,13 +19,9 @@ const BookForm = (props: BookFormProps) => {
   const types = Object.values(BookType);
 
   const [newBook, setNewBook] = useState<Omit<Book, "id">>(newEmptyBook);
-  const [editBook, setEditBook] = useState<Book>();
-
-  useEffect(() => {
-    if (existingBook) {
-      setEditBook(existingBook);
-    }
-  }, [existingBook]);
+  const [editBook, setEditBook] = useState<Book | null | undefined>(
+    existingBook
+  );
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -120,9 +116,7 @@ const BookForm = (props: BookFormProps) => {
               />
               <CommonButton
                 label={existingBook ? "Save" : "Add Book"}
-                onClick={() => {
-                  handleSave();
-                }}
+                onClick={handleSave}
                 altTextStyle="text-white"
                 altStyle="bg-dark-blue"
               />
