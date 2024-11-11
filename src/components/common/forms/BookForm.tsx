@@ -9,10 +9,11 @@ import MultiSelectTagButton from "./MultiSelectTagButton";
 interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
+  onSave?: (arg0: Book | null) => void;
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { setShowBookForm, existingBook } = props;
+  const { setShowBookForm, existingBook, onSave } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -77,6 +78,9 @@ const BookForm = (props: BookFormProps) => {
       if (editBook) {
         const editedBook = await updateBook(editBook);
         if (editedBook) {
+          if (onSave) {
+            onSave(editedBook);
+          }
           setShowBookForm(false);
         } else {
           throw new Error("Failed to update book!");
@@ -84,6 +88,9 @@ const BookForm = (props: BookFormProps) => {
       } else if (newBook) {
         const createdBook = await createBook(newBook);
         if (createdBook) {
+          if (onSave) {
+            onSave(createdBook);
+          }
           setShowBookForm(false);
         } else {
           throw new Error("Failed to create book!");
@@ -223,7 +230,7 @@ const BookForm = (props: BookFormProps) => {
               name="level"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
               onChange={bookChangeHandler}
-              value={editBook ? editBook.level : ""}
+              defaultValue={editBook ? editBook.level : ""}
               required
             >
               <option value="">Select level</option>
@@ -245,7 +252,7 @@ const BookForm = (props: BookFormProps) => {
               name="bookType"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
               onChange={bookChangeHandler}
-              value={editBook ? editBook.bookType : ""}
+              defaultValue={editBook ? editBook.bookType : ""}
               required
             >
               <option value="">Select book type</option>

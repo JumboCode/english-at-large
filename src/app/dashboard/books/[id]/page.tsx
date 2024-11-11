@@ -44,7 +44,13 @@ const BookDetails = (props: { params: Params }) => {
   return (
     <div>
       {showBookForm ? (
-        <BookForm setShowBookForm={setShowBookForm} existingBook={book} />
+        <BookForm
+          setShowBookForm={setShowBookForm}
+          existingBook={book}
+          onSave={(b: Book | null) => {
+            setBook(b);
+          }}
+        />
       ) : (
         <div>
           {book ? (
