@@ -5,11 +5,19 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
+import { ConfirmationPopupState } from "../message/ConfirmationPopup";
 // import ConfirmationPopup from "../popups/ConfirmationPopup";
 
 interface addNewBookFormProps {
   setShowBookForm: (arg0: boolean) => void;
-  setPopup: (arg0: [message: string, success: boolean, shown: boolean]) => void;
+  setPopup: (arg0: ConfirmationPopupState) => void;
+}
+
+export enum BookFormConfirmationMessages {
+  SUCCESS = "Book added!",
+  FAILURE = "Couldn't add book. Check your connection and retry.",
+  // add more states as needed, e.g. different error messages, etc
+  NONE = "",
 }
 
 const AddNewBookForm = (props: addNewBookFormProps) => {
@@ -49,22 +57,26 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
       const createdBook = await createBook(newBook);
       if (createdBook) {
         setShowBookForm(false);
-        setPopup(["Book added!", true, true]);
+        setPopup({
+          message: BookFormConfirmationMessages.SUCCESS,
+          success: true,
+          shown: true,
+        });
       } else {
         setShowBookForm(false);
-        setPopup([
-          "Couldn't add book. Check your connection and retry.",
-          false,
-          true,
-        ]);
+        setPopup({
+          message: BookFormConfirmationMessages.FAILURE,
+          success: false,
+          shown: true,
+        });
       }
     } catch (error) {
       setShowBookForm(false);
-      setPopup([
-        "Couldn't add book. Check your connection and retry.",
-        false,
-        true,
-      ]);
+      setPopup({
+        message: BookFormConfirmationMessages.FAILURE,
+        success: false,
+        shown: true,
+      });
       console.error(error);
     }
   };
