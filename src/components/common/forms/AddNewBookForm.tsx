@@ -49,14 +49,22 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
       const createdBook = await createBook(newBook);
       if (createdBook) {
         setShowBookForm(false);
-        setPopup(["Book added!", true, true])
+        setPopup(["Book added!", true, true]);
       } else {
         setShowBookForm(false);
-        setPopup(["Couldn't add book. Check your connection and retry.", false, true])
+        setPopup([
+          "Couldn't add book. Check your connection and retry.",
+          false,
+          true,
+        ]);
       }
     } catch (error) {
       setShowBookForm(false);
-      setPopup(["Couldn't add book. Check your connection and retry.", false, true])
+      setPopup([
+        "Couldn't add book. Check your connection and retry.",
+        false,
+        true,
+      ]);
       console.error(error);
     }
   };

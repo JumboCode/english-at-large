@@ -3,6 +3,9 @@ import AddNewBookForm from "@/components/common/forms/AddNewBookForm";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import SearchBar from "@/components/SearchBar";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 /*
  * Home Page
  * ...it's the home page.
@@ -12,50 +15,29 @@ import { useState } from "react";
  */
 export default function Home() {
   const [bookFormShown, setBookFormShown] = useState(false);
-  const [bookFormPopup, setBookFormPopup] = useState(["", false, false]) // message, success, shown?
-
+  const [bookFormPopup, setBookFormPopup] = useState(["", false, false]); // message, success, shown?
+  const router = useRouter();
+  useEffect(() => {
+    // Redirect to /dashboard when the component mounts
+    router.push("/dashboard");
+  }, [router]);
   return (
     <div>
       <SearchBar setShowBookForm={setBookFormShown} />
 
       {bookFormShown ? (
-        <AddNewBookForm setShowBookForm={setBookFormShown} setPopup={setBookFormPopup}></AddNewBookForm>
+        <AddNewBookForm
+          setShowBookForm={setBookFormShown}
+          setPopup={setBookFormPopup}
+        ></AddNewBookForm>
       ) : null}
 
       {bookFormPopup[2] ? (
-        <ConfirmationPopup message={bookFormPopup[0]} success={bookFormPopup[1]}/>
+        <ConfirmationPopup
+          message={bookFormPopup[0]}
+          success={bookFormPopup[1]}
+        />
       ) : null}
-
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-          <a
-            className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-            href="dashboard/backendTest"
-          >
-            <p className="text-center">Click to go to test backend page</p>
-          </a>
-          <a
-            className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-            href="login"
-          >
-            <p className="text-center">Click to go to login page</p>
-          </a>
-          {/* go to signup page */}
-          <a
-            className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-            href="signup"
-          >
-            <p className="text-center">Click to go to signup page</p>
-          </a>
-          <a
-            className="flex items-center justify-center rounded h-16 w-36 bg-gray-500"
-            href="manage"
-          >
-            <p className="text-center">Click to go to user management page</p>
-          </a>
-          {/* <AddNewBookForm /> */}
-        </div>
-      </div>
     </div>
   );
 }

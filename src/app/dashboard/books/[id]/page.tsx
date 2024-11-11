@@ -2,7 +2,7 @@
 import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-import bookIcon from "../../../assets/icons/bookmark_add.svg";
+import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import Tag from "@/components/tag";
 import BookDetail from "@/components/details";
 import { getOneBook } from "@/lib/api/books";
