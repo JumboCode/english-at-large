@@ -5,13 +5,15 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
+// import ConfirmationPopup from "../popups/ConfirmationPopup";
 
 interface addNewBookFormProps {
   setShowBookForm: (arg0: boolean) => void;
+  setPopup: (arg0: [message: string, success: boolean, shown: boolean]) => void;
 }
 
 const AddNewBookForm = (props: addNewBookFormProps) => {
-  const { setShowBookForm } = props;
+  const { setShowBookForm, setPopup } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -47,10 +49,14 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
       const createdBook = await createBook(newBook);
       if (createdBook) {
         setShowBookForm(false);
+        setPopup(["Book added!", true, true])
       } else {
-        throw new Error("Failed to create book!");
+        setShowBookForm(false);
+        setPopup(["Couldn't add book. Check your connection and retry.", false, true])
       }
     } catch (error) {
+      setShowBookForm(false);
+      setPopup(["Couldn't add book. Check your connection and retry.", false, true])
       console.error(error);
     }
   };
