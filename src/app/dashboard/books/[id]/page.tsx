@@ -1,14 +1,16 @@
 "use client";
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
-import Tag from "@/components/tag";
-import BookDetail from "@/components/details";
+import Tag from "@/components/Tag";
+import BookDetail from "@/components/Details";
+import BorrowPopup from "@/components/common/BorrowPopup";
+
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
 
-type Params = Promise<{ id: string }>;
+type Params = { id: string };
 
 /**
  *
@@ -18,8 +20,10 @@ type Params = Promise<{ id: string }>;
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
  */
 const BookDetails = (props: { params: Params }) => {
-  const params = use(props.params);
+  const { params } = props;
   const [book, setBook] = useState<Book | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isBorrowOpen, setIsBorrowOpen] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -32,6 +36,19 @@ const BookDetails = (props: { params: Params }) => {
   const handleClick = () => {
     alert("Button clicked!");
   };
+  
+  const toggleFilterPopup = () => {
+    setIsFilterOpen(!isFilterOpen);
+//     if (isFilterOpen && isBorrowOpen) {
+//         setIsBorrowOpen(false);
+//     }
+    console.log("toggle is true!!!")
+  };
+
+//   const borrowFilterPopup = () => {
+//         setIsBorrowOpen(true);
+//         console.log("is borrowed is true!!!")
+//       };
 
   if (book === null) return null;
 
@@ -48,18 +65,22 @@ const BookDetails = (props: { params: Params }) => {
                 <div className="mb-32 font-[family-name:var(--font-rubik)]">
                   by {book.author}
                 </div>
-                <CommonButton
-                  label="Borrow"
-                  onClick={handleClick}
-                  altStyle="w-40 h-10 bg-[#202D74]"
-                  altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                  leftIcon={
-                    <Image
-                      src={bookIcon}
-                      alt="Book Icon"
-                      className="w-4 h-4 mr-3"
-                    />
-                  }
+                <BorrowPopup
+                //   label="Borrow"
+                  isOpen={isFilterOpen}
+                //   isBorrowed={isBorrowOpen}
+                  toggle={toggleFilterPopup}
+                  book = {book}
+                //   confirmBorrow={borrowFilterPopup}
+                //   altStyle="w-40 h-10 bg-[#202D74]"
+                //   altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                //   leftIcon={
+                //     <Image
+                //       src={bookIcon}
+                //       alt="Book Icon"
+                //       className="w-4 h-4 mr-3"
+                //     />
+                //   }
                 />
               </div>
             </div>
@@ -112,6 +133,7 @@ const BookDetails = (props: { params: Params }) => {
                 publisher={book.publisher}
                 releaseDate={book.releaseDate}
                 copies={10}
+                altStyle="flex row-span-2 my-5"
               />
             </div>
           </div>
