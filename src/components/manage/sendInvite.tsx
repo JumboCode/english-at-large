@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { UserRole } from "@prisma/client";
 import { inviteUser } from "@/lib/api/users";
 import CommonButton from "../common/button/CommonButton";
-import InviteToast from "./InviteToast";
 
 interface SendInviteProps {
   isOpen: boolean;
@@ -15,7 +14,6 @@ const SendInvite = (props: SendInviteProps) => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole>(UserRole.Tutor);
-  const [statusText, setStatusText] = useState("");
   const [status, setStatus] = useState<boolean | null>(null);
   const handleUserKind = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRole(event.target.value as UserRole);
@@ -24,11 +22,9 @@ const SendInvite = (props: SendInviteProps) => {
   const sendEmail = async () => {
     try {
       await inviteUser(name, email, role);
-      setStatusText("Invite sent!");
       setStatus(true);
     } catch (error) {
       console.error("Error creating invite: ", error);
-      setStatusText("Invite failed, please try again!");
       setStatus(false);
     }
   };
@@ -102,13 +98,13 @@ const SendInvite = (props: SendInviteProps) => {
                 altStyle="bg-dark-blue w-1/2"
               />
             </div>
-            <p>{statusText}</p>
           </div>
         </div>
       ) : (
         <div />
       )}
-      <InviteToast success={status} />
+      {/* This is a placeholder for the invite toast */}
+      <p>{String(status)}</p>
     </div>
   );
 };

@@ -20,7 +20,7 @@ export default function Manage() {
     getUsers();
   }, []);
   return (
-    <div>
+    <div className="bg-white">
       <h1 className="bg-white text-black px-16 font-bold text-4xl font-geist-sans">
         Users
       </h1>
@@ -47,7 +47,7 @@ export default function Manage() {
         placeholderText="Search by name or email"
       />
       <div className="px-16">
-        <table className="table-auto bg-white w-screen font-family-name:var(--font-geist-sans)]">
+        <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
           <thead>
             <tr className="bg-gray-100">
               <th className="w-1/2 text-left text-text-default-secondary">
@@ -62,26 +62,29 @@ export default function Manage() {
               <th className="w-1/6" />
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-solid">
             {users.map((user, index) => (
-              <tr key={index} className="bg-white h-16 divide-y divide-solid">
+              <tr key={index} className="bg-white h-16">
                 <td className="flex flex-col">
                   <p className="text-black font-semibold">{user.name}</p>
-                  <p className="text-text-default-secondary underline">
+                  <a
+                    href={"mailto:" + user.email}
+                    className="text-text-default-secondary underline max-w-max"
+                  >
                     {user.email}
-                  </p>
+                  </a>
                 </td>
                 <td className="text-black">{user.role}</td>
                 <td className="text-black">{"6 November 2024"}</td>
                 <td>
-                  {
+                  <div className="flex justify-end items-center">
                     <CommonButton
                       label="Remove User"
                       onClick={() => {}}
                       altTextStyle="text-dark-blue"
                       altStyle="bg-white"
                     />
-                  }
+                  </div>
                 </td>
               </tr>
             ))}
