@@ -1,8 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
-import { useSignIn, useClerk } from "@clerk/clerk-react";
+import { useSignIn } from "@clerk/clerk-react";
 import { useRouter } from "next/navigation";
+
+
 
 
 const LoginForm = () => {
@@ -11,9 +13,6 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signOut } = useClerk(); // Add this for signing out
-
-
 
   const router = useRouter();
 
@@ -27,16 +26,6 @@ const LoginForm = () => {
     setChecked((prev) => !prev);
   };
 
-  // Add sign out function
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      console.log("Successfully signed out");
-      //router.push("/login"); // Redirect back to login page
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
 
   const handleLogin = async () => {
     if (isLoading) {
@@ -57,7 +46,7 @@ const LoginForm = () => {
       });
 
       if (result.status === "complete") { //if(signIn.createdSessionId))
-        await setActive({ session: result.createdSessionId });
+        //await setActive({ session: result.createdSessionId }); //was causing errors
         // Redirect to dashboard or home page after successful sign in
         router.push("/dashboard");
         //window.location.href = "/dashboard";
@@ -122,12 +111,7 @@ const LoginForm = () => {
           altTextStyle="text-white"
           altStyle="bg-dark-blue mt-10 w-full"
       />
-        <CommonButton
-        onClick={handleSignOut}
-        label="Sign Out (Test)"
-        altTextStyle="text-white"
-        altStyle="bg-red-500 mt-4 w-full"
-      />
+       
     </>
   );
 };
