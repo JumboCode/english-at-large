@@ -6,6 +6,7 @@ import CommonButton from "@/components/common/button/CommonButton";
 import DropArrowIcon from "@/assets/icons/DropArrow";
 import { User } from "@prisma/client";
 import { getAllUsers } from "@/lib/api/users";
+import Dropdown from "@/components/common/forms/Dropdown";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -26,13 +27,14 @@ export default function Manage() {
       </h1>
       <SearchBar
         button={
-          <CommonButton
-            label="All"
-            onClick={() => {}}
-            rightIcon={<DropArrowIcon />}
-            altTextStyle="text-dark-blue"
-            altStyle="bg-white"
-          />
+          <Dropdown />
+          // <CommonButton
+          //   label="All"
+          //   onClick={() => {}}
+          //   rightIcon={<DropArrowIcon />}
+          //   altTextStyle="text-dark-blue"
+          //   altStyle="bg-white"
+          // />
         }
         button2={
           <CommonButton

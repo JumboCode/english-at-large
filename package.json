@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.5",
+    "@headlessui/react": "^2.2.0",
     "@prisma/client": "^5.21.1",
     "@vercel/postgres": "^0.9.0",
     "axios": "^1.7.7",
