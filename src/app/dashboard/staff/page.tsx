@@ -3,10 +3,9 @@ import React, { useEffect, useState } from "react";
 import SendInvite from "../../../components/manage/sendInvite";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import DropArrowIcon from "@/assets/icons/DropArrow";
 import { User } from "@prisma/client";
 import { getAllUsers } from "@/lib/api/users";
-import Dropdown from "@/components/common/forms/Dropdown";
+import CommonDropdown from "@/components/common/forms/Dropdown";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -15,7 +14,7 @@ export default function Manage() {
   useEffect(() => {
     const getUsers = async () => {
       const allUsers = await getAllUsers();
-      setUsers(allUsers);
+      setUsers(allUsers ?? []);
     };
 
     getUsers();
@@ -27,14 +26,7 @@ export default function Manage() {
       </h1>
       <SearchBar
         button={
-          <Dropdown />
-          // <CommonButton
-          //   label="All"
-          //   onClick={() => {}}
-          //   rightIcon={<DropArrowIcon />}
-          //   altTextStyle="text-dark-blue"
-          //   altStyle="bg-white"
-          // />
+          <CommonDropdown items={["All", "Tutors", "Admins", "Pending"]} />
         }
         button2={
           <CommonButton

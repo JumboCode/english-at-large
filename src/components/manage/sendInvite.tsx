@@ -3,7 +3,10 @@ import React, { useState } from "react";
 import { UserRole } from "@prisma/client";
 import { inviteUser } from "@/lib/api/users";
 import CommonButton from "../common/button/CommonButton";
-
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import DropArrowIcon from "@/assets/icons/DropArrow";
+import SmallCheckIcon from "@/assets/icons/SmallCheck";
+import XIcon from "@/assets/icons/X";
 interface SendInviteProps {
   isOpen: boolean;
   exit: () => void;
@@ -13,16 +16,17 @@ const SendInvite = (props: SendInviteProps) => {
   const { isOpen, exit } = props;
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<UserRole>(UserRole.Tutor);
+  const [role, setRole] = useState<UserRole | null>(null);
   const [status, setStatus] = useState<boolean | null>(null);
-  const handleUserKind = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRole(event.target.value as UserRole);
-  };
 
   const sendEmail = async () => {
     try {
-      await inviteUser(name, email, role);
-      setStatus(true);
+      if (name && email && role) {
+        await inviteUser(name, email, role);
+        setStatus(true);
+      } else {
+        throw "Not all fields completed";
+      }
     } catch (error) {
       console.error("Error creating invite: ", error);
       setStatus(false);
@@ -37,7 +41,7 @@ const SendInvite = (props: SendInviteProps) => {
             <div className="flex flex-row justify-between">
               <p className="text-black text-semibold text-2xl">Invite user</p>
               <button className="text-black" onClick={exit}>
-                X
+                <XIcon />
               </button>
             </div>
             <hr />
@@ -66,7 +70,7 @@ const SendInvite = (props: SendInviteProps) => {
 
             <div>
               <p className="text-black text-lg font-medium">Invite as </p>
-              <input
+              {/* <input
                 type="radio"
                 id="tutor"
                 name="usertype"
@@ -82,7 +86,56 @@ const SendInvite = (props: SendInviteProps) => {
                 value={UserRole.Admin}
                 onChange={handleUserKind}
               />
-              <label htmlFor="admin">Admin</label>
+              <label htmlFor="admin">Admin</label> */}
+
+              <Menu as="div" className="relative inline-block ">
+                <div>
+                  <MenuButton className="inline-flex w-96 justify-between gap-2 rounded-lg bg-white p-3  border border-medium-grey-border">
+                    <p className="text-sm text-medium text-black">
+                      {role ?? "Select role"}
+                    </p>
+                    <DropArrowIcon />
+                  </MenuButton>
+                </div>
+
+                <MenuItems
+                  transition
+                  className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                >
+                  <div>
+                    <MenuItem>
+                      <button
+                        onClick={() => setRole(UserRole.Admin)}
+                        className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
+                      >
+                        <div className="flex justify-between">
+                          <p className="text-sm text-black">Admin</p>
+                          {role == UserRole.Admin ? (
+                            <SmallCheckIcon />
+                          ) : (
+                            <div />
+                          )}
+                        </div>
+                      </button>
+                    </MenuItem>
+                    <MenuItem>
+                      <button
+                        onClick={() => setRole(UserRole.Tutor)}
+                        className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
+                      >
+                        <div className="flex justify-between">
+                          <p className="text-sm text-black">Tutor</p>
+                          {role == UserRole.Tutor ? (
+                            <SmallCheckIcon />
+                          ) : (
+                            <div />
+                          )}
+                        </div>
+                      </button>
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </Menu>
             </div>
             <hr />
 
