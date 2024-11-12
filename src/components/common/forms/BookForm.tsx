@@ -3,13 +3,14 @@ import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
 import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
-import { createBook } from "@/lib/api/books";
+import { createBook, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
 import { ConfirmationPopupState } from "../message/ConfirmationPopup";
-// import ConfirmationPopup from "../popups/ConfirmationPopup";
 
-interface addNewBookFormProps {
+interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
+  existingBook?: Book | null;
+  onSave?: (arg0: Book | null) => void;
   setPopup: (arg0: ConfirmationPopupState) => void;
 }
 
@@ -20,14 +21,17 @@ export enum BookFormConfirmationMessages {
   NONE = "",
 }
 
-const AddNewBookForm = (props: addNewBookFormProps) => {
-  const { setShowBookForm, setPopup } = props;
+const BookForm = (props: BookFormProps) => {
+  const { setShowBookForm, existingBook, onSave, setPopup } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
   const types = Object.values(BookType);
 
   const [newBook, setNewBook] = useState<Omit<Book, "id">>(newEmptyBook);
+  const [editBook, setEditBook] = useState<Book | null | undefined>(
+    existingBook
+  );
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -37,46 +41,81 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setNewBook((prevBook) => ({
-      ...prevBook,
-      [name]: value,
-    }));
+    if (existingBook) {
+      setEditBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: value,
+          } as Book)
+      );
+    } else if (newBook) {
+      setNewBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: value,
+          } as Omit<Book, "id">)
+      );
+    }
   };
 
   // handles the setState for custom form fields
   const bookSkillsChangeHandler = (e: CustomChangeEvent<BookSkills[]>) => {
     const { name, value } = e.target;
-    setNewBook((prevBook) => ({
-      ...prevBook,
-      [name]: value,
-    }));
+    if (existingBook) {
+      setEditBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: value,
+          } as Book)
+      );
+    } else {
+      setNewBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: value,
+          } as Omit<Book, "id">)
+      );
+    }
   };
 
-  const addNewBook = async () => {
+  const handleSave = async () => {
     try {
-      const createdBook = await createBook(newBook);
-      if (createdBook) {
-        setShowBookForm(false);
-        setPopup({
-          message: BookFormConfirmationMessages.SUCCESS,
-          success: true,
-          shown: true,
-        });
-      } else {
-        setShowBookForm(false);
-        setPopup({
-          message: BookFormConfirmationMessages.FAILURE,
-          success: false,
-          shown: true,
-        });
+      if (editBook) {
+        const editedBook = await updateBook(editBook);
+        if (editedBook) {
+          if (onSave) {
+            onSave(editedBook);
+          }
+          setShowBookForm(false);
+        } else {
+          throw new Error("Failed to update book!");
+        }
+      } else if (newBook) {
+        const createdBook = await createBook(newBook);
+        if (createdBook) {
+          if (onSave) {
+            onSave(createdBook);
+          }
+          setShowBookForm(false);
+          setPopup({
+            message: BookFormConfirmationMessages.SUCCESS,
+            success: true,
+            shown: true,
+          });
+        } else {
+          setShowBookForm(false)
+          setPopup({
+            message: BookFormConfirmationMessages.FAILURE,
+            success: false,
+            shown: true,
+          });
+        }
       }
     } catch (error) {
-      setShowBookForm(false);
-      setPopup({
-        message: BookFormConfirmationMessages.FAILURE,
-        success: false,
-        shown: true,
-      });
       console.error(error);
     }
   };
@@ -90,7 +129,9 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
         <div>
           <div className="flex justify-between p-5">
             <div>
-              <h1 className="font-bold text-3xl inline">Add New Book</h1>
+              <h1 className="font-bold text-3xl inline">
+                {existingBook ? "Edit Book" : "Add New Book"}
+              </h1>
             </div>
             <div className="flex space-x-5">
               <CommonButton
@@ -100,11 +141,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
                 }}
               />
               <CommonButton
-                label="Add Book"
-                onClick={(e) => {
-                  e.preventDefault();
-                  addNewBook();
-                }}
+                label={existingBook ? "Save" : "Add Book"}
+                onClick={handleSave}
                 altTextStyle="text-white"
                 altStyle="bg-dark-blue"
               />
@@ -122,6 +160,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             name="title"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
+            defaultValue={editBook ? editBook.title : ""}
+            required
           />
         </div>
         <div>
@@ -134,6 +174,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             name="author"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
+            defaultValue={editBook ? editBook.author : ""}
+            required
           />
         </div>
         <div>
@@ -148,6 +190,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             name="description"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
             onChange={bookChangeHandler}
+            defaultValue={editBook ? editBook.description : ""}
+            required
           ></textarea>
         </div>
         <div>
@@ -160,6 +204,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
             name="isbn"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
+            defaultValue={editBook ? editBook.isbn : ""}
+            required
           />
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
@@ -173,6 +219,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
               name="publisher"
               className="border-[1px] border-black border-solid rounded-lg h-8"
               onChange={bookChangeHandler}
+              defaultValue={editBook ? editBook.publisher : ""}
+              required
             />
           </div>
           <div className="flex flex-col w-[50%]">
@@ -185,6 +233,9 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
               name="releaseDate"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
               onChange={bookChangeHandler}
+              defaultValue={
+                editBook && editBook.releaseDate ? editBook.releaseDate : ""
+              }
             />
           </div>
         </div>
@@ -198,6 +249,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
               name="level"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
               onChange={bookChangeHandler}
+              defaultValue={editBook ? editBook.level : ""}
+              required
             >
               <option value="">Select level</option>
               {levels.map((bookLevel, index) => {
@@ -218,6 +271,8 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
               name="bookType"
               className="border-[1px] border-black border-solid rounded-lg block h-8"
               onChange={bookChangeHandler}
+              defaultValue={editBook ? editBook.bookType : ""}
+              required
             >
               <option value="">Select book type</option>
               {types.map((bookType, index) => {
@@ -239,7 +294,9 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
                 <MultiSelectTagButton<BookSkills>
                   key={index}
                   label={bookSkill}
-                  value={newBook.skills}
+                  value={
+                    editBook ? editBook.skills : newBook ? newBook.skills : []
+                  }
                   onSelect={bookSkillsChangeHandler}
                   name={"skills"}
                 />
@@ -252,4 +309,4 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
   );
 };
 
-export default AddNewBookForm;
+export default BookForm;

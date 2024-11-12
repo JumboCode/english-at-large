@@ -6,7 +6,7 @@ import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import AddNewBookForm from "@/components/common/forms/AddNewBookForm";
+import BookForm from "@/components/common/forms/BookForm";
 import ConfirmationPopup, {
   ConfirmationPopupState,
   EmptyConfirmationState,
@@ -87,10 +87,7 @@ const BooksPage = () => {
       />
 
       {bookFormShown ? (
-        <AddNewBookForm
-          setShowBookForm={setBookFormShown}
-          setPopup={setBookFormPopup}
-        />
+        <BookForm setShowBookForm={setBookFormShown} existingBook={null} setPopup={setBookFormPopup}/>
       ) : null}
 
       {bookFormPopup.shown ? (
