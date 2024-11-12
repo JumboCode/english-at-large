@@ -1,8 +1,9 @@
 "use client";
-import React from "react";
+import React, {useState} from "react";
 import { Book } from "@prisma/client";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import Image from "next/image";
+import axios from 'axios';
 
 interface BookProps {
   book: Book;
@@ -17,15 +18,66 @@ interface BookProps {
  */
 const BookInfo = (props: BookProps) => {
   const { book } = props;
+  const [imageSrc, setImageSrc] = useState<string|undefined>(undefined);
+
+  const getImage = async() => {  
+    try {
+      const url = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
+      const response = await axios.get(`https://openlibrary.org/isbn/${book.isbn}.json`); 
+      setImageSrc(url);
+    } catch (error) {
+      setImageSrc(imageToAdd.src); 
+    }
+  }
+
+  getImage();
 
   return (
     <div>
       <a href={`books/${book.id}`} className="flex items-start space-x-4">
-        <Image
-          src={imageToAdd}
+        {/* <Image
+          src={}
+          width={200}
+          height={300}
           style={{ width: "200px", height: "auto" }}
           alt="Image"
-        />
+        />  */}
+        {/* <img 
+        src={`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`}
+        /> */}
+        {/* <div className="w-200 h-200"> */}
+      
+        {/* { ? (
+            <Image
+            src={imageToAdd}
+            style={{ width: "200px", height: "auto" }}
+            alt="Image"
+          /> 
+          ) : ( */}
+          <div className="flex justify-end font-[family-name:var(--font-rubik)]">
+            <img
+              src={imageSrc}
+              className="h-[200px]"
+              // height={200}
+              // width={150}
+            />
+          </div>
+          {/* </div>
+            <div className="flex justify-end my-4 mr-40 font-[family-name:var(--font-rubik)]">
+              {/* TODO: This will be implemented once the books have images! */}
+              {/* <Image
+                src={TODO:}
+                alt="Book Cover"
+                width={150}
+                height={190}
+                style={imageStyle}
+              /> */}
+              {/* <div className="bg-gray-500 w-[150px] h-[200px]"> </div>
+            </div> */}
+          {/* )} */}
+        {/* </div> */}
+
+        
 
         <div>
           <div className="text-left mt-4 mb-4 ml-4 mr-4">

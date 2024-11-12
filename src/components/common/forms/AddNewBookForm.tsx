@@ -64,7 +64,7 @@ const AddNewBookForm = (props: addNewBookFormProps) => {
       }));
     }
     if(response.data.publishers){
-      const publisher = response.data.publishers;
+      const publisher = response.data.publishers[0];
       setNewBook((prevBook) => ({
         ...prevBook,
         publisher: publisher,
