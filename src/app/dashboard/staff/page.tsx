@@ -68,7 +68,10 @@ export default function Manage() {
                     {user.email}
                   </a>
                 </td>
-                <td className="text-black">{user.role}</td>
+                <td className="text-black">
+                  {user.role}
+                  {user.pending ? "Pending" : null}
+                </td>
                 <td className="text-black">{"6 November 2024"}</td>
                 <td>
                   <div className="flex justify-end items-center">

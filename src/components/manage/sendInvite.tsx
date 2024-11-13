@@ -7,6 +7,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
 import SmallCheckIcon from "@/assets/icons/SmallCheck";
 import XIcon from "@/assets/icons/X";
+import { emptyUser } from "@/lib/util/types";
+import { createUser } from "@/lib/api/users";
 interface SendInviteProps {
   isOpen: boolean;
   exit: () => void;
@@ -23,6 +25,16 @@ const SendInvite = (props: SendInviteProps) => {
     try {
       if (name && email && role) {
         await inviteUser(name, email, role);
+        const newUser = {
+          ...emptyUser,
+          name: name,
+          role: role,
+          email: email,
+          pending: true,
+        };
+
+        await createUser(newUser);
+
         setStatus(true);
       } else {
         throw "Not all fields completed";
@@ -32,6 +44,16 @@ const SendInvite = (props: SendInviteProps) => {
       setStatus(false);
     }
   };
+
+  // if (attempt.createdUserId) {
+  //   const newUser = {
+  //     ...emptyUser,
+  //     name: `${formData.firstName} ${formData.lastName}`,
+  //     role: (metadata.role as UserRole) || "Tutor",
+  //     email: formData.email,
+  //     clerkId: attempt.createdUserId,
+  //   };
+  //   await createUser(newUser);
 
   return (
     <div>

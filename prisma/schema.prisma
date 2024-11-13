@@ -21,6 +21,7 @@ model User {
   role      UserRole
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  pending   Boolean
 
   // Relation to Request
   requests Request[] // One user can have many requests
