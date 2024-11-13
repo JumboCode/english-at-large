@@ -24,7 +24,6 @@ const SendInvite = (props: SendInviteProps) => {
   const sendEmail = async () => {
     try {
       if (name && email && role) {
-        await inviteUser(name, email, role);
         const newUser = {
           ...emptyUser,
           name: name,
@@ -33,7 +32,9 @@ const SendInvite = (props: SendInviteProps) => {
           pending: true,
         };
 
-        await createUser(newUser);
+        const user = await createUser(newUser);
+
+        await inviteUser(name, email, role, user?.id ?? "");
 
         setStatus(true);
       } else {

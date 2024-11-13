@@ -9,9 +9,10 @@ export async function POST(req: Request) {
     const name = data["name"];
     const email = data["email"];
     const role = data["role"];
+    const id = data["id"];
 
     // controller defined in controller.ts
-    await postInviteController(name, email, role);
+    await postInviteController(name, email, role, id);
     return NextResponse.json({}, { status: 201 });
   } catch (error) {
     return NextResponse.json(

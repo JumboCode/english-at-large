@@ -4,10 +4,11 @@ import clerkClient from "@/clerk";
 export const postInviteController = async (
   name: string,
   email: string,
-  role: string
+  role: string,
+  id: string
 ) => {
   try {
-    if (!name || !email || !role) {
+    if (!name || !email || !role || !id) {
       throw new Error("Missing required user properties");
     }
 
@@ -17,6 +18,7 @@ export const postInviteController = async (
       publicMetadata: {
         name: name,
         role: role,
+        id: id,
       },
       ignoreExisting: true,
       // Link that user will click on

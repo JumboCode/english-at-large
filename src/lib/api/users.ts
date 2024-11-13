@@ -72,12 +72,22 @@ export const createUser = async (
   }
 };
 
-export const inviteUser = async (name: string, email: string, role: string) => {
+export const inviteUser = async (
+  name: string,
+  email: string,
+  role: string,
+  id: string
+) => {
   try {
-    if (!name || !email || !role) {
+    if (!name || !email || !role || !id) {
       throw new Error("Missing user fields");
     }
-    await axios.post("/api/invite", { name: name, email: email, role: role });
+    await axios.post("/api/invite", {
+      name: name,
+      email: email,
+      role: role,
+      id: id,
+    });
     return;
   } catch (error) {
     console.error("Failed to invite user: ", error);
