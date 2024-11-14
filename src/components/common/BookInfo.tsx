@@ -1,5 +1,5 @@
 "use client";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { Book } from "@prisma/client";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import Image from "next/image";
@@ -18,23 +18,37 @@ interface BookProps {
  */
 const BookInfo = (props: BookProps) => {
   const { book } = props;
-  const [imageSrc, setImageSrc] = useState<string|undefined>(undefined);
+  const [imageSrc, setImageSrc] = useState<string>(imageToAdd.src);
 
+useEffect(() => {
   const getImage = async() => {  
     try {
       const url = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
       const response = await axios.get(`https://openlibrary.org/isbn/${book.isbn}.json`); 
-      setImageSrc(url);
+
+      if (response.status === 200) {
+        setImageSrc(url);
+      }
     } catch (error) {
       setImageSrc(imageToAdd.src); 
     }
   }
 
   getImage();
+}, [book.isbn]);
 
   return (
     <div>
       <a href={`books/${book.id}`} className="flex items-start space-x-4">
+      <div className="flex justify-end font-[family-name:var(--font-rubik)]">
+          <Image
+            src={imageSrc}
+            alt="Book Cover"
+            width={200}
+            height={300}
+            className="object-cover" // Ensures the image maintains its aspect ratio
+          />
+        </div>
         {/* <Image
           src={}
           width={200}
@@ -54,14 +68,14 @@ const BookInfo = (props: BookProps) => {
             alt="Image"
           /> 
           ) : ( */}
-          <div className="flex justify-end font-[family-name:var(--font-rubik)]">
+          {/* <div className="flex justify-end font-[family-name:var(--font-rubik)]">
             <img
               src={imageSrc}
               className="h-[200px]"
               // height={200}
               // width={150}
             />
-          </div>
+          </div> */}
           {/* </div>
             <div className="flex justify-end my-4 mr-40 font-[family-name:var(--font-rubik)]">
               {/* TODO: This will be implemented once the books have images! */}
