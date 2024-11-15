@@ -4,7 +4,7 @@ import Image from "next/image";
 import eal_logo from "@/assets/icons/eal_logo.svg";
 import arrow from "@/assets/icons/keyboard_arrow_up.svg";
 import profilePic from "@/assets/icons/reindeer.png";
-import { useClerk } from "@clerk/clerk-react";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 const imageStyle = {
@@ -20,13 +20,16 @@ const profileStyle = {
 
 const NavBar = () => {
   const { signOut } = useClerk();
+  const { user } = useUser();
   const router = useRouter();
 
   const handleSignOut = async () => {
     try {
       await signOut();
       console.log("Successfully signed out");
-      router.push("/login");
+      //note: mmiddlware will not redirect automatically unless user reloads page
+      //so I might as well just push to login
+      router.push("/login"); 
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -109,7 +112,7 @@ const NavBar = () => {
         </a>
         <div className="relative group w-28">
           <a className="text-md font-[family-name:var(--font-rubik)] font-semibold">
-            Clarence Yeh
+            {user?.firstName} {user?.lastName}
           </a>
           <div className="absolute hidden bg-grey-200 group-hover:block min-w-[200px]">
             <div className="p-3 mt-1 bg-white rounded-md w-20">
