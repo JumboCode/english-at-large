@@ -22,7 +22,6 @@ type Params = { id: string };
 const BookDetails = (props: { params: Params }) => {
   const { params } = props;
   const [book, setBook] = useState<Book | null>(null);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
 
   useEffect(() => {
@@ -33,22 +32,9 @@ const BookDetails = (props: { params: Params }) => {
     fetchBook();
   }, [params.id]);
 
-  const handleClick = () => {
-    alert("Button clicked!");
+  const toggleBorrow = () => {
+    setIsBorrowOpen(!isBorrowOpen);
   };
-  
-  const toggleFilterPopup = () => {
-    setIsFilterOpen(!isFilterOpen);
-//     if (isFilterOpen && isBorrowOpen) {
-//         setIsBorrowOpen(false);
-//     }
-    console.log("toggle is true!!!")
-  };
-
-//   const borrowFilterPopup = () => {
-//         setIsBorrowOpen(true);
-//         console.log("is borrowed is true!!!")
-//       };
 
   if (book === null) return null;
 
@@ -65,23 +51,25 @@ const BookDetails = (props: { params: Params }) => {
                 <div className="mb-32 font-[family-name:var(--font-rubik)]">
                   by {book.author}
                 </div>
-                <BorrowPopup
-                //   label="Borrow"
-                  isOpen={isFilterOpen}
-                //   isBorrowed={isBorrowOpen}
-                  toggle={toggleFilterPopup}
-                  book = {book}
-                //   confirmBorrow={borrowFilterPopup}
-                //   altStyle="w-40 h-10 bg-[#202D74]"
-                //   altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                //   leftIcon={
-                //     <Image
-                //       src={bookIcon}
-                //       alt="Book Icon"
-                //       className="w-4 h-4 mr-3"
-                //     />
-                //   }
+                <CommonButton
+                  label="Borrow"
+                  altStyle="w-40 h-10 bg-[#202D74]"
+                  onClick={toggleBorrow}
+                  altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                  leftIcon={
+                    <Image
+                      src={bookIcon}
+                      alt="Book Icon"
+                      className="w-4 h-4 mr-3"
+                    />
+                  }
                 />
+                {isBorrowOpen ? (
+                  <BorrowPopup
+                    toggle={toggleBorrow}
+                    book={book}
+                  />
+                ) : null}
               </div>
             </div>
 
