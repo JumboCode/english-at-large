@@ -62,14 +62,18 @@ const SendInvite = (props: SendInviteProps) => {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white py-6 px-12 rounded-lg shadow-lg min-w-max max-w-large flex flex-col gap-6">
             <div className="flex flex-row justify-between">
-              <p className="text-black text-semibold text-2xl">Invite user</p>
+              <p className="text-black font-semibold text-2xl font-[family-name:var(--font-rubik)]">
+                Invite user
+              </p>
               <button className="text-black" onClick={exit}>
                 <XIcon />
               </button>
             </div>
             <hr />
             <div>
-              <p className="text-black text-lg font-medium">Full Name </p>
+              <p className="text-black text-lg font-medium font-bold font-[family-name:var(--font-rubik)]">
+                Full Name{" "}
+              </p>
               <input
                 type="text"
                 name="fullname"
@@ -80,7 +84,9 @@ const SendInvite = (props: SendInviteProps) => {
               />
             </div>
             <div>
-              <p className="text-black text-lg font-medium">Email </p>
+              <p className="text-black text-lg font-medium font-[family-name:var(--font-rubik)]">
+                Email{" "}
+              </p>
               <input
                 type="text"
                 name="email"
@@ -92,24 +98,9 @@ const SendInvite = (props: SendInviteProps) => {
             </div>
 
             <div>
-              <p className="text-black text-lg font-medium">Invite as </p>
-              {/* <input
-                type="radio"
-                id="tutor"
-                name="usertype"
-                value={UserRole.Tutor}
-                onChange={handleUserKind}
-              />
-              <label htmlFor="tutor">Tutor</label>
-              <br />
-              <input
-                type="radio"
-                id="admin"
-                name="usertype"
-                value={UserRole.Admin}
-                onChange={handleUserKind}
-              />
-              <label htmlFor="admin">Admin</label> */}
+              <p className="text-black text-lg font-medium font-[family-name:var(--font-rubik)]">
+                Invite as{" "}
+              </p>
 
               <Menu as="div" className="relative inline-block ">
                 <div>
@@ -162,7 +153,7 @@ const SendInvite = (props: SendInviteProps) => {
             </div>
             <hr />
 
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-4">
               <CommonButton label="Cancel" onClick={exit} altStyle="w-1/2" />
               <CommonButton
                 label="Send Invite"

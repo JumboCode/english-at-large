@@ -6,8 +6,8 @@ import CommonButton from "@/components/common/button/CommonButton";
 import { User } from "@prisma/client";
 import { getAllUsers } from "@/lib/api/users";
 import CommonDropdown from "@/components/common/forms/Dropdown";
-import PendingChip from "@/assets/icons/pending_chip"; 
-import { deleteUser } from "@/lib/api/users"; 
+import PendingChip from "@/assets/icons/pending_chip";
+import { deleteUser } from "@/lib/api/users";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -19,24 +19,21 @@ export default function Manage() {
       setUsers(allUsers ?? []);
     };
 
-
     getUsers();
   }, []);
 
   const getUserDate = (user: User) => {
-    const date = new Date(user.createdAt)
-    const day = date.getDate()
-    const month = date.toLocaleString('default', { month: 'short' });
-    const year = date.getFullYear()
+    const date = new Date(user.createdAt);
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" });
+    const year = date.getFullYear();
 
     return day + " " + month + " " + year;
-  }
-
-
+  };
 
   return (
     <div className="bg-white">
-      <h1 className="bg-white text-black px-16 pt-10 font-bold text-3xl font-rubik">
+      <h1 className="bg-white text-black px-16 pt-12 font-bold text-3xl font-[family-name:var(--font-rubik)]">
         Users
       </h1>
       <SearchBar
@@ -65,7 +62,7 @@ export default function Manage() {
               <th className="w-[4.166666%] text-left text-text-default-secondary">
                 Role
               </th>
-              <th className="w-[12.499999%] text-left" > </ th>
+              <th className="w-[12.499999%] text-left"> </th>
               <th className="w-1/6 text-left text-text-default-secondary">
                 Date Invited
               </th>
@@ -87,12 +84,9 @@ export default function Manage() {
                 <td className=" text-black">
                   <div className="flex justify-between min-w-max max-w-[50%]">
                     {user.role}
-                    
                   </div>
                 </td>
-                <td>
-                  {user.pending ? <PendingChip/> : null}
-                </td>
+                <td>{user.pending ? <PendingChip /> : null}</td>
 
                 <td className="text-black">{getUserDate(user)}</td>
                 <td>
@@ -100,8 +94,8 @@ export default function Manage() {
                     <CommonButton
                       label="Remove User"
                       onClick={() => {
-                        console.log(user.id)
-                        deleteUser(user.id)
+                        console.log(user.id);
+                        deleteUser(user.id);
                       }}
                       altTextStyle="text-dark-blue"
                       altStyle="bg-white"

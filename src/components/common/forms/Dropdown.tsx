@@ -15,7 +15,9 @@ const CommonDropdown = (props: DropdownProps) => {
     <Menu as="div" className="relative inline-block text-left">
       <div>
         <MenuButton className="inline-flex min-w-28 w-full justify-center gap-2 rounded-lg bg-white p-3  text-gray-900 hover:bg-gray-50 border border-dark-blue">
-          <p className="text-sm text-medium text-dark-blue">{filterType}</p>
+          <p className="text-sm font-medium text-dark-blue font-[family-name:var(--font-rubik)]">
+            {filterType}
+          </p>
           <DropArrowIcon />
         </MenuButton>
       </div>

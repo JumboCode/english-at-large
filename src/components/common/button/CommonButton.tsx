@@ -38,7 +38,9 @@ const CommonButton = (props: ButtonProps) => {
       disabled={disabled}
     >
       {leftIcon ? leftIcon : null}
-      <p className={`text-dark-blue text-sm text-medium ${altTextStyle}`}>
+      <p
+        className={`text-dark-blue text-sm font-medium font-[family-name:var(--font-rubik)] ${altTextStyle}`}
+      >
         {label}
       </p>
 

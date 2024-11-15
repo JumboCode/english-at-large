@@ -15,7 +15,7 @@ export const getAllUsersController = async (): Promise<User[]> => {
 
 export const getOneUserController = async (id: string): Promise<User> => {
   try {
-    console.log("in controller: ", id)
+    console.log("in controller: ", id);
 
     const user = await prisma.user.findUnique({
       where: { id: id },
@@ -72,6 +72,7 @@ export const putUserController = async (userData: User): Promise<User> => {
 };
 
 export const deleteUserController = async (id: string): Promise<User> => {
+  console.log("HIIIII");
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
