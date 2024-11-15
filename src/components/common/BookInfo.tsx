@@ -1,9 +1,9 @@
 "use client";
 import React, {useState, useEffect} from "react";
 import { Book } from "@prisma/client";
-import imageToAdd from "../../assets/images/harry_potter.jpg";
+import { getBookCover } from "@/lib/api/books";
 import Image from "next/image";
-import axios from 'axios';
+import imageToAdd from "../../assets/images/harry_potter.jpg";
 
 interface BookProps {
   book: Book;
@@ -21,77 +21,28 @@ const BookInfo = (props: BookProps) => {
   const [imageSrc, setImageSrc] = useState<string>(imageToAdd.src);
 
 useEffect(() => {
-  const getImage = async() => {  
-    try {
-      const url = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`;
-      const response = await axios.get(`https://openlibrary.org/isbn/${book.isbn}.json`); 
-
-      if (response.status === 200) {
-        setImageSrc(url);
-      }
-    } catch (error) {
-      setImageSrc(imageToAdd.src); 
-    }
+  const setImage = async () => {
+    setImageSrc(await getBookCover(book.isbn));
   }
-
-  getImage();
+  setImage();
 }, [book.isbn]);
 
   return (
     <div>
       <a href={`books/${book.id}`} className="flex items-start space-x-4">
-      <div className="flex justify-end font-[family-name:var(--font-rubik)]">
+      <div className="w-[200px] h-[300px] bg-gray-100 flex justify-center items-center">
+        {imageSrc ? (
           <Image
-            src={imageSrc}
-            alt="Book Cover"
-            width={200}
-            height={300}
-            className="object-cover" // Ensures the image maintains its aspect ratio
-          />
-        </div>
-        {/* <Image
-          src={}
+          src={imageSrc}
+          alt="Book Cover"
           width={200}
           height={300}
-          style={{ width: "200px", height: "auto" }}
-          alt="Image"
-        />  */}
-        {/* <img 
-        src={`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`}
-        /> */}
-        {/* <div className="w-200 h-200"> */}
-      
-        {/* { ? (
-            <Image
-            src={imageToAdd}
-            style={{ width: "200px", height: "auto" }}
-            alt="Image"
-          /> 
-          ) : ( */}
-          {/* <div className="flex justify-end font-[family-name:var(--font-rubik)]">
-            <img
-              src={imageSrc}
-              className="h-[200px]"
-              // height={200}
-              // width={150}
-            />
-          </div> */}
-          {/* </div>
-            <div className="flex justify-end my-4 mr-40 font-[family-name:var(--font-rubik)]">
-              {/* TODO: This will be implemented once the books have images! */}
-              {/* <Image
-                src={TODO:}
-                alt="Book Cover"
-                width={150}
-                height={190}
-                style={imageStyle}
-              /> */}
-              {/* <div className="bg-gray-500 w-[150px] h-[200px]"> </div>
-            </div> */}
-          {/* )} */}
-        {/* </div> */}
-
-        
+          className="object-contain" // Ensures the image maintains its aspect ratio
+        />
+        ) : (
+          <div></div>
+        )}
+        </div>       
 
         <div>
           <div className="text-left mt-4 mb-4 ml-4 mr-4">

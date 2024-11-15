@@ -1,5 +1,6 @@
 import { Book } from "@prisma/client";
 import axios from "axios";
+import imageToAdd from "../../assets/images/harry_potter.jpg";
 
 /**
  * Utility function for fetching all books
@@ -88,3 +89,27 @@ export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
     console.error("Failed to create book: ", error);
   }
 };
+
+/**
+ * Utility function for retrieving book cover image url 
+ *
+ * @param bookISBN
+ * @returns book cover image url 
+ *
+ * @remarks
+ */
+export const getBookCover = async (bookISBN: string): Promise<string> => {
+  const url = `https://covers.openlibrary.org/b/isbn/${bookISBN}-M.jpg`;
+
+  try {
+    const response = await axios.head(url); 
+    if (response.status == 200) {
+      return url; 
+    }
+  } catch (error) {
+    console.warn("Error fetching image");
+  }
+
+  return imageToAdd.src; 
+}
+
