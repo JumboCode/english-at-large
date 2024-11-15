@@ -1,7 +1,8 @@
 "use client";
 import React, {useState, useEffect} from "react";
 import { Book } from "@prisma/client";
-import { getBookCover } from "@/lib/api/books";
+// import { getBookCover } from "@/lib/api/books";
+import axios from "axios";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 
@@ -21,10 +22,18 @@ const BookInfo = (props: BookProps) => {
   const [imageSrc, setImageSrc] = useState<string>(imageToAdd.src);
 
 useEffect(() => {
-  const setImage = async () => {
-    setImageSrc(await getBookCover(book.isbn));
+  const setBookCover = async() => {  
+    const url = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg?default=false`;
+    try {
+      const response = await axios.head(url);
+      if (response.status == 200) {
+        setImageSrc(url);
+      }
+    } catch (error) {
+      setImageSrc(imageToAdd.src);
+    }
   }
-  setImage();
+  setBookCover();
 }, [book.isbn]);
 
   return (
@@ -37,7 +46,7 @@ useEffect(() => {
           alt="Book Cover"
           width={200}
           height={300}
-          className="object-contain" // Ensures the image maintains its aspect ratio
+          className="object-contain"
         />
         ) : (
           <div></div>

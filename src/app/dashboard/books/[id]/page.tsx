@@ -7,7 +7,7 @@ import Tag from "@/components/tag";
 import BookDetail from "@/components/details";
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
-import { getBookCover } from "@/lib/api/books";
+import axios from "axios";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 
 type Params = Promise<{ id: string }>;
@@ -31,12 +31,20 @@ const BookDetails = (props: { params: Params }) => {
     };
     fetchBook();
 
-    const setImage = async () => {
+    const setBookCover = async () => {
       if (book) {
-        setImageSrc(await getBookCover(book.isbn));
+        const url = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg?default=false`;
+        try {
+          const response = await axios.head(url);
+          if (response.status == 200) {
+            setImageSrc(url);
+          }
+        } catch (error) {
+          setImageSrc(imageToAdd.src);
+        }
       }
-    }
-    setImage();
+    };
+    setBookCover();
   }, [params.id, book]);
 
   const handleClick = () => {
@@ -76,12 +84,7 @@ const BookDetails = (props: { params: Params }) => {
 
             <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
               {/* TODO: This will be implemented once the books have images! */}
-              <Image
-                src={imageSrc}
-                alt="Book Cover"
-                width={150}
-                height={190}
-              />
+              <Image src={imageSrc} alt="Book Cover" width={150} height={190} />
               <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
             </div>
           </div>
