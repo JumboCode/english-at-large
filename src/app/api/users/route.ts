@@ -69,6 +69,8 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
+    console.log("in router: ", id)
+
     if (id) {
       // if id, delete the specific user
       const deletedUser = await deleteUserController(id);
