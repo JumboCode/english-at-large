@@ -11,7 +11,6 @@ import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { sleep } from "@/lib/util/utilFunctions";
 import { emptyUser } from "@/lib/util/types";
 import { UserRole } from "@prisma/client";
-import { PerformanceNodeTiming } from "perf_hooks";
 
 interface SignupFormData {
   firstName: string;
@@ -126,9 +125,11 @@ const SignupForm = () => {
             name: `${formData.firstName} ${formData.lastName}`,
             role: (metadata.role as UserRole) || "Tutor",
             email: formData.email,
-            clerkId: attempt.createdUserId,
+            clerkId: attempt.createdUserId as string,
             pending: false,
-            id: metadata.id,
+            id: metadata.id as string,
+            createdAt: new Date(Date.now()),
+            updatedAt: new Date(Date.now()),
           };
           await updateUser(newUser);
           setIsSignUpSuccessful(true);

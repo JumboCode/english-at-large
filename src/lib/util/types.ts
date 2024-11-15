@@ -49,6 +49,7 @@ export const emptyBook: Book = {
   status: BookStatus.Available,
   skills: [],
   releaseDate: null,
+  numPages: 0,
 };
 
 /**
@@ -67,6 +68,7 @@ export const newEmptyBook: Omit<Book, "id"> = {
   status: BookStatus.Available,
   skills: [],
   releaseDate: null,
+  numPages: 0,
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
