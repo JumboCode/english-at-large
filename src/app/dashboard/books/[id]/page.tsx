@@ -121,13 +121,13 @@ const BookDetails = (props: { params: Params }) => {
                   </div>
                 </div>
 
-                <div className="mt-10 mr-10 w-[200px] h-[250px] bg-gray-100 flex justify-center items-center">
+                <div className="mt-10 mr-10 w-[200px] h-[300px] flex justify-center items-center">
                   <Image
                   src={book.coverURL || imageToAdd.src}
                   alt="Book Cover"
                   width={200}
-                  height={250}
-                  className="object-cover"
+                  height={300}
+                  className="w-full h-full object-fill"
                 />
                 </div>
               </div>

@@ -21,13 +21,13 @@ const BookInfo = (props: BookProps) => {
   return (
     <div>
       <a href={`books/${book.id}`} className="flex items-start space-x-4">
-      <div className="w-[200px] h-[300px] bg-gray-100 flex justify-center items-center">
+      <div className="w-[250px] h-[300px] flex justify-center items-center">
           <Image
           src={book.coverURL || imageToAdd.src}
           alt="Book Cover"
-          width={200}
+          width={250}
           height={300}
-          className="object-cover"
+          className="w-full h-full object-fill"
         />
 
         </div>       
