@@ -31,6 +31,14 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 
+## Deployment
+
+We have a CI/CD pipeline that will auto-deploy your changes to our website every time you push a change to your remote branch. This deployment pipeline will "lint" your code. This means that it will perform type-checking and throw compiler errors if incompatible types are found.
+
+This means you *need to have ESLint installed and configured* to avoid these errors. 
+
+Before pushing, run `npm run build` to try to build the website locally. It will throw errors if something is wrong and notify you where that error is. This will save me a headache when reviewing code later :D
+
 ## Practices and Techniques:
 
 These are some of the practices and style guidelines to maintain for consistency in this codebase.
@@ -55,6 +63,17 @@ const Component = (props: ComponentProps) => {
 }
 ```
 
+### Props
+
+Props are a very powerful method of transferring information between components. However, it can be quite tricky to wrap your head around it.
+
+Here's some tips and tricks:
+- You can pass in functions (any by extension, components) as props! This is super useful, as you can pass in `setState` functions from a parent component into its child. However, it's good practice to wrap these functions in a `useCallback` before passing it in as a prop. This prevents the function from being re-rendered and improves efficiency.
+- Try to avoid "prop drilling." This is when you pass a single prop from a parent down many layers of components. This leads to code that is hard to debug since you'll need to test every layer where it's failing. Usually there are better solutions, like a context or state management tool.
+- "Memoize" props involving complex data with many fields, such as a `Book`. Wrap it in `React.memo` to prevent unnecessary re-renders.
+- For consistency, use enums. This will make it slightly more of a pain in the ass when checking for type safety, but it improves readability and prevents bugs from typos which is a lot more sustainable down the line.
+
+
 ### Conditional Rendering 
 
 Use it when you can, rather than multiple `return` statements that can be hard to track. If there are many conditions, then either use a switch statement or bite the bullet and use a bunch of ternary operators. Track each state or condition with an enum. If you want to render nothing, then use `null` as the falsy value.
@@ -64,6 +83,8 @@ Use it when you can, rather than multiple `return` statements that can be hard t
 { condition ? <div>"render if true"</div> : null}
 
 ```
+
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

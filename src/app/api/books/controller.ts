@@ -94,7 +94,7 @@ export const putBookController = async (bookData: Book): Promise<Book> => {
  */
 export const deleteBookController = async (bookId: number): Promise<Book> => {
   try {
-    if (!bookId) throw new Error("Invalid ID");
+    if (bookId === null || bookId === undefined) throw new Error("Invalid ID");
 
     const deletedBook = await prisma.book.delete({
       where: { id: bookId },

@@ -1,10 +1,8 @@
 "use client";
 import React, {useState, useEffect} from "react";
 import { Book } from "@prisma/client";
-// import { getBookCover } from "@/lib/api/books";
-import axios from "axios";
 import Image from "next/image";
-import imageToAdd from "../../assets/images/harry_potter.jpg";
+import imageToAdd from "../../assets/images/harry_potter.jpg"
 
 interface BookProps {
   book: Book;
@@ -19,38 +17,19 @@ interface BookProps {
  */
 const BookInfo = (props: BookProps) => {
   const { book } = props;
-  const [imageSrc, setImageSrc] = useState<string>(imageToAdd.src);
-
-useEffect(() => {
-  const setBookCover = async() => {  
-    const url = `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg?default=false`;
-    try {
-      const response = await axios.head(url);
-      if (response.status == 200) {
-        setImageSrc(url);
-      }
-    } catch (error) {
-      setImageSrc(imageToAdd.src);
-    }
-  }
-  setBookCover();
-}, [book.isbn]);
 
   return (
     <div>
       <a href={`books/${book.id}`} className="flex items-start space-x-4">
       <div className="w-[200px] h-[300px] bg-gray-100 flex justify-center items-center">
-        {imageSrc ? (
           <Image
-          src={imageSrc}
+          src={book.coverURL || imageToAdd.src}
           alt="Book Cover"
           width={200}
           height={300}
-          className="object-contain"
+          className="object-cover"
         />
-        ) : (
-          <div></div>
-        )}
+
         </div>       
 
         <div>

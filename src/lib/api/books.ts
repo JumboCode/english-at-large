@@ -1,6 +1,5 @@
 import { Book } from "@prisma/client";
 import axios from "axios";
-// import imageToAdd from "../../assets/images/harry_potter.jpg";
 
 /**
  * Utility function for fetching all books

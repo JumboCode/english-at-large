@@ -21,7 +21,7 @@ const BookDetail = (props: DetailProps) => {
         <div className="relative text-gray-500 mr-4">Page Numbers</div>
       </div>
       <div>
-        <div className="relative">{isbn}</div>
+      <div className="relative">{isbn}</div>
         <div className="relative">{publisher}</div>
         <div className="relative">{releaseDate}</div>
         <div className="relative">{copies}</div>
