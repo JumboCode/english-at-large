@@ -1,11 +1,8 @@
 "use client";
-// import CommonButton from "@/components/common/button/CommonButton";
 import LoginForm from "@/components/auth/LoginForm";
 import books from "@/images/books.jpg";
 
 import Image from "next/image";
-// import { useState } from "react";
-
 
 const Login = () => {
   return (
@@ -30,8 +27,6 @@ const Login = () => {
         </div>
 
         <LoginForm />
-
-        
       </div>
     </div>
   );
