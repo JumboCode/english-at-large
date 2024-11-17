@@ -1,16 +1,16 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
-import Tag from "@/components/Tag";
-import BookDetail from "@/components/Details";
+import Tag from "@/components/tag";
+import BookDetail from "@/components/details";
 import BorrowPopup from "@/components/common/BorrowPopup";
 
 import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
 
-type Params = { id: string };
+type Params = Promise<{ id: string }>;
 
 /**
  *
@@ -20,7 +20,7 @@ type Params = { id: string };
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
  */
 const BookDetails = (props: { params: Params }) => {
-  const { params } = props;
+  const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
 
@@ -31,6 +31,7 @@ const BookDetails = (props: { params: Params }) => {
     };
     fetchBook();
   }, [params.id]);
+  
 
   const toggleBorrow = () => {
     setIsBorrowOpen(!isBorrowOpen);

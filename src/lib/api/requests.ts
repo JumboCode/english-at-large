@@ -53,7 +53,7 @@ export const getRequests = async (): Promise<BookRequest[] | undefined> => {
  */
 export const createRequest = async (
   request: Omit<BookRequest, "id">
-): Promise<BookRequest[] | undefined> => {
+): Promise<BookRequest | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
@@ -77,7 +77,7 @@ export const createRequest = async (
  */
 export const updateRequest = async (
   request: BookRequest
-): Promise<BookRequest[] | undefined> => {
+): Promise<BookRequest | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
