@@ -130,21 +130,6 @@ const BookForm = (props: BookFormProps) => {
     }
   }
 
-  const addNewBook = async () => {
-    try {
-      console.log("CREATING BOOK");
-      const createdBook = await createBook(newBook);
-      console.log("CREATED BOOK");
-      if (createdBook) {
-        setShowBookForm(false);
-      } else {
-        throw new Error("Failed to create book!");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   const handleSave = async () => {
     try {
       if (editBook) {
@@ -215,6 +200,7 @@ const BookForm = (props: BookFormProps) => {
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             value={newBook.title}
             onChange={bookChangeHandler}
+            // defaultValue={editBook ? editBook.title : ""}
             required
           />
         </div>
@@ -245,6 +231,7 @@ const BookForm = (props: BookFormProps) => {
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
             value={newBook.description}
             onChange={bookChangeHandler}
+            // defaultValue={editBook ? editBook.description : ""}
             required
           ></textarea>
         </div>
@@ -258,6 +245,7 @@ const BookForm = (props: BookFormProps) => {
             name="isbn"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
+            defaultValue={editBook ? editBook.isbn : ""}
             required
           />
         </div>
@@ -273,6 +261,7 @@ const BookForm = (props: BookFormProps) => {
               className="border-[1px] border-black border-solid rounded-lg h-8"
               value={newBook.publisher}
               onChange={bookChangeHandler}
+              // defaultValue={editBook ? editBook.publisher : ""}
               required
             />
           </div>
