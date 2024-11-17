@@ -127,8 +127,8 @@ export const updateUser = async (user: User): Promise<User | undefined> => {
  */
 export async function deleteUser(id: string): Promise<User | undefined> {
   try {
-    console.log("in deleteUser: ", id)
-    const response = await axios.delete("api/users/?id=" + id);
+    console.log("in deleteUser: ", id);
+    const response = await axios.delete("/api/users?id=" + id);
     return response.data;
   } catch (error) {
     console.error("Failed to delete user: " + id, error);

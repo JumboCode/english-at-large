@@ -21,7 +21,7 @@ type Params = Promise<{ id: string }>;
  * @notes uses Next.js 15's asynchronous pages. find out more here:
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
  */
-const BookDetails = (props: { params: Params }) => {
+const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
   const [showBookForm, setShowBookForm] = useState(false);
