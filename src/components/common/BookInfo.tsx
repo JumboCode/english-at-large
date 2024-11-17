@@ -1,5 +1,4 @@
 "use client";
-import React, {useState, useEffect} from "react";
 import { Book } from "@prisma/client";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg"
