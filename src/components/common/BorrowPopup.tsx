@@ -16,14 +16,15 @@ const BorrowPopup = (props: BorrowPopupProps) => {
   const exit = () => {
     toggle();
   };
-
+  
+  //this also needs to be changed to a request
   const updateBook: Book = {
     id: book.id,
     title: book.title,
     author: book.author,
     isbn: book.isbn,
     publisher: book.publisher,
-    level: book.level,
+    level: book.level, 
     bookType: book.bookType,
     scanLink: book.scanLink,
     description: book.description,
@@ -89,7 +90,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
           <ConfirmPopup
             updatedBook = {updateBook}
             book  = {book}
-            toggle = {toggleNextBorrow}
+            toggle = {toggle}
           />
         </div>
         

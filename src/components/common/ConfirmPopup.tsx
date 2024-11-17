@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
-import { Book, BookStatus } from "@prisma/client";
+import { useEffect } from "react";
+import { Book } from "@prisma/client";
 import checkmark from "../../assets/icons/checkmark.svg";
-import xmark from "../../assets/icons/xmark.svg";
 import Image from "next/image";
 import { updateBook } from "@/lib/api/books";
 interface ConfirmPopupProps {
@@ -12,7 +11,6 @@ interface ConfirmPopupProps {
 
 const ConfirmPopup = (props: ConfirmPopupProps) => {
   const { toggle, book, updatedBook } = props;
-  const [alreadyBorrowed, setIsAlreadyBorrowed] = useState(false);
   const exit = () => {
     toggle();
   };
@@ -24,27 +22,19 @@ const ConfirmPopup = (props: ConfirmPopupProps) => {
   
   useEffect(() => {
     const setUnavailable = async () => {
-        if (book.status === BookStatus.Available) {
-          try {
-            
-            const response = await updateBook(updatedBook);
-            console.log("this is the ", response)
+        try {
+            //replace with createRequest and updateRequest
+            await updateBook(updatedBook);
             
           } catch (err) {
             console.error(err);
           }
-          console.log("book has just been borrowed");
-        } else {
-          setIsAlreadyBorrowed(true);
-          console.log("book is already borrowed");
-        }
     };
     setUnavailable();
   }, [updatedBook, book]);
 
   return (
     <div>
-      {!alreadyBorrowed ? (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
         <div className="bg-white rounded-lg shadow-lg p-8 w-5/12">
           <div className="flex justify-end items-center h-full">
@@ -98,60 +88,6 @@ const ConfirmPopup = (props: ConfirmPopupProps) => {
           </div>
         </div>
       </div>
-      ) : (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-        <div className="bg-white rounded-lg shadow-lg p-8 w-5/12">
-          <div className="flex justify-end items-center h-full">
-            <button onClick={exit} className="bg-white text-gray-600 p-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-          <div className="flex justify-end items-center h-full"></div>
-          <div className="flex justify-center m-6">
-            <Image
-              src={xmark}
-              alt="navy x mark"
-              width={50}
-              height={80}
-              style={imageStyle}
-            />
-          </div>
-          <div className="flex justify-center font-[family-name:var(--font-rubik)] font-semibold text-2xl m-2">
-            Book not borrowed: Unavailable
-          </div>
-          <div className="flex justify-center text-[#757575] font-[family-name:var(--font-rubik)] text-xs mb-10">
-            Please check back later to see if the book is available.
-          </div>
-          <div className="flex row-span-2 mt-5 gap-3 justify-between">
-            <a
-              href="/dashboard"
-              className="flex flex-row items-center w-56 h-10 text-[#202D74] justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue font-[family-name:var(--font-rubik)] font-semibold bg-white text-sm"
-            >
-              Keep Browsing
-            </a>
-            <a
-              href="/dashboard"
-              className="flex flex-row items-center w-56 h-10 text-white justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue font-[family-name:var(--font-rubik)] font-semibold bg-[#202D74] text-sm"
-            >
-              Go to Shelf
-            </a>
-          </div>
-        </div>
-      </div>
-      )}
     </div>
   );
 };

@@ -8,7 +8,7 @@ import BookDetail from "@/components/details";
 import BorrowPopup from "@/components/common/BorrowPopup";
 
 import { getOneBook } from "@/lib/api/books";
-import { Book } from "@prisma/client";
+import { Book,BookStatus } from "@prisma/client";
 
 type Params = Promise<{ id: string }>;
 
@@ -52,7 +52,8 @@ const BookDetails = (props: { params: Params }) => {
                 <div className="mb-32 font-[family-name:var(--font-rubik)]">
                   by {book.author}
                 </div>
-                <CommonButton
+                {book.status == BookStatus.Available ? (
+                  <div><CommonButton
                   label="Borrow"
                   altStyle="w-40 h-10 bg-[#202D74]"
                   onClick={toggleBorrow}
@@ -61,10 +62,25 @@ const BookDetails = (props: { params: Params }) => {
                     <Image
                       src={bookIcon}
                       alt="Book Icon"
-                      className="w-4 h-4 mr-3"
+                      className="w-4 h-4 mr-3 color-white"
                     />
                   }
-                />
+                /></div>) : 
+                (<div>
+                  <CommonButton
+                  label="Borrow"
+                  altStyle="w-40 h-10 bg-[#D9D9D9] border-0"
+                  altTextStyle="text-gray-400 font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                  leftIcon={
+                    <Image
+                      src={bookIcon}
+                      alt="Book Icon"
+                      className="w-4 h-4 mr-3 text-red"
+                    />
+                  } 
+                  /></div>
+                )}
+                  
                 {isBorrowOpen ? (
                   <BorrowPopup
                     toggle={toggleBorrow}
