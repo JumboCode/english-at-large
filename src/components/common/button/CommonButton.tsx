@@ -36,6 +36,7 @@ const CommonButton = (props: ButtonProps) => {
       onClick={onClick}
       className={`flex flex-row items-center justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue bg-white" ${altStyle}`}
       disabled={disabled}
+      type="button"
     >
       {leftIcon ? leftIcon : null}
       <p

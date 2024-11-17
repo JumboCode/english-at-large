@@ -6,9 +6,9 @@ import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import AddNewBookForm from "@/components/common/forms/AddNewBookForm";
-import FilterIcon from "@/assets/icons/Filter";
+import BookForm from "@/components/common/forms/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
+import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
 
 const BooksPage = () => {
@@ -101,7 +101,7 @@ const BooksPage = () => {
       />
 
       {bookFormShown ? (
-        <AddNewBookForm setShowBookForm={setBookFormShown} />
+        <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
       ) : null}
       <FilterPopup
         isOpen={isFilterOpen}
