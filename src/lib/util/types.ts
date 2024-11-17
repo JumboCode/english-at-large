@@ -50,6 +50,7 @@ export const emptyBook: Book = {
   skills: [],
   releaseDate: null,
   numPages: 0,
+  coverURL: "",
 };
 
 /**
@@ -69,6 +70,7 @@ export const newEmptyBook: Omit<Book, "id"> = {
   skills: [],
   releaseDate: null,
   numPages: 0,
+  coverURL: "",
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////

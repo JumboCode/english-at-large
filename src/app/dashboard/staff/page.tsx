@@ -8,6 +8,7 @@ import { getAllUsers } from "@/lib/api/users";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import PendingChip from "@/assets/icons/pending_chip";
 import { deleteUser } from "@/lib/api/users";
+import Link from "next/link";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -74,12 +75,12 @@ export default function Manage() {
               <tr key={index} className="bg-white h-16">
                 <td className="flex flex-col">
                   <p className="text-black font-semibold">{user.name}</p>
-                  <a
+                  <Link
                     href={"mailto:" + user.email}
                     className="text-text-default-secondary underline max-w-max"
                   >
                     {user.email}
-                  </a>
+                  </Link>
                 </td>
                 <td className=" text-black">
                   <div className="flex justify-between min-w-max max-w-[50%]">

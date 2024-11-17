@@ -29,11 +29,11 @@ const BookDetails = (props: { params: Promise<Params> }) => {
 
   useEffect(() => {
     const fetchBook = async () => {
-      const book = await getOneBook(+params.id);
+      const book = await getOneBook(+(await params).id);
       setBook(book || null);
     };
     fetchBook();
-  }, [params.id]);
+  }, [params]);
 
   const handleClick = () => {
     alert("Button clicked!");
