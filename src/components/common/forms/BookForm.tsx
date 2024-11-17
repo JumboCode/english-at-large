@@ -198,9 +198,8 @@ const BookForm = (props: BookFormProps) => {
             id="title"
             name="title"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
-            value={newBook.title}
             onChange={bookChangeHandler}
-            // defaultValue={editBook ? editBook.title : ""}
+            value={editBook ? editBook.title : newBook.title}
             required
           />
         </div>
@@ -229,9 +228,8 @@ const BookForm = (props: BookFormProps) => {
             id="description"
             name="description"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
-            value={newBook.description}
             onChange={bookChangeHandler}
-            // defaultValue={editBook ? editBook.description : ""}
+            value={editBook ? editBook.description : newBook.description}
             required
           ></textarea>
         </div>
@@ -259,9 +257,8 @@ const BookForm = (props: BookFormProps) => {
               id="publisher"
               name="publisher"
               className="border-[1px] border-black border-solid rounded-lg h-8"
-              value={newBook.publisher}
               onChange={bookChangeHandler}
-              // defaultValue={editBook ? editBook.publisher : ""}
+              value={editBook ? editBook.publisher : newBook.publisher}
               required
             />
           </div>

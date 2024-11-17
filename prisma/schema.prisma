@@ -72,7 +72,7 @@ model Book {
   bookType    BookType
   skills      BookSkills[]
   numPages    Int?         @default(0)
-  coverURL    String
+  coverURL    String?      @default("placeholder")
   scanLink    String?
   releaseDate String?
   notes       String?
