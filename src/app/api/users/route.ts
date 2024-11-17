@@ -65,12 +65,9 @@ export async function PUT(req: Request) {
 
 // DELETE - delete user by id
 export async function DELETE(req: Request) {
-  console.log("HIIIIIIII");
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-
-    console.log("in router: ", id);
 
     if (id) {
       // if id, delete the specific user
