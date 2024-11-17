@@ -3,8 +3,9 @@ import React, { useEffect, useState,use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
-import Tag from "@/components/tag";
-import BookDetail from "@/components/details";
+import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
+import Tag from "@/components/Tag";
+import BookDetail from "@/components/Details";
 import BorrowPopup from "@/components/common/BorrowPopup";
 
 import { getOneBook } from "@/lib/api/books";
@@ -62,7 +63,7 @@ const BookDetails = (props: { params: Params }) => {
                     <Image
                       src={bookIcon}
                       alt="Book Icon"
-                      className="w-4 h-4 mr-3 color-white"
+                      className="w-4 h-4 mr-3"
                     />
                   }
                 /></div>) : 
@@ -70,12 +71,12 @@ const BookDetails = (props: { params: Params }) => {
                   <CommonButton
                   label="Borrow"
                   altStyle="w-40 h-10 bg-[#D9D9D9] border-0"
-                  altTextStyle="text-gray-400 font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                  altTextStyle="text-[#808080] font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                   leftIcon={
                     <Image
-                      src={bookIcon}
+                      src={bookIconGreyed}
                       alt="Book Icon"
-                      className="w-4 h-4 mr-3 text-red"
+                      className="w-4 h-4 mr-3 "
                     />
                   } 
                   /></div>

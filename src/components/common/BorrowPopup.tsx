@@ -1,6 +1,6 @@
 "use client";
 import { useState} from "react";
-import BookDetail from "@/components/details";
+import BookDetail from "@/components/Details";
 import ConfirmPopup from "./ConfirmPopup";
 import CommonButton from "@/components/common/button/CommonButton";
 import { Book, BookStatus} from "@prisma/client";
