@@ -95,8 +95,8 @@ export default function Manage() {
                     <CommonButton
                       label="Remove User"
                       onClick={() => {
-                        console.log(user.id);
                         deleteUser(user.id);
+                        location.reload(); // next js router.refresh() was not working
                       }}
                       altTextStyle="text-dark-blue"
                       altStyle="bg-white"
