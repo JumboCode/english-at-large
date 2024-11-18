@@ -15,8 +15,8 @@ model User {
   updatedAt DateTime  @updatedAt @map("updated_at")
   role      UserRole
   clerkId   String    @default("placeholder")
-  requests  Request[]
   pending   Boolean   @default(false)
+  requests  Request[]
 
   @@map("users")
 }
@@ -36,7 +36,7 @@ model Book {
   level       BookLevel
   status      BookStatus   @default(Available)
   numPages    Int?         @default(0)
-  coverURL    String
+  coverURL    String       @default("")
   requests    Request[]
 
   @@map("Books")
