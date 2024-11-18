@@ -12,7 +12,7 @@ export const postInviteController = async (
       throw new Error("Missing required user properties");
     }
 
-    clerkClient.invitations.createInvitation({
+    const invite = clerkClient.invitations.createInvitation({
       emailAddress: email,
       redirectUrl: "http://localhost:3000/signup",
       publicMetadata: {
@@ -20,11 +20,11 @@ export const postInviteController = async (
         role: role,
         id: id,
       },
-      ignoreExisting: true,
+      ignoreExisting: false,
       // Link that user will click on
     });
 
-    return;
+    return invite;
   } catch (error) {
     console.error("Error in postInviteController:", error);
     throw error; // Let the calling function handle the error and response

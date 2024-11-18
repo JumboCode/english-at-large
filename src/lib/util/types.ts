@@ -132,6 +132,7 @@ export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   role: "Tutor",
   clerkId: "placeholder",
   pending: false,
+  inviteID: "",
 };
 
 export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
@@ -140,6 +141,7 @@ export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   role: "Admin",
   clerkId: "placeholder",
   pending: false,
+  inviteID: "",
 };
 
 /**

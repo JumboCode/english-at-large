@@ -80,6 +80,8 @@ export const deleteUserController = async (id: string): Promise<User> => {
     } else {
       if (!user.pending) {
         await clerkClient.users.deleteUser(user.clerkId);
+      } else if (user.inviteID) {
+        await clerkClient.invitations.revokeInvitation(user.inviteID);
       }
 
       return await prisma.user.delete({

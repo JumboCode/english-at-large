@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { UserRole } from "@prisma/client";
-import { inviteUser } from "@/lib/api/users";
+import { inviteUser, updateUser } from "@/lib/api/users";
 import CommonButton from "../common/button/CommonButton";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
@@ -30,12 +30,19 @@ const SendInvite = (props: SendInviteProps) => {
           role: role,
           email: email,
           pending: true,
+          inviteID: "",
         };
 
         const user = await createUser(newUser);
 
-        await inviteUser(name, email, role, user?.id ?? "");
+        const invitation = await inviteUser(name, email, role, user?.id ?? "");
 
+        const inviteID = invitation.data.invite.id as string;
+        // const updatedUser = { ...user, inviteID: inviteID };
+        if (user) {
+          user.inviteID = inviteID;
+          await updateUser(user);
+        }
         setStatus(true);
       } else {
         throw "Not all fields completed";
