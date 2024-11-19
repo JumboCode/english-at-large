@@ -20,8 +20,7 @@ export const postInviteController = async (
         role: role,
         id: id,
       },
-      ignoreExisting: false,
-      // Link that user will click on
+      ignoreExisting: true,
     });
 
     return invite;
