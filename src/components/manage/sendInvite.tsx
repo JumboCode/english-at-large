@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { UserRole } from "@prisma/client";
-import { inviteUser, updateUser } from "@/lib/api/users";
+import { getAllUsers, inviteUser, updateUser } from "@/lib/api/users";
 import CommonButton from "../common/button/CommonButton";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
@@ -21,6 +21,11 @@ const SendInvite = (props: SendInviteProps) => {
   const [role, setRole] = useState<UserRole | null>(null);
   const [status, setStatus] = useState<boolean | null>(null);
 
+  const checkUserEmail = async (email: string) => {
+    const users = await getAllUsers();
+    return users ? !users.some((user) => user.email === email) : false;
+  };
+
   const sendEmail = async () => {
     try {
       if (name && email && role) {
@@ -33,21 +38,31 @@ const SendInvite = (props: SendInviteProps) => {
           inviteID: "",
         };
 
-        const user = await createUser(newUser);
-        if (!user) {
-          throw "Failed to create user";
-        }
-        const invitation = await inviteUser(name, email, role, user?.id ?? "");
+        const validEmail = await checkUserEmail(email);
 
-        const inviteID = invitation.data.invite.id as string;
-        // const updatedUser = { ...user, inviteID: inviteID };
-        if (user) {
-          user.inviteID = inviteID;
-          await updateUser(user);
+        if (validEmail) {
+          const user = await createUser(newUser);
+          if (!user) {
+            throw "Failed to create user";
+          }
+          const invitation = await inviteUser(
+            name,
+            email,
+            role,
+            user?.id ?? ""
+          );
+
+          const inviteID = invitation.data.invite.id as string;
+          if (user) {
+            user.inviteID = inviteID;
+            await updateUser(user);
+          }
+          setStatus(true);
+        } else {
+          throw "Email already in use!";
         }
-        setStatus(true);
       } else {
-        throw "Not all fields completed";
+        throw "Not all fields completed!";
       }
     } catch (error) {
       console.error("Error creating invite: ", error);
