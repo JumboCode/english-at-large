@@ -34,7 +34,9 @@ const SendInvite = (props: SendInviteProps) => {
         };
 
         const user = await createUser(newUser);
-
+        if (!user) {
+          throw "Failed to create user";
+        }
         const invitation = await inviteUser(name, email, role, user?.id ?? "");
 
         const inviteID = invitation.data.invite.id as string;

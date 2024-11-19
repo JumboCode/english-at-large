@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ invite }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to send invite" },
+      { error: "Failed to send invite: " + error },
       { status: 500 }
     );
   }
