@@ -1,15 +1,20 @@
 "use client";
-import React, { useEffect, useState,use } from "react";
+import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
-import Tag from "@/components/Tag";
-import BookDetail from "@/components/Details";
 import BorrowPopup from "@/components/common/BorrowPopup";
 
 import { getOneBook } from "@/lib/api/books";
-import { Book,BookStatus } from "@prisma/client";
+import { Book, BookStatus } from "@prisma/client";
+import bookmark from "@/assets/icons/Bookmark.svg";
+import pencil from "@/assets/icons/Pencil.svg";
+import trash from "@/assets/icons/Trash.svg";
+import Tag from "@/components/tag";
+import BookDetail from "@/components/Details";
+import BookForm from "@/components/common/forms/BookForm";
+import RemoveModal from "@/components/RemoveModal";
 
 type Params = Promise<{ id: string }>;
 
@@ -20,19 +25,20 @@ type Params = Promise<{ id: string }>;
  * @notes uses Next.js 15's asynchronous pages. find out more here:
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
  */
-const BookDetails = (props: { params: Params }) => {
+const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
+  const [showBookForm, setShowBookForm] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
-      const book = await getOneBook(+params.id);
+      const book = await getOneBook(+(await params).id);
       setBook(book || null);
     };
     fetchBook();
-  }, [params.id]);
-  
+  }, [params]);
 
   const toggleBorrow = () => {
     setIsBorrowOpen(!isBorrowOpen);
@@ -42,109 +48,175 @@ const BookDetails = (props: { params: Params }) => {
 
   return (
     <div>
-      {book ? (
+      {showBookForm ? (
+        <BookForm
+          setShowBookForm={setShowBookForm}
+          existingBook={book}
+          onSave={(b: Book | null) => {
+            setBook(b);
+          }}
+        />
+      ) : (
         <div>
-          <div className="grid grid-rows-1 grid-flow-col xs:grid-rows-2">
-            <div className="flex content-center">
-              <div className="relative my-20 mx-40">
-                <div className="text-3xl font-[family-name:var(--font-rubik)] font-semibold">
-                  {book.title}
+          {book ? (
+            <div>
+              <div className="grid grid-rows-1 grid-flow-col xs:grid-rows-2">
+                <div className="flex content-center">
+                  <div className="relative my-20 mx-40">
+                    <div className="text-3xl font-[family-name:var(--font-rubik)] font-semibold">
+                      {book.title}
+                    </div>
+                    <div className="mb-32 font-[family-name:var(--font-rubik)]">
+                      by {book.author}
+                    </div>
+                    <div className="flex">
+                      <CommonButton
+                        label="Borrow"
+                        onClick={toggleBorrow}
+                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
+                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                        leftIcon={
+                          <Image
+                            src={bookmark}
+                            alt="Book Icon"
+                            className="w-4 h-4 mr-3"
+                          />
+                        }
+                      />
+                      <CommonButton
+                        label="Edit"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowBookForm(true);
+                        }}
+                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
+                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                        leftIcon={
+                          <Image
+                            src={pencil}
+                            alt="Pencil Icon"
+                            className="w-4 h-4 mr-3"
+                          />
+                        }
+                      />
+                      <CommonButton
+                        label="Remove"
+                        onClick={() => {
+                          setShowRemoveModal(true);
+                        }}
+                        altStyle="w-40 h-10 bg-[#EC221F] border-none mr-3"
+                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                        leftIcon={
+                          <Image
+                            src={trash}
+                            alt="Book Icon"
+                            className="w-4 h-4 mr-3"
+                          />
+                        }
+                      />
+                      {showRemoveModal && (
+                        <RemoveModal
+                          setShowRemoveModal={setShowRemoveModal}
+                          book={book}
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="mb-32 font-[family-name:var(--font-rubik)]">
-                  by {book.author}
+
+                <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
+                  {/* TODO: This will be implemented once the books have images! */}
+                  {/* <Image
+                  src={TODO:}
+                  alt="Book Cover"
+                  width={150}
+                  height={190}
+                  style={imageStyle}
+                /> */}
+                  <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
                 </div>
-                {book.status == BookStatus.Available ? (
-                  <div><CommonButton
-                  label="Borrow"
-                  altStyle="w-40 h-10 bg-[#202D74]"
-                  onClick={toggleBorrow}
-                  altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                  leftIcon={
-                    <Image
-                      src={bookIcon}
-                      alt="Book Icon"
-                      className="w-4 h-4 mr-3"
-                    />
-                  }
-                /></div>) : 
-                (<div>
-                  <CommonButton
-                  label="Borrow"
-                  altStyle="w-40 h-10 bg-[#D9D9D9] border-0"
-                  altTextStyle="text-[#808080] font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                  leftIcon={
-                    <Image
-                      src={bookIconGreyed}
-                      alt="Book Icon"
-                      className="w-4 h-4 mr-3 "
-                    />
-                  } 
-                  /></div>
-                )}
-                  
-                {isBorrowOpen ? (
-                  <BorrowPopup
-                    toggle={toggleBorrow}
-                    book={book}
-                  />
-                ) : null}
               </div>
-            </div>
 
-            <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
-              {/* TODO: This will be implemented once the books have images! */}
-              {/* <Image
-                src={TODO:}
-                alt="Book Cover"
-                width={150}
-                height={190}
-                style={imageStyle}
-              /> */}
-              <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
-            </div>
-          </div>
+              <hr className="h-px bg-[#D4D4D4] border-0 mx-40 -mt-10"></hr>
 
-          <hr className="h-px bg-[#D4D4D4] border-0 mx-40 -mt-10"></hr>
+              {/* Tags Section */}
+              <div className="relative mt-10 mx-40">
+                <div className="font-semibold font-[family-name:var(--font-rubik)] text-lg">
+                  Tags
+                </div>
+                <div className="flex mt-2">
+                  {book.skills.map((skill, index) => (
+                    <Tag key={index} label={skill} />
+                  ))}
+                </div>
+              </div>
 
-          {/* Tags Section */}
-          <div className="relative mt-10 mx-40">
-            <div className="font-semibold font-[family-name:var(--font-rubik)] text-lg">
-              Tags
-            </div>
-            <div className="flex mt-2">
-              {book.skills.map((skill, index) => (
-                <Tag key={index} label={skill} />
-              ))}
-            </div>
-          </div>
+              {/* Description Section */}
+              <div className="relative mt-10 mx-40">
+                <div className="font-semibold font-[family-name:var(--font-rubik)] text-lg">
+                  Description
+                </div>
+                <div className="mt-5 font-[family-name:var(--font-rubik)]">
+                  {book.description}
+                </div>
+              </div>
 
-          {/* Description Section */}
-          <div className="relative mt-10 mx-40">
-            <div className="font-semibold font-[family-name:var(--font-rubik)] text-lg">
-              Description
-            </div>
-            <div className="mt-5 font-[family-name:var(--font-rubik)]">
-              {book.description}
-            </div>
-          </div>
+              {/* Details Section */}
+              <div className="relative mt-10 mx-40">
+                <div className="font-semibold font-[family-name:var(--font-rubik)] text-lg">
+                  Details
+                </div>
+                <div className="mt-5 font-[family-name:var(--font-rubik)]">
+                  <BookDetail
+                    isbn={book.isbn}
+                    publisher={book.publisher}
+                    releaseDate={book.releaseDate}
+                    copies={10}
+                    lineSpacing="space-y-3"
+                    verticalSpacing="ml-7"
+                  />
+                </div>
+              </div>
+              {book.status == BookStatus.Available ? (
+                <div>
+                  <CommonButton
+                    label="Borrow"
+                    altStyle="w-40 h-10 bg-[#202D74]"
+                    onClick={toggleBorrow}
+                    altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                    leftIcon={
+                      <Image
+                        src={bookIcon}
+                        alt="Book Icon"
+                        className="w-4 h-4 mr-3"
+                      />
+                    }
+                  />
+                </div>
+              ) : (
+                <div>
+                  <CommonButton
+                    label="Borrow"
+                    altStyle="w-40 h-10 bg-[#D9D9D9] border-0"
+                    altTextStyle="text-[#808080] font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                    leftIcon={
+                      <Image
+                        src={bookIconGreyed}
+                        alt="Book Icon"
+                        className="w-4 h-4 mr-3 "
+                      />
+                    }
+                  />
+                </div>
+              )}
 
-          {/* Details Section */}
-          <div className="relative mt-10 mx-40">
-            <div className="font-semibold font-[family-name:var(--font-rubik)] text-lg">
-              Details
+              {isBorrowOpen ? (
+                <BorrowPopup toggle={toggleBorrow} book={book} />
+              ) : null}
             </div>
-            <div className="mt-5 font-[family-name:var(--font-rubik)]">
-              <BookDetail
-                isbn={book.isbn}
-                publisher={book.publisher}
-                releaseDate={book.releaseDate}
-                copies={10}
-                altStyle="flex row-span-2 my-5"
-              />
-            </div>
-          </div>
+          ) : null}
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

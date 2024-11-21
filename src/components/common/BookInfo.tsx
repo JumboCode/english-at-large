@@ -3,6 +3,7 @@ import React from "react";
 import { Book } from "@prisma/client";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import Image from "next/image";
+import Link from "next/link";
 
 interface BookProps {
   book: Book;
@@ -20,7 +21,7 @@ const BookInfo = (props: BookProps) => {
 
   return (
     <div>
-      <a href={`books/${book.id}`} className="flex items-start space-x-4">
+      <Link href={`books/${book.id}`} className="flex items-start space-x-4">
         <Image
           src={imageToAdd}
           style={{ width: "200px", height: "auto" }}
@@ -56,7 +57,7 @@ const BookInfo = (props: BookProps) => {
             </div>
           </div>
         </div>
-      </a>
+      </Link>
     </div>
   );
 };

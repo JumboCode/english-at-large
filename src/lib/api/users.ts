@@ -2,6 +2,7 @@ import { User } from "@prisma/client";
 import axios from "axios";
 import { validateUserData } from "../util/types";
 import { UserResource } from "@clerk/types";
+import { Invitation } from "@clerk/backend";
 
 /**
  * Utility function for fetching all users
@@ -31,13 +32,38 @@ export const getAllUsers = async (): Promise<User[] | undefined> => {
  */
 export const getOneUser = async (id: string): Promise<User | undefined> => {
   try {
-    const response = await axios.get("api/users/?id=" + id);
+    const response = await axios.get("/api/users/?id=" + id);
     return response.data;
   } catch (error) {
     console.error("Failed to get user: ", error);
   }
 };
 
+/**
+ * Utility function for fetching one user by Clerk ID
+ *
+ * @param id: string
+ * @returns one User
+ *
+ * @remarks
+ */
+export const getOneUserByClerkid = async (
+  clerkId: string
+): Promise<User | undefined> => {
+  try {
+    const response = await axios.get("/api/users/?clerkId=" + clerkId);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get user: ", error);
+  }
+};
+
+/**
+ *
+ * @param clerkId - a user's ID in clerk, NOT their neon.tech id.
+ *
+ * @returns - the user's associated clerk profile. this should only be used internally
+ */
 export const getClerkUser = async (
   clerkId: string
 ): Promise<UserResource | undefined> => {
@@ -72,13 +98,38 @@ export const createUser = async (
   }
 };
 
-export const inviteUser = async (name: string, email: string, role: string) => {
+/**
+ *
+ * @param name - the user's name
+ * @param email - the user's email
+ * @param role
+ * @param id - the user's neon.tech id
+ * @returns clerk invitation
+ *
+ * @notes begins the user invitation process. the flow goes:
+ * - admin invite the user
+ * - 'pending' user is created in neon tech
+ * - invitation is sent Clerk (and created in Clerk)
+ * - user accepts invite. clerk invitation (should) go away, and clerk user is created
+ * - 'pending' is set to false
+ */
+export const inviteUser = async (
+  name: string,
+  email: string,
+  role: string,
+  id: string
+): Promise<Invitation | undefined> => {
   try {
-    if (!name || !email || !role) {
+    if (!name || !email || !role || !id) {
       throw new Error("Missing user fields");
     }
-    await axios.post("/api/invite", { name: name, email: email, role: role });
-    return;
+    const invite: Invitation = await axios.post("/api/invite", {
+      name: name,
+      email: email,
+      role: role,
+      id: id,
+    });
+    return invite;
   } catch (error) {
     console.error("Failed to invite user: ", error);
     throw error;
@@ -117,7 +168,7 @@ export const updateUser = async (user: User): Promise<User | undefined> => {
  */
 export async function deleteUser(id: string): Promise<User | undefined> {
   try {
-    const response = await axios.delete("api/users/?id=" + id);
+    const response = await axios.delete("/api/users?id=" + id);
     return response.data;
   } catch (error) {
     console.error("Failed to delete user: " + id, error);

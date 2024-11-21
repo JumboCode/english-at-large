@@ -8,7 +8,7 @@ const SuccessfulSignUp = () => {
   const router = useRouter();
   const handleClick = (event: Event) => {
     event.preventDefault();
-    router.push("/");
+    router.push("/login");
   };
   return (
     <div>
