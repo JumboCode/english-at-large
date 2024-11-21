@@ -32,7 +32,26 @@ export const getAllUsers = async (): Promise<User[] | undefined> => {
  */
 export const getOneUser = async (id: string): Promise<User | undefined> => {
   try {
-    const response = await axios.get("api/users/?id=" + id);
+    const response = await axios.get("/api/users/?id=" + id);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get user: ", error);
+  }
+};
+
+/**
+ * Utility function for fetching one user by Clerk ID
+ *
+ * @param id: string
+ * @returns one User
+ *
+ * @remarks
+ */
+export const getOneUserByClerkid = async (
+  clerkId: string
+): Promise<User | undefined> => {
+  try {
+    const response = await axios.get("/api/users/?clerkId=" + clerkId);
     return response.data;
   } catch (error) {
     console.error("Failed to get user: ", error);

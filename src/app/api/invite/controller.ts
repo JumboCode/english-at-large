@@ -14,7 +14,7 @@ export const postInviteController = async (
 
     const invite = clerkClient.invitations.createInvitation({
       emailAddress: email,
-      redirectUrl: "http://localhost:3000/signup",
+      redirectUrl: "https://english-at-large-liard.vercel.app/signup",
       publicMetadata: {
         name: name,
         role: role,

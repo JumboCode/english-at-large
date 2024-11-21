@@ -4,7 +4,11 @@ import Image from "next/image";
 import eal_logo from "@/assets/icons/eal_logo.svg";
 import arrow from "@/assets/icons/keyboard_arrow_up.svg";
 import profilePic from "@/assets/icons/reindeer.png";
+import { useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
 
 const imageStyle = {
   minHeight: "40px",
@@ -18,6 +22,21 @@ const profileStyle = {
 };
 
 const NavBar = () => {
+  const { signOut } = useClerk();
+  const router = useRouter();
+
+  const user = useCurrentUser();
+  // useEffect to run when `user` changes
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
     <div className="bg-[#F6FAFD] flex p-4 justify-between">
       <div className="gap-10 flex">
@@ -54,7 +73,6 @@ const NavBar = () => {
             </div>
           </div>
         </div>
-
         <div className="relative group w-20 mt-2">
           <p className="text-md font-[family-name:var(--font-rubik)] font-semibold">
             Manage{" "}
@@ -87,7 +105,6 @@ const NavBar = () => {
           </Link>
         </div>
       </div>
-
       <div className="flex row gap-3 mr-14 mt-2">
         <Link href="/profile">
           <Image
@@ -99,16 +116,19 @@ const NavBar = () => {
         </Link>
         <div className="relative group w-28">
           <p className="text-md font-[family-name:var(--font-rubik)] font-semibold">
-            Clarence Yeh
+            {user?.name}
           </p>
 
           <div className="absolute hidden bg-grey-200 group-hover:block min-w-[200px]">
             <div className="p-3 mt-1 bg-white rounded-md w-20">
               <div className="dropdown-menu font-[family-name:var(--font-rubik)] whitespace-nowrap">
                 <ul className="pb-2">
-                  <Link href="/login" className="dropdown-item">
+                  <button
+                    onClick={handleSignOut}
+                    className="dropdown-item cursor-pointer w-full text-left hover:bg-gray-100 px-2 py-1 rounded"
+                  >
                     Logout
-                  </Link>
+                  </button>
                 </ul>
               </div>
             </div>
