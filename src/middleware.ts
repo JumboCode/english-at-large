@@ -1,19 +1,17 @@
-import { clerkMiddleware, createRouteMatcher} from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-
 
 // Define protected routes
 const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
-  const { userId} = await auth();
-  
+  const { userId } = await auth();
+
   if (isProtectedRoute(req) && !userId) {
     //comment this out if you want to access dashboard without being logged in
-    return NextResponse.redirect(new URL('/login', req.url)); 
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 });
-
 
 export const config = {
   matcher: [

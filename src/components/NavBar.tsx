@@ -120,9 +120,12 @@ const NavBar = () => {
             <div className="p-3 mt-1 bg-white rounded-md w-20">
               <div className="dropdown-menu font-[family-name:var(--font-rubik)] whitespace-nowrap">
                 <ul className="pb-2">
-                  <Link href="/login" className="dropdown-item">
+                  <button
+                    onClick={handleSignOut}
+                    className="dropdown-item cursor-pointer w-full text-left hover:bg-gray-100 px-2 py-1 rounded"
+                  >
                     Logout
-                  </Link>
+                  </button>
                 </ul>
               </div>
             </div>
