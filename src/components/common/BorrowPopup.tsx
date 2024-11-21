@@ -1,10 +1,11 @@
 "use client";
-import { useState} from "react";
+import { useState } from "react";
 import BookDetail from "@/components/Details";
 import ConfirmPopup from "./ConfirmPopup";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book, BookStatus} from "@prisma/client";
-
+import { Book, BookStatus } from "@prisma/client";
+import Image from "next/image";
+import imageToAdd from "../../assets/images/harry_potter.jpg";
 interface BorrowPopupProps {
   book: Book;
   toggle: () => void;
@@ -16,7 +17,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
   const exit = () => {
     toggle();
   };
-  
+
   //this also needs to be changed to a request
   const updateBook: Book = {
     id: book.id,
@@ -24,7 +25,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
     author: book.author,
     isbn: book.isbn,
     publisher: book.publisher,
-    level: book.level, 
+    level: book.level,
     bookType: book.bookType,
     scanLink: book.scanLink,
     description: book.description,
@@ -32,11 +33,13 @@ const BorrowPopup = (props: BorrowPopupProps) => {
     status: BookStatus.Borrowed,
     skills: book.skills,
     releaseDate: book.releaseDate,
+    numPages: 0,
+    coverURL: "",
   };
-  
+
   const toggleNextBorrow = async () => {
     setIsNextBorrowOpen(!isNextBorrowOpen);
-    console.log("this is the book status after toggle", book.status)
+    console.log("this is the book status after toggle", book.status);
   };
 
   return (
@@ -50,9 +53,14 @@ const BorrowPopup = (props: BorrowPopupProps) => {
             </h1>
             <div className="text-[#757575] text-sm"> You are borrowing: </div>
             <hr className="h-px bg-[#D4D4D4] border-0 mt-5"></hr>
-            <div className="flex grid grid-cols-2 gap-4 mt-4">
-              <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
-
+            <div className="flex grid grid-cols-2 gap-4 mt-4 ">
+              <Image
+                src={book.coverURL || imageToAdd.src}
+                alt="Book Cover"
+                width={150}
+                height={190}
+                // className="w-full h-full object-fill"
+              />
               <div>
                 <div className="font-[family-name:var(--font-rubik)] font-semibold text-2xl">
                   {book.title}
@@ -63,6 +71,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
                   publisher={book.publisher}
                   releaseDate={book.releaseDate}
                   copies={10}
+                  numPages={book.numPages}
                   altStyle="flex row-span-2 my-5"
                   altWidth="pb-3"
                 />
@@ -85,16 +94,11 @@ const BorrowPopup = (props: BorrowPopupProps) => {
             </div>
           </div>
         </div>
-      ) :(
-        <div> 
-          <ConfirmPopup
-            updatedBook = {updateBook}
-            book  = {book}
-            toggle = {toggle}
-          />
+      ) : (
+        <div>
+          <ConfirmPopup updatedBook={updateBook} book={book} toggle={toggle} />
         </div>
-        
-        )}
+      )}
     </div>
   );
 };

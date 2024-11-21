@@ -8,7 +8,6 @@ import BorrowPopup from "@/components/common/BorrowPopup";
 
 import { getOneBook } from "@/lib/api/books";
 import { Book, BookStatus } from "@prisma/client";
-import bookmark from "@/assets/icons/Bookmark.svg";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -71,19 +70,34 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                       by {book.author}
                     </div>
                     <div className="flex">
-                      <CommonButton
-                        label="Borrow"
-                        onClick={toggleBorrow}
-                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
-                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                        leftIcon={
-                          <Image
-                            src={bookmark}
-                            alt="Book Icon"
-                            className="w-4 h-4 mr-3"
-                          />
-                        }
-                      />
+                      {
+                        <CommonButton
+                          label="Borrow"
+                          altStyle={`w-40 h-10 ${
+                            book.status === BookStatus.Available
+                              ? "bg-dark-blue"
+                              : "bg-medium-grey-border"
+                          } border-none mr-3`}
+                          onClick={
+                            book.status === BookStatus.Available
+                              ? toggleBorrow
+                              : undefined
+                          }
+                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                          leftIcon={
+                            <Image
+                              src={
+                                book.status === BookStatus.Available
+                                  ? bookIcon
+                                  : bookIconGreyed
+                              }
+                              alt="Book Icon"
+                              className="w-4 h-4 mr-3"
+                            />
+                          }
+                        />
+                      }
+
                       <CommonButton
                         label="Edit"
                         onClick={(e) => {
@@ -173,38 +187,6 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                   />
                 </div>
               </div>
-              {book.status == BookStatus.Available ? (
-                <div>
-                  <CommonButton
-                    label="Borrow"
-                    altStyle="w-40 h-10 bg-[#202D74]"
-                    onClick={toggleBorrow}
-                    altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                    leftIcon={
-                      <Image
-                        src={bookIcon}
-                        alt="Book Icon"
-                        className="w-4 h-4 mr-3"
-                      />
-                    }
-                  />
-                </div>
-              ) : (
-                <div>
-                  <CommonButton
-                    label="Borrow"
-                    altStyle="w-40 h-10 bg-[#D9D9D9] border-0"
-                    altTextStyle="text-[#808080] font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                    leftIcon={
-                      <Image
-                        src={bookIconGreyed}
-                        alt="Book Icon"
-                        className="w-4 h-4 mr-3 "
-                      />
-                    }
-                  />
-                </div>
-              )}
 
               {isBorrowOpen ? (
                 <BorrowPopup toggle={toggleBorrow} book={book} />
