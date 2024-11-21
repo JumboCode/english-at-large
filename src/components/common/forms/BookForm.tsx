@@ -3,10 +3,10 @@ import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
 import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
-import { createBook, updateBook } from "@/lib/api/books";
+import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
-import imageToAdd from "../../../assets/images/harry_potter.jpg"
-import axios from 'axios';
+import imageToAdd from "../../../assets/images/harry_potter.jpg";
+import axios from "axios";
 
 interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
@@ -75,60 +75,46 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
-  const pullISBN = async() => {
+  const pullISBN = async () => {
     setShowBookForm(true);
     try {
-    const response = await axios.get(`https://openlibrary.org/isbn/${newBook.isbn}.json`);
+      const response = await axios.get(
+        `https://openlibrary.org/isbn/${newBook.isbn}.json`
+      );
+      const data = response.data;
 
-    if(response.data.title){
-      const title = response.data.title;
+      // Create an object to map OpenLibrary keys to book keys
+      const bookFields = {
+        title: data.title,
+        description: data.description?.value,
+        publisher: data.publishers?.[0],
+        numPages: data.number_of_pages,
+      };
+
+      // Update newBook with retrieved data
+      setNewBook((prevBook) => {
+        const updatedBook = { ...prevBook };
+
+        // update all fields at once
+        if (bookFields.title) updatedBook.title = bookFields.title;
+        if (bookFields.description)
+          updatedBook.description = bookFields.description;
+        if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
+        if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
+
+        return updatedBook;
+      });
+
+      // Book cover retrieval
+      const coverUrl = await getBookCover(newBook.isbn);
       setNewBook((prevBook) => ({
         ...prevBook,
-        title: title,
+        coverURL: coverUrl ?? imageToAdd.src,
       }));
-    }
-    if(response.data.description){
-      const desc = response.data.description.value;
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        description: desc,
-      }));
-    }
-    if(response.data.publishers){
-      const publisher = response.data.publishers[0];
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        publisher: publisher,
-      }));
-    }
-    if(response.data.number_of_pages){
-      const numPages : number = response.data.number_of_pages;
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        numPages: numPages,
-      }));
-    }
     } catch {
-      throw new Error("Book not found for this ISBN")
+      throw new Error("Book not found for this ISBN");
     }
-
-    // book cover retrieval
-    const url = `https://covers.openlibrary.org/b/isbn/${newBook.isbn}-M.jpg?default=false`;
-    try {
-      const response = await axios.get(url);
-          if (response.status == 200) {
-            setNewBook((prevBook) => ({
-              ...prevBook,
-              coverURL: url,
-            }));
-          }
-    } catch (error) {
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        coverURL: imageToAdd.src,
-      }));
-    }
-  }
+  };
 
   const handleSave = async () => {
     try {
@@ -156,7 +142,7 @@ const BookForm = (props: BookFormProps) => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <div className="bg-white text-black absolute left-0 top-0 w-full h-full overflow-scroll block text-sm font-medium">
@@ -356,11 +342,14 @@ const BookForm = (props: BookFormProps) => {
               );
             })}
           </div>
-          <CommonButton 
-              label={"ISBN Click"} 
+          {!existingBook ? (
+            <CommonButton
+              label={"ISBN Click"}
               onClick={() => {
                 pullISBN();
-              }}/>
+              }}
+            />
+          ) : null}
         </div>
       </form>
     </div>

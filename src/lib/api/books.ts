@@ -89,19 +89,19 @@ export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
   }
 };
 
+export const getBookCover = async (
+  bookISBN: string
+): Promise<string | undefined> => {
+  const url = `https://covers.openlibrary.org/b/isbn/${bookISBN}-M.jpg`;
 
-// export const getBookCover = async (bookISBN: string): Promise<string> => {
-//   const url = `https://covers.openlibrary.org/b/isbn/${bookISBN}-M.jpg`;
+  try {
+    const response = await axios.head(url);
+    if (response.status == 200) {
+      return url;
+    }
+  } catch (error) {
+    console.warn("Error fetching image");
+  }
 
-//   try {
-//     const response = await axios.head(url); 
-//     if (response.status == 200) {
-//       return url; 
-//     }
-//   } catch (error) {
-//     console.warn("Error fetching image");
-//   }
-
-//   return imageToAdd.src; 
-// }
-
+  // return imageToAdd.src;
+};
