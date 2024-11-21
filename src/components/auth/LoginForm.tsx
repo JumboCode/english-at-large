@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const LoginForm = () => {
@@ -36,7 +37,7 @@ const LoginForm = () => {
           </label>
         </div>
 
-        <a href="/forgot-password">Forgot password?</a>
+        <Link href="/forgot-password">Forgot password?</Link>
       </div>
     </>
   );

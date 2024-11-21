@@ -39,7 +39,11 @@ const CommonButton = (props: ButtonProps) => {
       type="button"
     >
       {leftIcon ? leftIcon : null}
-      <p className={`text-dark-blue text-sm ${altTextStyle}`}>{label}</p>
+      <p
+        className={`text-dark-blue text-sm font-medium font-[family-name:var(--font-rubik)] ${altTextStyle}`}
+      >
+        {label}
+      </p>
 
       {rightIcon ? rightIcon : null}
     </button>

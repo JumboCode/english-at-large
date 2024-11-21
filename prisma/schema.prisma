@@ -7,25 +7,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String    @id @default(cuid())
+  name      String?
+  email     String?   @unique
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  role      UserRole
+  clerkId   String    @default("placeholder")
+  pending   Boolean   @default(false)
+  inviteID  String    @default("none")
+  requests  Request[]
+
+  @@map("users")
+}
+
+model Book {
+  id          Int          @id @default(autoincrement())
+  isbn        String
+  notes       String?
+  scanLink    String?
+  title       String
+  author      String
+  description String
+  publisher   String
+  releaseDate String?
+  skills      BookSkills[]
+  bookType    BookType
+  level       BookLevel
+  status      BookStatus   @default(Available)
+  numPages    Int?         @default(0)
+  coverURL    String       @default("placeholder")
+  requests    Request[]
+
+  @@map("Books")
+}
+
+model Request {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  bookId    Int
+  status    String
+  createdAt DateTime
+  message   String
+  bookTitle String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Requests")
+}
+
 enum UserRole {
   Admin
   Volunteer
   Tutor
-}
-
-model User {
-  id        String   @id @default(cuid())
-  clerkId   String   @default("placeholder")
-  name      String?
-  email     String?  @unique
-  role      UserRole
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relation to Request
-  requests Request[] // One user can have many requests
-
-  @@map("users")
 }
 
 enum BookStatus {
@@ -37,7 +72,7 @@ enum BookStatus {
 
 enum BookSkills {
   Grammar
-  Vocab_Building // use underscore for easier string processing when we display
+  Vocab_Building
   Reading
   Writing
   Speaking
@@ -59,53 +94,4 @@ enum BookLevel {
   Intermediate
   High_Intermediate
   Advanced
-}
-
-model Book {
-  id          Int          @id @default(autoincrement())
-  title       String
-  author      String
-  isbn        String
-  description String
-  publisher   String
-  level       BookLevel
-  bookType    BookType
-  skills      BookSkills[]
-  scanLink    String?
-  releaseDate String?
-  notes       String?
-  status      BookStatus   @default(Available)
-
-  // Foreign key to BookGroup. Is optional until we implement the BookGroup logic
-  // groupId   Int?       // Foreign key to BookGroup
-  // group     BookGroup? @relation(fields: [groupId], references: [id]) // Relation to BookGroup
-
-  // Relation to Request
-  requests Request[] // One book can be requested in many requests
-
-  @@map("Books")
-}
-
-// model BookGroup {
-//   id    Int     @id @default(autoincrement())
-//   title String
-//   books Book[]  // One group can have many books
-
-//   @@map("BookGroups")
-// }
-
-model Request {
-  id        Int      @id @default(autoincrement())
-  userId    String // Foreign key to User
-  bookId    Int // Foreign key to Book
-  status    String
-  createdAt DateTime
-  message   String
-  bookTitle String
-
-  // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
-
-  @@map("Requests")
 }
