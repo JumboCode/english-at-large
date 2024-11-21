@@ -45,8 +45,8 @@ const LoginForm = () => {
       });
 
       if (result?.status === "complete") {
-        // Force a full page refresh to update auth state
-        router.replace("/dashboard");
+        // Force full refresh with vanilla JS; router.refresh() only does server side refreshes
+        window.location.href = "/dashboard";
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -68,10 +68,7 @@ const LoginForm = () => {
 
   return (
     <>
-      <form
-        className="flex flex-col gap-y-4"
-        onSubmit={(e) => e.preventDefault()}
-      >
+      <div className="flex flex-col gap-y-4">
         <label className="text-l font-bold">Email</label>
         <input
           type="email"
@@ -88,7 +85,7 @@ const LoginForm = () => {
           placeholder="Enter your password"
           onChange={(e) => setPassword(e.target.value)}
         />
-      </form>
+      </div>
       {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
       <div className="flex flex-row justify-between pt-10 text-sm font-bold">
         <div className="flex gap-1 items-center">
@@ -112,6 +109,7 @@ const LoginForm = () => {
           invalidInputs ? "bg-light-blue" : "bg-dark-blue"
         } mt-10 w-full`}
         disabled={isLoading || invalidInputs}
+        type="submit"
       />
     </>
   );

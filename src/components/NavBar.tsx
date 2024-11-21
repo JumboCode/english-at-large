@@ -4,9 +4,11 @@ import Image from "next/image";
 import eal_logo from "@/assets/icons/eal_logo.svg";
 import arrow from "@/assets/icons/keyboard_arrow_up.svg";
 import profilePic from "@/assets/icons/reindeer.png";
-import { useClerk, useUser } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
 
 const imageStyle = {
   minHeight: "40px",
@@ -21,13 +23,14 @@ const profileStyle = {
 
 const NavBar = () => {
   const { signOut } = useClerk();
-  const { user } = useUser();
   const router = useRouter();
+
+  const user = useCurrentUser();
+  // useEffect to run when `user` changes
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      console.log("Successfully signed out");
       router.push("/login");
     } catch (error) {
       console.error("Error signing out:", error);
@@ -113,7 +116,7 @@ const NavBar = () => {
         </Link>
         <div className="relative group w-28">
           <p className="text-md font-[family-name:var(--font-rubik)] font-semibold">
-            Clarence Yeh
+            {user?.name}
           </p>
 
           <div className="absolute hidden bg-grey-200 group-hover:block min-w-[200px]">

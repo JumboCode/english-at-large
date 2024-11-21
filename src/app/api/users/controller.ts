@@ -30,6 +30,25 @@ export const getOneUserController = async (id: string): Promise<User> => {
   }
 };
 
+export const getOneUserByClerkController = async (
+  clerkId: string
+): Promise<User> => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: { clerkId: clerkId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      return user;
+    }
+  } catch (error) {
+    console.error("Error fetching user: ", error);
+    throw error;
+  }
+};
+
 export const postUserController = async (
   userData: Omit<User, "id">
 ): Promise<User> => {
