@@ -95,7 +95,7 @@ const SendInvite = (props: SendInviteProps) => {
             </div>
             <hr />
             <div>
-              <p className="text-black text-lg font-medium font-bold font-[family-name:var(--font-rubik)]">
+              <p className="text-black text-lg font-medium font-[family-name:var(--font-rubik)]">
                 Full Name{" "}
               </p>
               <input

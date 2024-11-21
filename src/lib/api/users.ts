@@ -2,6 +2,7 @@ import { User } from "@prisma/client";
 import axios from "axios";
 import { validateUserData } from "../util/types";
 import { UserResource } from "@clerk/types";
+import { Invitation } from "@clerk/backend";
 
 /**
  * Utility function for fetching all users
@@ -38,6 +39,12 @@ export const getOneUser = async (id: string): Promise<User | undefined> => {
   }
 };
 
+/**
+ *
+ * @param clerkId - a user's ID in clerk, NOT their neon.tech id.
+ *
+ * @returns - the user's associated clerk profile. this should only be used internally
+ */
 export const getClerkUser = async (
   clerkId: string
 ): Promise<UserResource | undefined> => {
@@ -72,17 +79,32 @@ export const createUser = async (
   }
 };
 
+/**
+ *
+ * @param name - the user's name
+ * @param email - the user's email
+ * @param role
+ * @param id - the user's neon.tech id
+ * @returns clerk invitation
+ *
+ * @notes begins the user invitation process. the flow goes:
+ * - admin invite the user
+ * - 'pending' user is created in neon tech
+ * - invitation is sent Clerk (and created in Clerk)
+ * - user accepts invite. clerk invitation (should) go away, and clerk user is created
+ * - 'pending' is set to false
+ */
 export const inviteUser = async (
   name: string,
   email: string,
   role: string,
   id: string
-) => {
+): Promise<Invitation | undefined> => {
   try {
     if (!name || !email || !role || !id) {
       throw new Error("Missing user fields");
     }
-    const invite = await axios.post("/api/invite", {
+    const invite: Invitation = await axios.post("/api/invite", {
       name: name,
       email: email,
       role: role,

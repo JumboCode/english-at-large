@@ -9,6 +9,7 @@ import CommonDropdown from "@/components/common/forms/Dropdown";
 import PendingChip from "@/assets/icons/pending_chip";
 import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
+import { dateToTimeString } from "@/lib/util/utilFunctions";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -22,15 +23,6 @@ export default function Manage() {
 
     getUsers();
   }, []);
-
-  const getUserDate = (user: User) => {
-    const date = new Date(user.createdAt);
-    const day = date.getDate();
-    const month = date.toLocaleString("default", { month: "short" });
-    const year = date.getFullYear();
-
-    return day + " " + month + " " + year;
-  };
 
   return (
     <div className="bg-white">
@@ -89,7 +81,9 @@ export default function Manage() {
                 </td>
                 <td>{user.pending ? <PendingChip /> : null}</td>
 
-                <td className="text-black">{getUserDate(user)}</td>
+                <td className="text-black">
+                  {dateToTimeString(user.createdAt)}
+                </td>
                 <td>
                   <div className="flex justify-end items-center">
                     <CommonButton

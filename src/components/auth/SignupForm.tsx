@@ -117,7 +117,7 @@ const SignupForm = () => {
           };
 
           const metadata = await waitForMetadata();
-          console.log(metadata);
+          // console.log(metadata);
           // Now create the user database
           // if (attempt.createdUserId) {
           const newUser = {
