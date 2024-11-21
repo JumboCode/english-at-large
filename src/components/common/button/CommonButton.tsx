@@ -36,9 +36,14 @@ const CommonButton = (props: ButtonProps) => {
       onClick={onClick}
       className={`flex flex-row items-center justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue bg-white" ${altStyle}`}
       disabled={disabled}
+      type="button"
     >
       {leftIcon ? leftIcon : null}
-      <p className={`text-dark-blue text-sm ${altTextStyle}`}>{label}</p>
+      <p
+        className={`text-dark-blue text-sm font-medium font-[family-name:var(--font-rubik)] ${altTextStyle}`}
+      >
+        {label}
+      </p>
 
       {rightIcon ? rightIcon : null}
     </button>

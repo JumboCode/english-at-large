@@ -6,7 +6,10 @@ import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import AddNewBookForm from "@/components/common/forms/AddNewBookForm";
+import BookForm from "@/components/common/forms/BookForm";
+import CommonButton from "@/components/common/button/CommonButton";
+import FilterIcon from "@/assets/icons/Filter";
+import AddIcon from "@/assets/icons/Add";
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -74,12 +77,31 @@ const BooksPage = () => {
   return (
     <div>
       <SearchBar
-        filterOnPress={toggleFilterPopup}
-        setShowBookForm={setBookFormShown}
+        // filterOnPress={toggleFilterPopup}
+        // setShowBookForm={setBookFormShown}
+        button={
+          <CommonButton
+            label={"Filter"}
+            leftIcon={<FilterIcon />}
+            onClick={toggleFilterPopup}
+          />
+        }
+        button2={
+          <CommonButton
+            label="Create Book"
+            leftIcon={<AddIcon />}
+            onClick={() => {
+              setBookFormShown(true);
+            }}
+            altTextStyle="text-white"
+            altStyle="bg-dark-blue"
+          />
+        }
+        placeholderText="Search for books"
       />
 
       {bookFormShown ? (
-        <AddNewBookForm setShowBookForm={setBookFormShown} />
+        <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
       ) : null}
       <FilterPopup
         isOpen={isFilterOpen}

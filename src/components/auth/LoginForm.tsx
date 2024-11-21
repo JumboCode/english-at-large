@@ -1,8 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import { useSignIn, useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const LoginForm = () => {
   const [checked, setChecked] = useState(false);
@@ -10,16 +10,14 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const { isLoaded, signIn } = useSignIn();
-  const { isSignedIn, userId } = useAuth();
+  const { isSignedIn } = useAuth();
 
   const handleChange = () => {
     setChecked((prev) => !prev);
   };
 
   const handleLogin = async () => {
-
     if (isSignedIn) {
       console.log("User already signed in, redirecting...");
       window.location.href = "/dashboard";
@@ -32,7 +30,7 @@ const LoginForm = () => {
     try {
       setIsLoading(true);
       console.log("Email:", email);
-      
+
       const result = await signIn.create({
         identifier: email,
         password: password,
@@ -48,7 +46,9 @@ const LoginForm = () => {
       }
     } catch (err) {
       console.error("Error:", err);
-      setError(err.errors?.[0]?.message || "An error occurred. Please try again.");
+      setError(
+        err.errors?.[0]?.message || "An error occurred. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +60,10 @@ const LoginForm = () => {
 
   return (
     <>
-      <form className="flex flex-col gap-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="flex flex-col gap-y-4"
+        onSubmit={(e) => e.preventDefault()}
+      >
         <label className="text-l font-bold">Email</label>
         <input
           type="text"
@@ -78,9 +81,7 @@ const LoginForm = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </form>
-      {error && (
-        <div className="text-red-500 text-sm mt-2">{error}</div>
-      )}
+      {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
       <div className="flex flex-row justify-between pt-10 text-sm font-bold">
         <div className="flex gap-1 items-center">
           <input type="checkbox" checked={checked} onChange={handleChange} />
@@ -88,7 +89,8 @@ const LoginForm = () => {
             Remember for 7 days
           </label>
         </div>
-        <a href="/forgot-password">Forgot password?</a>
+
+        <Link href="/forgot-password">Forgot password?</Link>
       </div>
       <CommonButton
         onClick={handleLogin}
