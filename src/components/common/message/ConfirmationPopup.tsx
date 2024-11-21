@@ -2,6 +2,7 @@
 import CheckCircleIcon from "@/assets/icons/CheckCircle";
 import FailCircleIcon from "@/assets/icons/FailCircle";
 import CloseIcon from "@/assets/icons/Close";
+import { useEffect } from "react";
 
 interface SuccessProps {
   message: string;
@@ -23,6 +24,12 @@ export const EmptyConfirmationState: ConfirmationPopupState = {
 
 const ConfirmationPopup = (props: SuccessProps) => {
   const { message, success, onDisappear } = props;
+
+  useEffect(()=> {
+    setTimeout(() => {
+      onDisappear();
+    }, 5000)
+  })
 
   return (
     <div className={"bottom-[15px] right-[15px] shadow-lg rounded-b-lg fixed bg-white"}>
