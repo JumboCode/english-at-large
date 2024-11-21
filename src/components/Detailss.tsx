@@ -6,14 +6,23 @@ interface DetailProps {
   publisher: string;
   releaseDate: string | null;
   copies: number;
-  numPages: number | null; 
+  numPages: number | null;
   lineSpacing?: string;
   verticalSpacing?: string;
   fontSize?: string;
 }
 
 const BookDetail = (props: DetailProps) => {
-  const { isbn, publisher, releaseDate, copies, numPages, lineSpacing, verticalSpacing,fontSize} = props;
+  const {
+    isbn,
+    publisher,
+    releaseDate,
+    copies,
+    numPages,
+    lineSpacing,
+    verticalSpacing,
+    fontSize,
+  } = props;
   return (
     <div className="flex row-span-2 my-5">
       <div className={`font-medium ${lineSpacing} ${fontSize}`}>
@@ -24,7 +33,7 @@ const BookDetail = (props: DetailProps) => {
         <div className="relative text-gray-500 mr-4">Page Numbers</div>
       </div>
       <div className={`${lineSpacing} ${verticalSpacing} ${fontSize}`}>
-      <div className="relative">{isbn}</div>
+        <div className="relative">{isbn}</div>
         <div className="relative">{publisher}</div>
         <div className="relative">{releaseDate}</div>
         <div className="relative">{copies}</div>
