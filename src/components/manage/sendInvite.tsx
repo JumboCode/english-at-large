@@ -52,7 +52,7 @@ const SendInvite = (props: SendInviteProps) => {
             user?.id ?? ""
           );
 
-          const inviteID = invitation.data.invite.id as string;
+          const inviteID = invitation?.id as string;
           if (user) {
             user.inviteID = inviteID;
             await updateUser(user);

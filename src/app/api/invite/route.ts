@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       role,
       id
     );
-    return NextResponse.json({ invite }, { status: 201 });
+    return NextResponse.json(invite, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to send invite: " + error },
