@@ -15,6 +15,7 @@ import Tag from "@/components/tag";
 import BookDetail from "@/components/Details";
 import BookForm from "@/components/common/forms/BookForm";
 import RemoveModal from "@/components/RemoveModal";
+import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 
 type Params = Promise<{ id: string }>;
 
@@ -124,20 +125,16 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                   </div>
                 </div>
 
-                <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
-                  {/* TODO: This will be implemented once the books have images! */}
-                  {/* <Image
-                  src={TODO:}
-                  alt="Book Cover"
-                  width={150}
-                  height={190}
-                  style={imageStyle}
-                /> */}
-                  <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
+                <div className="mt-10 mr-10 w-[200px] h-[300px] flex justify-center items-center">
+                  <Image
+                    src={book.coverURL || imageToAdd.src}
+                    alt="Book Cover"
+                    width={200}
+                    height={300}
+                    className="w-full h-full object-fill"
+                  />
                 </div>
               </div>
-
-              <hr className="h-px bg-[#D4D4D4] border-0 mx-40 -mt-10"></hr>
 
               {/* Tags Section */}
               <div className="relative mt-10 mx-40">
@@ -172,8 +169,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     publisher={book.publisher}
                     releaseDate={book.releaseDate}
                     copies={10}
-                    lineSpacing="space-y-3"
-                    verticalSpacing="ml-7"
+                    numPages={book.numPages}
                   />
                 </div>
               </div>
