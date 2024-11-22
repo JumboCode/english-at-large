@@ -98,6 +98,7 @@ const BooksPage = () => {
           />
         }
         placeholderText="Search for books"
+        books={books}
       />
 
       {bookFormShown ? (
