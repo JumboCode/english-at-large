@@ -37,13 +37,13 @@ const BookDetail = (props: DetailProps) => {
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Release</div>
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Copies</div>
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
-          Page Numbers
+          No of Pages
         </div>
       </div>
       <div className={`${lineSpacing} ${verticalSpacing} ${fontSize}`}>
         <div className={`relative ${altWidth}`}>{isbn}</div>
         <div className={`relative ${altWidth}`}>{publisher}</div>{" "}
-        <div className={`relative`}>{releaseDate}</div>
+        <div className={`relative`}>{`${releaseDate ?? "1/1/1900"}`} </div>
         <div className={`relative ${altWidth}`}>{copies}</div>
         <div className={`relative ${altWidth}`}>{numPages}</div>
       </div>

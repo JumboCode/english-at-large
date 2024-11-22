@@ -119,13 +119,13 @@ const NavBar = () => {
             {user?.name}
           </p>
 
-          <div className="absolute hidden bg-grey-200 group-hover:block min-w-[200px]">
-            <div className="p-3 mt-1 bg-white rounded-md w-20">
+          <div className="absolute hidden bg-grey-200 group-hover:block min-w-[100px] shadow-md">
+            <div className="p-1 mt-1 bg-white rounded-md">
               <div className="dropdown-menu font-[family-name:var(--font-rubik)] whitespace-nowrap">
-                <ul className="pb-2">
+                <ul>
                   <button
                     onClick={handleSignOut}
-                    className="dropdown-item cursor-pointer w-full text-left hover:bg-gray-100 px-2 py-1 rounded"
+                    className="dropdown-item cursor-pointer w-full text-center hover:bg-gray-100 px-2 py-1 rounded"
                   >
                     Logout
                   </button>
