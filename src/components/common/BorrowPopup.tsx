@@ -3,43 +3,31 @@ import { useState } from "react";
 import BookDetail from "@/components/Details";
 import ConfirmPopup from "./ConfirmPopup";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book, BookStatus } from "@prisma/client";
+import { Book } from "@prisma/client";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
+import { createQuickRequest } from "@/lib/api/requests";
 interface BorrowPopupProps {
   book: Book;
-  toggle: () => void;
+  toggleOpen: () => void;
 }
 
 const BorrowPopup = (props: BorrowPopupProps) => {
-  const { toggle, book } = props;
+  const { toggleOpen, book } = props;
   const [isNextBorrowOpen, setIsNextBorrowOpen] = useState(true);
+  const user = useCurrentUser(); // currently logged in user
   const exit = () => {
-    toggle();
+    toggleOpen();
   };
 
   //this also needs to be changed to a request
-  const updateBook: Book = {
-    id: book.id,
-    title: book.title,
-    author: book.author,
-    isbn: book.isbn,
-    publisher: book.publisher,
-    level: book.level,
-    bookType: book.bookType,
-    scanLink: book.scanLink,
-    description: book.description,
-    notes: book.notes,
-    status: BookStatus.Borrowed,
-    skills: book.skills,
-    releaseDate: book.releaseDate,
-    numPages: 0,
-    coverURL: "",
-  };
 
   const toggleNextBorrow = async () => {
+    if (user) {
+      await createQuickRequest(book, user);
+    } // you shouldn't be here if you're not authenticated...
     setIsNextBorrowOpen(!isNextBorrowOpen);
-    console.log("this is the book status after toggle", book.status);
   };
 
   return (
@@ -53,7 +41,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
             </h1>
             <div className="text-[#757575] text-sm"> You are borrowing: </div>
             <hr className="h-px bg-[#D4D4D4] border-0 mt-5"></hr>
-            <div className="flex grid grid-cols-2 gap-4 mt-4 ">
+            <div className="flex grid-cols-2 gap-4 mt-4 ">
               <Image
                 src={book.coverURL || imageToAdd.src}
                 alt="Book Cover"
@@ -96,7 +84,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
         </div>
       ) : (
         <div>
-          <ConfirmPopup updatedBook={updateBook} book={book} toggle={toggle} />
+          <ConfirmPopup toggle={toggleOpen} />
         </div>
       )}
     </div>

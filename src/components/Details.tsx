@@ -31,14 +31,19 @@ const BookDetail = (props: DetailProps) => {
     <div className={`flex row-span-2 my-5 ${altStyle}`}>
       <div className={`font-medium ${lineSpacing} ${fontSize}`}>
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>ISBN</div>
-        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Publisher</div>
+        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
+          Publisher
+        </div>
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Release</div>
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Copies</div>
-        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Page Numbers</div>
+        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
+          Page Numbers
+        </div>
       </div>
       <div className={`${lineSpacing} ${verticalSpacing} ${fontSize}`}>
         <div className={`relative ${altWidth}`}>{isbn}</div>
-        <div className={`relative ${altWidth}`}>{publisher}</div>`}        <div className={`relative`}>{releaseDate}</div>
+        <div className={`relative ${altWidth}`}>{publisher}</div>{" "}
+        <div className={`relative`}>{releaseDate}</div>
         <div className={`relative ${altWidth}`}>{copies}</div>
         <div className={`relative ${altWidth}`}>{numPages}</div>
       </div>

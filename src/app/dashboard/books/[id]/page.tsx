@@ -40,7 +40,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     fetchBook();
   }, [params]);
 
-  const toggleBorrow = () => {
+  const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
   };
 
@@ -74,13 +74,13 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         <CommonButton
                           label="Borrow"
                           altStyle={`w-40 h-10 ${
-                            book.status === BookStatus.Available
+                            book.status === BookStatus.Available // may have to change the case for when someone else reqeuests -- add a hold
                               ? "bg-dark-blue"
                               : "bg-medium-grey-border"
                           } border-none mr-3`}
                           onClick={
                             book.status === BookStatus.Available
-                              ? toggleBorrow
+                              ? toggleBorrowOpen
                               : undefined
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
@@ -189,7 +189,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
               </div>
 
               {isBorrowOpen ? (
-                <BorrowPopup toggle={toggleBorrow} book={book} />
+                <BorrowPopup toggleOpen={toggleBorrowOpen} book={book} />
               ) : null}
             </div>
           ) : null}

@@ -8,22 +8,22 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
+  id        String        @id @default(cuid())
   name      String?
-  email     String?   @unique
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  email     String?       @unique
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
   role      UserRole
-  clerkId   String    @default("placeholder")
-  pending   Boolean   @default(false)
-  inviteID  String    @default("none")
-  requests  Request[]
+  clerkId   String        @default("placeholder")
+  pending   Boolean       @default(false)
+  inviteID  String        @default("none")
+  requests  BookRequest[]
 
   @@map("users")
 }
 
 model Book {
-  id          Int          @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   isbn        String
   notes       String?
   scanLink    String?
@@ -35,26 +35,26 @@ model Book {
   skills      BookSkills[]
   bookType    BookType
   level       BookLevel
-  status      BookStatus   @default(Available)
-  numPages    Int?         @default(0)
-  coverURL    String       @default("placeholder")
-  requests    Request[]
+  status      BookStatus    @default(Available)
+  numPages    Int?          @default(0)
+  coverURL    String        @default("placeholder")
+  requests    BookRequest[]
 
   @@map("Books")
 }
 
-model Request {
-  id        Int      @id @default(autoincrement())
+model BookRequest {
+  id        Int        @id @default(autoincrement())
   userId    String
   bookId    Int
-  status    String
+  status    BookStatus
   createdAt DateTime
   message   String
   bookTitle String
-  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("Requests")
+  @@map("BookRequests")
 }
 
 enum UserRole {

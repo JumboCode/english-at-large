@@ -1,16 +1,11 @@
-import { useEffect } from "react";
-import { Book } from "@prisma/client";
 import checkmark from "../../assets/icons/checkmark.svg";
 import Image from "next/image";
-import { updateBook } from "@/lib/api/books";
 interface ConfirmPopupProps {
-    updatedBook: Book;
-    book: Book;
-    toggle: () => void;
+  toggle: () => void;
 }
 
 const ConfirmPopup = (props: ConfirmPopupProps) => {
-  const { toggle, book, updatedBook } = props;
+  const { toggle } = props;
   const exit = () => {
     toggle();
   };
@@ -18,20 +13,6 @@ const ConfirmPopup = (props: ConfirmPopupProps) => {
     minHeight: "50px",
     minWidth: "50px",
   };
-
-  
-  useEffect(() => {
-    const setUnavailable = async () => {
-        try {
-            //replace with createRequest and updateRequest
-            await updateBook(updatedBook);
-            
-          } catch (err) {
-            console.error(err);
-          }
-    };
-    setUnavailable();
-  }, [updatedBook, book]);
 
   return (
     <div>
