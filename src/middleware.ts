@@ -1,11 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+//import {useCurrentUser } from "./lib/hooks/useCurrentUser"
 
 // Define protected routes
 const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
 
+
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
+  
 
   if (isProtectedRoute(req) && !userId) {
     //comment this out if you want to access dashboard without being logged in

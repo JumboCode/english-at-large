@@ -10,10 +10,27 @@ import PendingChip from "@/assets/icons/pending_chip";
 import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
+import { redirect } from "next/navigation";
+
+
 
 export default function Manage() {
+
+  const user = useCurrentUser(); 
+  console.log("USER ", user?.email);
+  console.log("ROLE ", user?.role);
+
+  
+  if (user?.role !== "Admin") {
+    console.log("REDIRECTING")
+    redirect("/dashboard");
+  }
+  
   const [users, setUsers] = useState<User[]>([]);
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
+
+  
 
   useEffect(() => {
     const getUsers = async () => {
@@ -25,6 +42,8 @@ export default function Manage() {
   }, []);
 
   return (
+    <div>
+    {user?.role === "Admin" ? (
     <div className="bg-white">
       <h1 className="bg-white text-black px-16 pt-12 font-bold text-3xl font-[family-name:var(--font-rubik)]">
         Users
@@ -104,5 +123,7 @@ export default function Manage() {
       </div>
       <SendInvite isOpen={popupOpen} exit={() => setPopupOpen(false)} />
     </div>
+  ) : (null) }
+  </div>
   );
 }

@@ -14,8 +14,10 @@ import ConfirmationPopup, {
   ConfirmationPopupState,
   EmptyConfirmationState,
 } from "@/components/common/message/ConfirmationPopup";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
 
 const BooksPage = () => {
+  const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -23,7 +25,6 @@ const BooksPage = () => {
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
-
   const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
     EmptyConfirmationState
   );
@@ -54,7 +55,6 @@ const BooksPage = () => {
           a.author.localeCompare(b.author) || a.title.localeCompare(b.title)
         );
       } else if (bookSortBy === "By Release Date") {
-        // Sort by release date, treating undefined dates as less recent
         return (a.releaseDate || 0) < (b.releaseDate || 0) ? -1 : 1;
       }
       return 0;
@@ -63,9 +63,9 @@ const BooksPage = () => {
   );
 
   const filteredBooks = useMemo(() => {
-    return [...books] // Create a shallow copy to avoid mutating the original `books` array
-      .sort((a, b) => sortBooks(a, b)) // Use the sortBooks function to compare and sort
-      .filter((book) => filterBooks(book)); // Use filterBooks to filter out the books
+    return [...books]
+      .sort((a, b) => sortBooks(a, b))
+      .filter((book) => filterBooks(book));
   }, [books, filterBooks, sortBooks]);
 
   useEffect(() => {
@@ -85,44 +85,43 @@ const BooksPage = () => {
   return (
     <div>
       <SearchBar
-        // filterOnPress={toggleFilterPopup}
-        // setShowBookForm={setBookFormShown}
         button={
           <CommonButton
-            label={"Filter"}
+            label="Filter"
             leftIcon={<FilterIcon />}
             onClick={toggleFilterPopup}
           />
         }
         button2={
-          <CommonButton
-            label="Create Book"
-            leftIcon={<AddIcon />}
-            onClick={() => {
-              setBookFormShown(true);
-            }}
-            altTextStyle="text-white"
-            altStyle="bg-dark-blue"
-          />
+          user?.role === "Admin" ? (
+            <CommonButton
+              label="Create Book"
+              leftIcon={<AddIcon />}
+              onClick={() => setBookFormShown(true)}
+              altTextStyle="text-white"
+              altStyle="bg-dark-blue"
+            />
+          ) : null
         }
         placeholderText="Search for books"
       />
 
-      {bookFormShown ? (
+      {bookFormShown && (
         <BookForm
           setShowBookForm={setBookFormShown}
           existingBook={null}
           setPopup={setBookFormPopup}
         />
-      ) : null}
+      )}
 
-      {bookFormPopup.shown ? (
+      {bookFormPopup.shown && (
         <ConfirmationPopup
           message={bookFormPopup.message}
           success={bookFormPopup.success}
           onDisappear={() => setBookFormPopup(EmptyConfirmationState)}
         />
-      ) : null}
+      )}
+      
       <FilterPopup
         isOpen={isFilterOpen}
         toggle={toggleFilterPopup}
@@ -135,11 +134,12 @@ const BooksPage = () => {
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />
+      
       <div className="p-4 bg-gray-100">
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500">
-              {filteredBooks.length} {"titles"}
+              {filteredBooks.length} titles
             </p>
           </div>
         </div>

@@ -96,14 +96,16 @@ const NavBar = () => {
             </div>
           </div>
         </div>
-        <div className="relative group mt-2">
+        {user?.role == "Admin" ? ( 
+          <div className="relative group mt-2">
           <Link
             href="staff"
             className="font-[family-name:var(--font-rubik)] font-semibold"
           >
             Staff
           </Link>
-        </div>
+        </div>) : (null) }
+  
       </div>
       <div className="flex row gap-3 mr-14 mt-2">
         <Link href="/profile">
