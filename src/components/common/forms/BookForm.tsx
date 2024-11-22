@@ -13,7 +13,7 @@ interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
-  setPopup: (arg0: ConfirmationPopupState) => void;
+  setPopup?: (arg0: ConfirmationPopupState) => void;
 }
 
 export enum BookFormConfirmationMessages {
@@ -144,18 +144,22 @@ const BookForm = (props: BookFormProps) => {
             onSave(createdBook);
           }
           setShowBookForm(false);
-          setPopup({
-            message: BookFormConfirmationMessages.SUCCESS,
-            success: true,
-            shown: true,
-          });
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.SUCCESS,
+              success: true,
+              shown: true,
+            });
+          }
         } else {
           setShowBookForm(false);
-          setPopup({
-            message: BookFormConfirmationMessages.FAILURE,
-            success: false,
-            shown: true,
-          });
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.FAILURE,
+              success: false,
+              shown: true,
+            });
+          }
         }
       }
     } catch (error) {
