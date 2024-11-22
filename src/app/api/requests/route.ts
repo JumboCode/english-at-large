@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Request as BookRequest } from "@prisma/client";
+import { BookRequest } from "@prisma/client";
 import {
   getOneRequestController,
   postRequestController,
