@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
+import { ConfirmationPopupState } from "../message/ConfirmationPopup";
 import imageToAdd from "../../../assets/images/harry_potter.jpg";
 import axios from "axios";
 
@@ -12,10 +13,18 @@ interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
+  setPopup?: (arg0: ConfirmationPopupState) => void;
+}
+
+export enum BookFormConfirmationMessages {
+  SUCCESS = "Book added!",
+  FAILURE = "Couldn't add book. Check your connection and retry.",
+  // add more states as needed, e.g. different error messages, etc
+  NONE = "",
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { setShowBookForm, existingBook, onSave } = props;
+  const { setShowBookForm, existingBook, onSave, setPopup } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -135,8 +144,22 @@ const BookForm = (props: BookFormProps) => {
             onSave(createdBook);
           }
           setShowBookForm(false);
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.SUCCESS,
+              success: true,
+              shown: true,
+            });
+          }
         } else {
-          throw new Error("Failed to create book!");
+          setShowBookForm(false);
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.FAILURE,
+              success: false,
+              shown: true,
+            });
+          }
         }
       }
     } catch (error) {
