@@ -25,14 +25,18 @@ export const EmptyConfirmationState: ConfirmationPopupState = {
 const ConfirmationPopup = (props: SuccessProps) => {
   const { message, success, onDisappear } = props;
 
-  useEffect(()=> {
+  useEffect(() => {
     setTimeout(() => {
       onDisappear();
-    }, 5000)
-  })
+    }, 3000);
+  });
 
   return (
-    <div className={"bottom-[15px] right-[15px] shadow-lg rounded-b-lg fixed bg-white"}>
+    <div
+      className={
+        "bottom-[15px] right-[15px] shadow-lg rounded-b-lg fixed bg-white"
+      }
+    >
       <div className={"h-1 " + (success ? "bg-green-500" : "bg-red-500")}></div>
       <div className="flex flex-row gap-x-[100px] p-3">
         <div className="flex flex-row gap-x-1">
