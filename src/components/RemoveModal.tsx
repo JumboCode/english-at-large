@@ -3,7 +3,7 @@ import { deleteBook } from "@/lib/api/books";
 import CommonButton from "./common/button/CommonButton";
 import { Book } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import BookDetail from "./details";
+import BookDetail from "./Details";
 
 interface RemoveModalProps {
   setShowRemoveModal: (arg0: boolean) => void;
