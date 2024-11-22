@@ -49,6 +49,8 @@ export const emptyBook: Book = {
   status: BookStatus.Available,
   skills: [],
   releaseDate: null,
+  numPages: 0,
+  coverURL: "",
 };
 
 /**
@@ -67,6 +69,8 @@ export const newEmptyBook: Omit<Book, "id"> = {
   status: BookStatus.Available,
   skills: [],
   releaseDate: null,
+  numPages: 0,
+  coverURL: "",
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
@@ -127,6 +131,8 @@ export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   email: "bob@gmail.com",
   role: "Tutor",
   clerkId: "placeholder",
+  pending: false,
+  inviteID: "",
 };
 
 export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
@@ -134,6 +140,8 @@ export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   email: "u1@gmail.com",
   role: "Admin",
   clerkId: "placeholder",
+  pending: false,
+  inviteID: "",
 };
 
 /**

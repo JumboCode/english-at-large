@@ -3,6 +3,7 @@ import ForgotPasswordForm from "@/components/forgot-password/ForgotPasswordForm"
 import books from "@/images/books.jpg";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
+import Link from "next/link";
 
 const ForgotPassword = () => {
   const handleReset = () => {
@@ -42,13 +43,13 @@ const ForgotPassword = () => {
             altTextStyle="text-white"
             altStyle="bg-dark-blue mt-10 w-full"
           />
-          <a href="/login">
+          <Link href="/login">
             <CommonButton
               label="Back to login"
               altTextStyle="text-dark-blue"
               altStyle="bg-white outline-dark-blue mt-3 w-full"
             />
-          </a>
+          </Link>
         </div>
       </div>
     </div>

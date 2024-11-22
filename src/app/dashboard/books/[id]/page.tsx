@@ -11,6 +11,7 @@ import { getOneBook } from "@/lib/api/books";
 import { Book } from "@prisma/client";
 import BookForm from "@/components/common/forms/BookForm";
 import RemoveModal from "@/components/RemoveModal";
+import imageToAdd from "../../../../assets/images/harry_potter.jpg"
 
 type Params = Promise<{ id: string }>;
 
@@ -21,19 +22,20 @@ type Params = Promise<{ id: string }>;
  * @notes uses Next.js 15's asynchronous pages. find out more here:
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
  */
-const BookDetails = (props: { params: Params }) => {
+const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
+  // const [imageSrc, setImageSrc] = useState<string>(imageToAdd.src);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
-      const book = await getOneBook(+params.id);
+      const book = await getOneBook(+(await params).id);
       setBook(book || null);
     };
     fetchBook();
-  }, [params.id]);
+  }, [params]);
 
   const handleClick = () => {
     alert("Button clicked!");
@@ -119,20 +121,16 @@ const BookDetails = (props: { params: Params }) => {
                   </div>
                 </div>
 
-                <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
-                  {/* TODO: This will be implemented once the books have images! */}
-                  {/* <Image
-                  src={TODO:}
+                <div className="mt-10 mr-10 w-[200px] h-[300px] flex justify-center items-center">
+                  <Image
+                  src={book.coverURL || imageToAdd.src}
                   alt="Book Cover"
-                  width={150}
-                  height={190}
-                  style={imageStyle}
-                /> */}
-                  <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
+                  width={200}
+                  height={300}
+                  className="w-full h-full object-fill"
+                />
                 </div>
               </div>
-
-              <hr className="h-px bg-[#D4D4D4] border-0 mx-40 -mt-10"></hr>
 
               {/* Tags Section */}
               <div className="relative mt-10 mx-40">
@@ -167,8 +165,7 @@ const BookDetails = (props: { params: Params }) => {
                     publisher={book.publisher}
                     releaseDate={book.releaseDate}
                     copies={10}
-                    lineSpacing="space-y-3"
-                    verticalSpacing="ml-7"
+                    numPages={book.numPages}
                   />
                 </div>
               </div>

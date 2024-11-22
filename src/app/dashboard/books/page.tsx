@@ -7,7 +7,10 @@ import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
 import BookForm from "@/components/common/forms/BookForm";
-import ConfirmationPopup, {
+import CommonButton from "@/components/common/button/CommonButton";
+import FilterIcon from "@/assets/icons/Filter";
+import AddIcon from "@/assets/icons/Add";
+import {
   ConfirmationPopupState,
   EmptyConfirmationState,
 } from "@/components/common/message/ConfirmationPopup";
@@ -82,12 +85,35 @@ const BooksPage = () => {
   return (
     <div>
       <SearchBar
-        filterOnPress={toggleFilterPopup}
-        setShowBookForm={setBookFormShown}
+        // filterOnPress={toggleFilterPopup}
+        // setShowBookForm={setBookFormShown}
+        button={
+          <CommonButton
+            label={"Filter"}
+            leftIcon={<FilterIcon />}
+            onClick={toggleFilterPopup}
+          />
+        }
+        button2={
+          <CommonButton
+            label="Create Book"
+            leftIcon={<AddIcon />}
+            onClick={() => {
+              setBookFormShown(true);
+            }}
+            altTextStyle="text-white"
+            altStyle="bg-dark-blue"
+          />
+        }
+        placeholderText="Search for books"
       />
 
       {bookFormShown ? (
-        <BookForm setShowBookForm={setBookFormShown} existingBook={null} setPopup={setBookFormPopup}/>
+        <BookForm
+          setShowBookForm={setBookFormShown}
+          existingBook={null}
+          setPopup={setBookFormPopup}
+        />
       ) : null}
 
       {bookFormPopup.shown ? (

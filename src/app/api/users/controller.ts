@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { validateUserData } from "../../../lib/util/types";
+import clerkClient from "@/clerk";
 
 export const getAllUsersController = async (): Promise<User[]> => {
   try {
@@ -16,6 +17,25 @@ export const getOneUserController = async (id: string): Promise<User> => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    } else {
+      return user;
+    }
+  } catch (error) {
+    console.error("Error fetching user: ", error);
+    throw error;
+  }
+};
+
+export const getOneUserByClerkController = async (
+  clerkId: string
+): Promise<User> => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: { clerkId: clerkId },
     });
 
     if (!user) {
@@ -77,6 +97,12 @@ export const deleteUserController = async (id: string): Promise<User> => {
     if (!user) {
       throw new Error("User not found");
     } else {
+      if (!user.pending) {
+        await clerkClient.users.deleteUser(user.clerkId);
+      } else if (user.inviteID) {
+        await clerkClient.invitations.revokeInvitation(user.inviteID);
+      }
+
       return await prisma.user.delete({
         where: { id: id },
       });

@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
 import { Book } from "@prisma/client";
-import imageToAdd from "../../assets/images/harry_potter.jpg";
 import Image from "next/image";
+import imageToAdd from "../../assets/images/harry_potter.jpg";
+import Link from "next/link";
 
 interface BookProps {
   book: Book;
@@ -20,12 +20,16 @@ const BookInfo = (props: BookProps) => {
 
   return (
     <div>
-      <a href={`books/${book.id}`} className="flex items-start space-x-4">
-        <Image
-          src={imageToAdd}
-          style={{ width: "200px", height: "auto" }}
-          alt="Image"
-        />
+      <Link href={`books/${book.id}`} className="flex items-start space-x-4">
+        <div className="w-[250px] h-[300px] flex justify-center items-center">
+          <Image
+            src={book.coverURL || imageToAdd.src}
+            alt="Book Cover"
+            width={250}
+            height={300}
+            className="w-full h-full object-fill"
+          />
+        </div>
 
         <div>
           <div className="text-left mt-4 mb-4 ml-4 mr-4">
@@ -56,7 +60,7 @@ const BookInfo = (props: BookProps) => {
             </div>
           </div>
         </div>
-      </a>
+      </Link>
     </div>
   );
 };

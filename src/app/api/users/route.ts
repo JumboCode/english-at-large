@@ -6,18 +6,24 @@ import {
   putUserController,
   deleteUserController,
   getOneUserController,
+  getOneUserByClerkController,
 } from "./controller";
 
 // GET - retrieve all users or single user by ID
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
+  const clerkId = searchParams.get("clerkId");
 
   try {
     if (id) {
       // if id, fetch the specific user
 
       const user = await getOneUserController(id);
+      return NextResponse.json(user);
+    }
+    if (clerkId) {
+      const user = await getOneUserByClerkController(clerkId);
       return NextResponse.json(user);
     } else {
       // if no id, fetch all users
