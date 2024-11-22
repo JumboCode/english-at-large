@@ -10,6 +10,10 @@ import BookForm from "@/components/common/forms/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
+import ConfirmationPopup, {
+  ConfirmationPopupState,
+  EmptyConfirmationState,
+} from "@/components/common/message/ConfirmationPopup";
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -19,6 +23,10 @@ const BooksPage = () => {
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
+
+  const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
+    EmptyConfirmationState
+  );
 
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -102,7 +110,19 @@ const BooksPage = () => {
       />
 
       {bookFormShown ? (
-        <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
+        <BookForm
+          setShowBookForm={setBookFormShown}
+          existingBook={null}
+          setPopup={setBookFormPopup}
+        />
+      ) : null}
+
+      {bookFormPopup.shown ? (
+        <ConfirmationPopup
+          message={bookFormPopup.message}
+          success={bookFormPopup.success}
+          onDisappear={() => setBookFormPopup(EmptyConfirmationState)}
+        />
       ) : null}
       <FilterPopup
         isOpen={isFilterOpen}
