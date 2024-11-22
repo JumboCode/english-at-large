@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import { useSignIn, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
