@@ -18,14 +18,19 @@ import { redirect } from "next/navigation";
 export default function Manage() {
 
   const user = useCurrentUser(); 
-  console.log("USER ", user?.email);
-  console.log("ROLE ", user?.role);
 
+  useEffect(() => {
+    if (user?.role != "Admin" && user?.role != undefined) {
+      console.log("REDIRECTING")
+      redirect("/dashboard");
+    }
+  }, [user]);
+
+
+
+ 
   
-  if (user?.role !== "Admin") {
-    console.log("REDIRECTING")
-    redirect("/dashboard");
-  }
+  
   
   const [users, setUsers] = useState<User[]>([]);
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
