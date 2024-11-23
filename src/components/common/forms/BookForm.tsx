@@ -19,6 +19,10 @@ interface BookFormProps {
 export enum BookFormConfirmationMessages {
   SUCCESS = "Book added!",
   FAILURE = "Couldn't add book. Check your connection and retry.",
+  EDITSUCCESS = "Book saved successfully.",
+  EDITFAILURE = "Couldn't save book. Check your connection and retry.",
+  REMSUCCESS = "Book removed successfully.",
+  REMFAILURE = "Couldn't remove book. Check your connection and retry.",
   // add more states as needed, e.g. different error messages, etc
   NONE = "",
 }
@@ -134,8 +138,22 @@ const BookForm = (props: BookFormProps) => {
             onSave(editedBook);
           }
           setShowBookForm(false);
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.EDITSUCCESS,
+              success: true,
+              shown: true,
+            });
+          }
         } else {
-          throw new Error("Failed to update book!");
+          setShowBookForm(false);
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.EDITFAILURE,
+              success: false,
+              shown: true,
+            });
+          }
         }
       } else if (newBook) {
         const createdBook = await createBook(newBook);
@@ -229,8 +247,7 @@ const BookForm = (props: BookFormProps) => {
         <div>
           <label
             htmlFor="description"
-            className="block text-lg ml-[5%] font-bold"
-          >
+            className="block text-lg ml-[5%] font-bold">
             Description
           </label>
           <textarea
@@ -343,7 +360,9 @@ const BookForm = (props: BookFormProps) => {
               id="numPages"
               name="numPages"
               className="border-[1px] border-black border-solid rounded-lg h-8"
-              value={newBook.numPages || ""}
+              value = {
+                editBook && editBook.numPages ? editBook.numPages : ""
+              }
               onChange={bookChangeHandler}
             />
           </div>

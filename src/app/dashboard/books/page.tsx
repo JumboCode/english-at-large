@@ -71,6 +71,7 @@ const BooksPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(bookFormPopup.shown);
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
@@ -123,6 +124,7 @@ const BooksPage = () => {
           onDisappear={() => setBookFormPopup(EmptyConfirmationState)}
         />
       ) : null}
+
       <FilterPopup
         isOpen={isFilterOpen}
         toggle={toggleFilterPopup}
