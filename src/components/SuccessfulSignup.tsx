@@ -4,8 +4,7 @@ import CheckIcon from "@/assets/icons/Check";
 import CommonButton from "@/components/common/button/CommonButton";
 
 const SuccessfulSignUp = () => {
-  const handleClick = (event: Event) => {
-    event.preventDefault();
+  const handleClick = () => {
     window.location.href = "/dashboard";
   };
   return (
@@ -24,7 +23,7 @@ const SuccessfulSignUp = () => {
 
           <CommonButton
             label="Continue"
-            onClick={() => handleClick}
+            onClick={handleClick}
             altStyle="border-dark-blue bg-[#202D74] hover:bg-[#202D74]/80 place-self-center"
             altTextStyle="text-white font-bold"
           />
