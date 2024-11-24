@@ -49,6 +49,8 @@ model BookRequest {
   bookId    Int
   status    BookStatus
   createdAt DateTime
+  returnedBy DateTime
+  requestedOn DateTime
   message   String
   bookTitle String
   book      Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
@@ -66,7 +68,9 @@ enum UserRole {
 enum BookStatus {
   Available
   Requested
+  Pickup
   Borrowed
+  Returned
   Lost
 }
 
