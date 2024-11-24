@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { Request as BookRequest } from "@prisma/client";
+import { BookRequest } from "@prisma/client";
 import { validateRequestData, emptyRequest } from "@/lib/util/types";
-import sgMail from "@sendgrid/mail"
+import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 
 /**
@@ -14,7 +14,7 @@ import { UserRole } from "@prisma/client";
  */
 export const getAllRequestsController = async (): Promise<BookRequest[]> => {
   try {
-    const requests = await prisma.request.findMany();
+    const requests = await prisma.bookRequest.findMany();
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
@@ -34,7 +34,7 @@ export const getOneRequestController = async (
   id: number
 ): Promise<BookRequest> => {
   try {
-    const request = await prisma.request.findUnique({
+    const request = await prisma.bookRequest.findUnique({
       where: { id: id },
     });
 
@@ -65,10 +65,9 @@ export const postRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
-    // const newRequest = await prisma.request.create({
-    //   data: requestData,
-    // });
-
+    const newRequest = await prisma.bookRequest.create({
+      data: requestData,
+    });
 
     const users = await prisma.user.findMany();
 
@@ -82,26 +81,25 @@ export const postRequestController = async (
       for (let i = 0; i < admins.length; i++) {
         const email = admins[i].email;
         if (email) {
-            const msg = {
-                to: email, // Change to your recipient
-                from: "englishatlarge427@gmail.com", // Change to your verified sender
-                subject: "testing testing 123",
-                text: "testing testing 456",
-                html: "<strong>testing testing 789</strong>",
-              };
-      
-              sgMail
-                .send(msg)
-                .then((response) => {
-                  console.log(response[0].statusCode);
-                  console.log(response[0].headers);
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            }
-        }
+          const msg = {
+            to: email, // Change to your recipient
+            from: "englishatlarge427@gmail.com", // Change to your verified sender
+            subject: "testing testing 123",
+            text: "testing testing 456",
+            html: "<strong>testing testing 789</strong>",
+          };
 
+          sgMail
+            .send(msg)
+            .then((response) => {
+              console.log(response[0].statusCode);
+              console.log(response[0].headers);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      }
     }
 
     return emptyRequest;
@@ -129,7 +127,7 @@ export const putRequestController = async (
       throw new Error("Missing required request properties");
     }
 
-    const updatedRequest = await prisma.request.update({
+    const updatedRequest = await prisma.bookRequest.update({
       where: { id: requestData.id },
       data: requestData,
     });
@@ -152,7 +150,7 @@ export const deleteRequestController = async (
   id: number
 ): Promise<BookRequest> => {
   try {
-    const deletedBook = await prisma.request.delete({
+    const deletedBook = await prisma.bookRequest.delete({
       where: { id: id },
     });
     if (!deletedBook) {

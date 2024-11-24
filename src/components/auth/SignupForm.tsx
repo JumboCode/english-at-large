@@ -5,12 +5,12 @@ import InfoIcon from "@/assets/icons/Info";
 import { useState, useEffect, useCallback } from "react";
 import SuccessfulSignUp from "@/components/SuccessfulSignup";
 import { useSignUp } from "@clerk/nextjs";
-import { createUser, getClerkUser } from "@/lib/api/users";
-import { emptyUser } from "@/lib/util/types";
-import { UserRole } from "@prisma/client";
+import { getClerkUser, updateUser } from "@/lib/api/users";
 import { useSearchParams, useRouter } from "next/navigation";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { sleep } from "@/lib/util/utilFunctions";
+import { emptyUser } from "@/lib/util/types";
+import { UserRole } from "@prisma/client";
 
 interface SignupFormData {
   firstName: string;
@@ -117,19 +117,22 @@ const SignupForm = () => {
           };
 
           const metadata = await waitForMetadata();
-
+          // console.log(metadata);
           // Now create the user database
-          if (attempt.createdUserId) {
-            const newUser = {
-              ...emptyUser,
-              name: `${formData.firstName} ${formData.lastName}`,
-              role: (metadata.role as UserRole) || "Tutor",
-              email: formData.email,
-              clerkId: attempt.createdUserId,
-            };
-            await createUser(newUser);
-            setIsSignUpSuccessful(true);
-          }
+          // if (attempt.createdUserId) {
+          const newUser = {
+            ...emptyUser,
+            name: `${formData.firstName} ${formData.lastName}`,
+            role: (metadata.role as UserRole) || "Tutor",
+            email: formData.email,
+            clerkId: attempt.createdUserId as string,
+            pending: false,
+            id: metadata.id as string,
+            createdAt: new Date(Date.now()),
+            updatedAt: new Date(Date.now()),
+          };
+          await updateUser(newUser);
+          setIsSignUpSuccessful(true);
         }
       }
     } catch (error) {

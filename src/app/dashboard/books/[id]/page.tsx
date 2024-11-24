@@ -2,15 +2,19 @@
 import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-import bookmark from "@/assets/icons/Bookmark.svg";
+import bookIcon from "../../../../assets/icons/bookmark_add.svg";
+import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
+import BorrowPopup from "@/components/common/BorrowPopup";
+
+import { getOneBook } from "@/lib/api/books";
+import { Book, BookStatus } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
-import BookDetail from "@/components/details";
-import { getOneBook } from "@/lib/api/books";
-import { Book } from "@prisma/client";
+import BookDetail from "@/components/Details";
 import BookForm from "@/components/common/forms/BookForm";
 import RemoveModal from "@/components/RemoveModal";
+import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 
 type Params = Promise<{ id: string }>;
 
@@ -21,22 +25,23 @@ type Params = Promise<{ id: string }>;
  * @notes uses Next.js 15's asynchronous pages. find out more here:
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
  */
-const BookDetails = (props: { params: Params }) => {
+const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
+  const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
-      const book = await getOneBook(+params.id);
+      const book = await getOneBook(+(await params).id);
       setBook(book || null);
     };
     fetchBook();
-  }, [params.id]);
+  }, [params]);
 
-  const handleClick = () => {
-    alert("Button clicked!");
+  const toggleBorrowOpen = () => {
+    setIsBorrowOpen(!isBorrowOpen);
   };
 
   if (book === null) return null;
@@ -65,19 +70,34 @@ const BookDetails = (props: { params: Params }) => {
                       by {book.author}
                     </div>
                     <div className="flex">
-                      <CommonButton
-                        label="Borrow"
-                        onClick={handleClick}
-                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
-                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                        leftIcon={
-                          <Image
-                            src={bookmark}
-                            alt="Book Icon"
-                            className="w-4 h-4 mr-3"
-                          />
-                        }
-                      />
+                      {
+                        <CommonButton
+                          label="Borrow"
+                          altStyle={`w-40 h-10 ${
+                            book.status === BookStatus.Available // may have to change the case for when someone else reqeuests -- add a hold
+                              ? "bg-dark-blue"
+                              : "bg-medium-grey-border"
+                          } border-none mr-3`}
+                          onClick={
+                            book.status === BookStatus.Available
+                              ? toggleBorrowOpen
+                              : undefined
+                          }
+                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                          leftIcon={
+                            <Image
+                              src={
+                                book.status === BookStatus.Available
+                                  ? bookIcon
+                                  : bookIconGreyed
+                              }
+                              alt="Book Icon"
+                              className="w-4 h-4 mr-3"
+                            />
+                          }
+                        />
+                      }
+
                       <CommonButton
                         label="Edit"
                         onClick={(e) => {
@@ -119,20 +139,16 @@ const BookDetails = (props: { params: Params }) => {
                   </div>
                 </div>
 
-                <div className="flex justify-end my-20 mr-40 font-[family-name:var(--font-rubik)]">
-                  {/* TODO: This will be implemented once the books have images! */}
-                  {/* <Image
-                  src={TODO:}
-                  alt="Book Cover"
-                  width={150}
-                  height={190}
-                  style={imageStyle}
-                /> */}
-                  <div className="bg-gray-500 w-[150px] h-[190px]"> </div>
+                <div className="mt-10 mr-10 w-[200px] h-[300px] flex justify-center items-center">
+                  <Image
+                    src={book.coverURL || imageToAdd.src}
+                    alt="Book Cover"
+                    width={200}
+                    height={300}
+                    className="w-full h-full object-fill"
+                  />
                 </div>
               </div>
-
-              <hr className="h-px bg-[#D4D4D4] border-0 mx-40 -mt-10"></hr>
 
               {/* Tags Section */}
               <div className="relative mt-10 mx-40">
@@ -167,11 +183,14 @@ const BookDetails = (props: { params: Params }) => {
                     publisher={book.publisher}
                     releaseDate={book.releaseDate}
                     copies={10}
-                    lineSpacing="space-y-3"
-                    verticalSpacing="ml-7"
+                    numPages={book.numPages}
                   />
                 </div>
               </div>
+
+              {isBorrowOpen ? (
+                <BorrowPopup toggleOpen={toggleBorrowOpen} book={book} />
+              ) : null}
             </div>
           ) : null}
         </div>

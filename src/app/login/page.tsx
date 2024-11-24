@@ -1,5 +1,4 @@
 "use client";
-import CommonButton from "@/components/common/button/CommonButton";
 import LoginForm from "@/components/auth/LoginForm";
 import books from "@/images/books.jpg";
 
@@ -28,13 +27,6 @@ const Login = () => {
         </div>
 
         <LoginForm />
-
-        <CommonButton
-          onClick={() => {}}
-          label="Login"
-          altTextStyle="text-white"
-          altStyle="bg-dark-blue mt-10 w-full"
-        />
       </div>
     </div>
   );
