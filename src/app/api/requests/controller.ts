@@ -1,8 +1,13 @@
 import { prisma } from "@/lib/prisma";
+<<<<<<< HEAD
 import { Request as BookRequest } from "@prisma/client";
 import { validateRequestData, emptyRequest } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail"
 import { UserRole } from "@prisma/client";
+=======
+import { BookRequest } from "@prisma/client";
+import { validateRequestData } from "@/lib/util/types";
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 
 /**
  * Utility controller that gets all the Request in the backend.
@@ -14,7 +19,7 @@ import { UserRole } from "@prisma/client";
  */
 export const getAllRequestsController = async (): Promise<BookRequest[]> => {
   try {
-    const requests = await prisma.request.findMany();
+    const requests = await prisma.bookRequest.findMany();
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
@@ -34,7 +39,7 @@ export const getOneRequestController = async (
   id: number
 ): Promise<BookRequest> => {
   try {
-    const request = await prisma.request.findUnique({
+    const request = await prisma.bookRequest.findUnique({
       where: { id: id },
     });
 
@@ -129,7 +134,7 @@ export const putRequestController = async (
       throw new Error("Missing required request properties");
     }
 
-    const updatedRequest = await prisma.request.update({
+    const updatedRequest = await prisma.bookRequest.update({
       where: { id: requestData.id },
       data: requestData,
     });
@@ -152,7 +157,7 @@ export const deleteRequestController = async (
   id: number
 ): Promise<BookRequest> => {
   try {
-    const deletedBook = await prisma.request.delete({
+    const deletedBook = await prisma.bookRequest.delete({
       where: { id: id },
     });
     if (!deletedBook) {

@@ -1,6 +1,11 @@
-import { Request as BookRequest } from "@prisma/client";
+import { Book, BookRequest, BookStatus, User } from "@prisma/client";
 import axios from "axios";
-import { validateRequestData } from "../util/types";
+import {
+  validateBookData,
+  validateRequestData,
+  validateUserData,
+} from "../util/types";
+import { updateBook } from "./books";
 
 /**
  * Utility function for fetching all requests
@@ -43,7 +48,7 @@ export const getRequests = async (): Promise<BookRequest[] | undefined> => {
 };
 
 /**
- * Utility function for creating a requests
+ * Utility function for creating a request. Use if you want to include custom messages or have more functionality
  *
  * @param request the request to create
  * @returns the newly created request
@@ -53,13 +58,49 @@ export const getRequests = async (): Promise<BookRequest[] | undefined> => {
  */
 export const createRequest = async (
   request: Omit<BookRequest, "id">
-): Promise<BookRequest[] | undefined> => {
+): Promise<BookRequest | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
     }
     const response = await axios.post("/api/requests", request);
 
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create request: ", error);
+  }
+};
+
+/**
+ * quick util function for creating a request with just the book and user.
+ *
+ * @param request the request to create
+ * @returns the newly created request
+ *
+ * @remarks
+ * - error handling (incorrect types, etc) is on both client and server side
+ */
+export const createQuickRequest = async (
+  book: Book,
+  user: User
+): Promise<BookRequest | undefined> => {
+  try {
+    if (!validateBookData(book) || !validateUserData(user)) {
+      throw new Error("Missing request fields");
+    }
+
+    const request: BookRequest = {
+      id: 0, // or handle it as undefined
+      userId: user.id,
+      bookId: book.id,
+      createdAt: new Date(),
+      status: BookStatus.Requested,
+      message: "",
+      bookTitle: book.title,
+    };
+
+    const response = await axios.post("/api/requests", request);
+    await updateBook({ ...book, status: BookStatus.Requested });
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);
@@ -77,7 +118,7 @@ export const createRequest = async (
  */
 export const updateRequest = async (
   request: BookRequest
-): Promise<BookRequest[] | undefined> => {
+): Promise<BookRequest | undefined> => {
   try {
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");

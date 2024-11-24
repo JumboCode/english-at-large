@@ -2,13 +2,10 @@
 
 import CheckIcon from "@/assets/icons/Check";
 import CommonButton from "@/components/common/button/CommonButton";
-import { useRouter } from "next/navigation";
 
 const SuccessfulSignUp = () => {
-  const router = useRouter();
-  const handleClick = (event: Event) => {
-    event.preventDefault();
-    router.push("/");
+  const handleClick = () => {
+    window.location.href = "/dashboard";
   };
   return (
     <div>
@@ -25,8 +22,8 @@ const SuccessfulSignUp = () => {
           </p>
 
           <CommonButton
-            label="Go to login"
-            onClick={() => handleClick}
+            label="Continue"
+            onClick={handleClick}
             altStyle="border-dark-blue bg-[#202D74] hover:bg-[#202D74]/80 place-self-center"
             altTextStyle="text-white font-bold"
           />

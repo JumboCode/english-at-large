@@ -3,17 +3,39 @@ import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
 import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
+<<<<<<< HEAD
 import { createBook, updateBook } from "@/lib/api/books";
+=======
+import { createBook, getBookCover, updateBook } from "@/lib/api/books";
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 import MultiSelectTagButton from "./MultiSelectTagButton";
+import { ConfirmationPopupState } from "../message/ConfirmationPopup";
+import imageToAdd from "../../../assets/images/harry_potter.jpg";
+import axios from "axios";
 
 interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
+<<<<<<< HEAD
 }
 
 const BookForm = (props: BookFormProps) => {
   const { setShowBookForm, existingBook, onSave } = props;
+=======
+  setPopup?: (arg0: ConfirmationPopupState) => void;
+}
+
+export enum BookFormConfirmationMessages {
+  SUCCESS = "Book added!",
+  FAILURE = "Couldn't add book. Check your connection and retry.",
+  // add more states as needed, e.g. different error messages, etc
+  NONE = "",
+}
+
+const BookForm = (props: BookFormProps) => {
+  const { setShowBookForm, existingBook, onSave, setPopup } = props;
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -73,8 +95,54 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
+<<<<<<< HEAD
   const handleSave = async () => {
     try {
+=======
+  const pullISBN = async () => {
+    setShowBookForm(true);
+    try {
+      const response = await axios.get(
+        `https://openlibrary.org/isbn/${newBook.isbn}.json`
+      );
+      const data = response.data;
+
+      // Create an object to map OpenLibrary keys to book keys
+      const bookFields = {
+        title: data.title,
+        description: data.description?.value,
+        publisher: data.publishers?.[0],
+        numPages: data.number_of_pages,
+      };
+
+      // Update newBook with retrieved data
+      setNewBook((prevBook) => {
+        const updatedBook = { ...prevBook };
+
+        // update all fields at once
+        if (bookFields.title) updatedBook.title = bookFields.title;
+        if (bookFields.description)
+          updatedBook.description = bookFields.description;
+        if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
+        if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
+
+        return updatedBook;
+      });
+
+      // Book cover retrieval
+      const coverUrl = await getBookCover(newBook.isbn);
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        coverURL: coverUrl ?? imageToAdd.src,
+      }));
+    } catch {
+      throw new Error("Book not found for this ISBN");
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
       if (editBook) {
         const editedBook = await updateBook(editBook);
         if (editedBook) {
@@ -92,8 +160,27 @@ const BookForm = (props: BookFormProps) => {
             onSave(createdBook);
           }
           setShowBookForm(false);
+<<<<<<< HEAD
         } else {
           throw new Error("Failed to create book!");
+=======
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.SUCCESS,
+              success: true,
+              shown: true,
+            });
+          }
+        } else {
+          setShowBookForm(false);
+          if (setPopup) {
+            setPopup({
+              message: BookFormConfirmationMessages.FAILURE,
+              success: false,
+              shown: true,
+            });
+          }
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
         }
       }
     } catch (error) {
@@ -106,6 +193,7 @@ const BookForm = (props: BookFormProps) => {
       <form
         className="flex flex-col space-y-2 [&_input]:p-2 [&_textarea]:p-2 [&_select]:p-2"
         id="create-book-form"
+        onSubmit={(e) => e.preventDefault()}
       >
         <div>
           <div className="flex justify-between p-5">
@@ -141,7 +229,11 @@ const BookForm = (props: BookFormProps) => {
             name="title"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
+<<<<<<< HEAD
             defaultValue={editBook ? editBook.title : ""}
+=======
+            value={editBook ? editBook.title : newBook.title}
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
             required
           />
         </div>
@@ -171,7 +263,11 @@ const BookForm = (props: BookFormProps) => {
             name="description"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
             onChange={bookChangeHandler}
+<<<<<<< HEAD
             defaultValue={editBook ? editBook.description : ""}
+=======
+            value={editBook ? editBook.description : newBook.description}
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
             required
           ></textarea>
         </div>
@@ -200,7 +296,11 @@ const BookForm = (props: BookFormProps) => {
               name="publisher"
               className="border-[1px] border-black border-solid rounded-lg h-8"
               onChange={bookChangeHandler}
+<<<<<<< HEAD
               defaultValue={editBook ? editBook.publisher : ""}
+=======
+              value={editBook ? editBook.publisher : newBook.publisher}
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
               required
             />
           </div>
@@ -266,7 +366,21 @@ const BookForm = (props: BookFormProps) => {
             </select>
           </div>
         </div>
-
+        <div className="flex w-[90%] mx-auto space-x-4">
+          <div className="flex flex-col w-[50%]">
+            <label htmlFor="publisher" className="text-lg font-bold">
+              Page Numbers
+            </label>
+            <input
+              type="number"
+              id="numPages"
+              name="numPages"
+              className="border-[1px] border-black border-solid rounded-lg h-8"
+              value={newBook.numPages || ""}
+              onChange={bookChangeHandler}
+            />
+          </div>
+        </div>
         <div>
           <p className="block text-lg ml-[5%] font-bold">Skills</p>
           <div className="flex space-x-4 mx-[5%]">
@@ -284,6 +398,14 @@ const BookForm = (props: BookFormProps) => {
               );
             })}
           </div>
+          {!existingBook ? (
+            <CommonButton
+              label={"ISBN Click"}
+              onClick={() => {
+                pullISBN();
+              }}
+            />
+          ) : null}
         </div>
       </form>
     </div>

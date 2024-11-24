@@ -1,5 +1,5 @@
 import { Book, BookLevel, BookStatus, BookType } from "@prisma/client";
-import { Request as BookRequest } from "@prisma/client";
+import { BookRequest } from "@prisma/client";
 import { User } from "@prisma/client";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +49,8 @@ export const emptyBook: Book = {
   status: BookStatus.Available,
   skills: [],
   releaseDate: null,
+  numPages: 0,
+  coverURL: "",
 };
 
 /**
@@ -67,6 +69,8 @@ export const newEmptyBook: Omit<Book, "id"> = {
   status: BookStatus.Available,
   skills: [],
   releaseDate: null,
+  numPages: 0,
+  coverURL: "",
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
@@ -80,7 +84,7 @@ export const emptyRequest: BookRequest = {
   id: 0, // Autoincremented, so can be 0 for dummy purposes
   userId: "cm2f3a8ra0000sl8zdb10q3d1 ", // Foreign key to User
   bookId: 0, // Foreign key to Book
-  status: "",
+  status: BookStatus.Requested,
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",
@@ -89,7 +93,7 @@ export const emptyRequest: BookRequest = {
 export const newEmptyRequest: Omit<BookRequest, "id"> = {
   userId: "cm2f3a8ra0000sl8zdb10q3d1", // Foreign key to User
   bookId: 1, // Foreign key to Book
-  status: "",
+  status: BookStatus.Requested,
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",
@@ -127,6 +131,8 @@ export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   email: "bob@gmail.com",
   role: "Tutor",
   clerkId: "placeholder",
+  pending: false,
+  inviteID: "",
 };
 
 export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
@@ -134,6 +140,8 @@ export const newEmptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   email: "u1@gmail.com",
   role: "Admin",
   clerkId: "placeholder",
+  pending: false,
+  inviteID: "",
 };
 
 /**
