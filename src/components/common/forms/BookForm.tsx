@@ -21,8 +21,6 @@ export enum BookFormConfirmationMessages {
   FAILURE = "Couldn't add book. Check your connection and retry.",
   EDITSUCCESS = "Book saved successfully.",
   EDITFAILURE = "Couldn't save book. Check your connection and retry.",
-  REMSUCCESS = "Book removed successfully.",
-  REMFAILURE = "Couldn't remove book. Check your connection and retry.",
   // add more states as needed, e.g. different error messages, etc
   NONE = "",
 }

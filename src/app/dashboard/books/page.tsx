@@ -7,9 +7,11 @@ import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
 import BookForm from "@/components/common/forms/BookForm";
+import RemoveModal from "@/components/RemoveModal"
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
+// import { useSearchParams } from "next/navigation"
 import ConfirmationPopup, {
   ConfirmationPopupState,
   EmptyConfirmationState,
@@ -18,13 +20,20 @@ import ConfirmationPopup, {
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
+  // const searchParams = useSearchParams(); 
+  // const removeSuccess = searchParams.get('removeSuccess'); 
+
   const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
+    EmptyConfirmationState
+  );
+  const [removeModalPopup, setRemoveModalPopup] = useState<ConfirmationPopupState>(
     EmptyConfirmationState
   );
 
@@ -71,7 +80,6 @@ const BooksPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(bookFormPopup.shown);
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
@@ -109,13 +117,13 @@ const BooksPage = () => {
         placeholderText="Search for books"
       />
 
-      {bookFormShown ? (
+      {bookFormShown && 
         <BookForm
           setShowBookForm={setBookFormShown}
           existingBook={null}
           setPopup={setBookFormPopup}
         />
-      ) : null}
+      }
 
       {bookFormPopup.shown ? (
         <ConfirmationPopup
@@ -124,6 +132,25 @@ const BooksPage = () => {
           onDisappear={() => setBookFormPopup(EmptyConfirmationState)}
         />
       ) : null}
+
+      {/* TODO: showRemoveModal is connected to anything; needs another setShowRemoveModal(true) case. 
+      Not sure how to integrate it with removeModal file because of router redirecting ??? 
+      (react.usecontext [like global variables] */}
+      {showRemoveModal && 
+        <RemoveModal
+          setShowRemoveModal={setShowRemoveModal}
+          book={null}
+          setPopup={setRemoveModalPopup}
+        />
+      }
+
+      {removeModalPopup.shown ? (
+      <ConfirmationPopup
+        message={removeModalPopup.message}
+        success={removeModalPopup.success}
+        onDisappear={() => setRemoveModalPopup(EmptyConfirmationState)}
+      />
+      ) : null} 
 
       <FilterPopup
         isOpen={isFilterOpen}

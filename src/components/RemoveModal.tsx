@@ -2,28 +2,49 @@
 import { deleteBook } from "@/lib/api/books";
 import CommonButton from "./common/button/CommonButton";
 import { Book } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"
 import BookDetail from "./Details";
+import { ConfirmationPopupState } from "./common/message/ConfirmationPopup";
 
 interface RemoveModalProps {
   setShowRemoveModal: (arg0: boolean) => void;
-  book: Book;
+  book: Book | null;
+  setPopup?: (arg0: ConfirmationPopupState) => void;
 }
 
-const RemoveModal = ({ setShowRemoveModal, book }: RemoveModalProps) => {
+const RemoveModal = ({ setShowRemoveModal, book, setPopup}: RemoveModalProps) => {
   const router = useRouter();
   const handleDelete = async () => {
-    try {
-      await deleteBook(book.id);
-      setShowRemoveModal(false);
-      router.push("/dashboard/books");
-    } catch (error) {
-      console.error(error);
+    if (book) {
+      try {
+        await deleteBook(book.id);
+        setShowRemoveModal(false);
+        if (setPopup) {
+          setPopup({
+            message: "Book removed successfully.",
+            success: true,
+            shown: true,
+          });
+        }
+        router.push("/dashboard/books?removeSuccess=true");
+
+      } catch (error) {
+        setShowRemoveModal(false); 
+        if (setPopup) {
+          setPopup({
+            message: "Couldn't remove book. Check your connection and retry.",
+            success: false,
+            shown: true,
+          });  
+        } 
+        router.push("/dashboard/books?removeSuccess=false");
     }
-  };
+  }};
 
   return (
-    <div className="flex fixed backdrop-brightness-50 inset-0 justify-center items-center z-50 rounded-xl">
+    <div>
+      {book ? (
+      <div className="flex fixed backdrop-brightness-50 inset-0 justify-center items-center z-50 rounded-xl">
       <div className="bg-[#FFFFFF] rounded-md py-5 px-12">
         <h1 className="text-black text-2xl font-[family-name:var(--font-rubik)] font-semibold place-self-start">
           Remove book
@@ -74,6 +95,7 @@ const RemoveModal = ({ setShowRemoveModal, book }: RemoveModalProps) => {
           />
         </div>
       </div>
+    </div>) : (null)}
     </div>
   );
 };
