@@ -4,7 +4,7 @@ import SearchIcon from "../assets/icons/Search";
 
 interface searchBarProps {
   button: React.ReactNode;
-  button2: React.ReactNode;
+  button2 ?: React.ReactNode;
   placeholderText: string;
 }
 

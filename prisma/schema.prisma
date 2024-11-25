@@ -44,17 +44,17 @@ model Book {
 }
 
 model BookRequest {
-  id        Int        @id @default(autoincrement())
-  userId    String
-  bookId    Int
-  status    BookStatus
-  createdAt DateTime
-  returnedBy DateTime
+  id          Int        @id @default(autoincrement())
+  userId      String
+  bookId      Int
+  status      BookStatus
+  createdAt   DateTime
+  message     String
+  bookTitle   String
   requestedOn DateTime
-  message   String
-  bookTitle String
-  book      Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  returnedBy  DateTime
+  book        Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("BookRequests")
 }
@@ -68,10 +68,10 @@ enum UserRole {
 enum BookStatus {
   Available
   Requested
-  Pickup
   Borrowed
-  Returned
   Lost
+  Pickup
+  Returned
 }
 
 enum BookSkills {

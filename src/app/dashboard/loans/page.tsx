@@ -3,26 +3,40 @@ import React, { useEffect, useState } from "react";
 import SendInvite from "../../../components/manage/sendInvite";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { User } from "@prisma/client";
-import { getAllUsers } from "@/lib/api/users";
+import { User, BookRequest } from "@prisma/client";
+import { getAllUsers, getOneUser } from "@/lib/api/users";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import PendingChip from "@/assets/icons/pending_chip";
 import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
+import { getRequests, updateRequest } from "@/lib/api/requests";
 
 const loans = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  // const [users, setUsers] = useState<User[]>([]);
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
+  const [requests, setRequests] = useState<BookRequest[]>([])
 
   useEffect(() => {
-    const getUsers = async () => {
-      const allUsers = await getAllUsers();
-      setUsers(allUsers ?? []);
-    };
+    // const getUsers = async () => {
+    //   const allUsers = await getAllUsers();
+    //   setUsers(allUsers ?? []);
+    // };
 
-    getUsers();
+    // getUsers();
+
+    const getReqs = async () => {
+      const allRequests = await getRequests();
+      setRequests(allRequests ?? [])
+    }
+
+    getReqs();
   }, []);
+
+  const getUser = async (id: string) => {
+    const user = await getOneUser(id);
+    return user;
+  }
   
   return (
     <div className="bg-white">
@@ -39,19 +53,18 @@ const loans = () => {
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
           <thead>
             <tr className="bg-gray-100">
-              <th className="w-1/2 text-left text-text-default-secondary">
+              <th className="w-1/6 text-left text-text-default-secondary">
                 Name
               </th>
-              <th className="w-[4.166666%] text-left text-text-default-secondary">
+              <th className="w-1/6  text-left text-text-default-secondary">
                 Book Title
               </th>
-              <th className="w-[4.166666%] text-left text-text-default-secondary">
+              <th className="w-1/6  text-left text-text-default-secondary">
                 Requested On
               </th>
-              <th className="w-[4.166666%] text-left text-text-default-secondary">
+              <th className="w-1/6  text-left text-text-default-secondary">
                 Return By
               </th>
-              <th className="w-[12.499999%] text-left"> </th>
               <th className="w-1/6 text-left text-text-default-secondary">
                 Status
               </th>
@@ -59,37 +72,42 @@ const loans = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-solid">
-            {users.map((user, index) => (
+            {requests.map((request, index) => (
               <tr key={index} className="bg-white h-16">
                 <td className="flex flex-col">
-                  <p className="text-black font-semibold">{user.name}</p>
-                  <Link
+                  <p className="text-black font-semibold">{request.userId}</p>
+                  {/* <Link
                     href={"mailto:" + user.email}
                     className="text-text-default-secondary underline max-w-max"
-                  >
-                    {user.email}
-                  </Link>
+                  > */}
+                    {request.userId}
+                  {/* </Link> */}
                 </td>
                 <td className=" text-black">
                   <div className="flex justify-between min-w-max max-w-[50%]">
-                    {user.role}
+                    {request.bookId}
                   </div>
                 </td>
                 <td>{user.pending ? <PendingChip /> : null}</td>
-
+                    
                 <td className="text-black">
-                  {dateToTimeString(user.createdAt)}
+                  {dateToTimeString(request.requestedOn)}
                 </td>
+                
+                <td className="text-black">
+                  {dateToTimeString(request.returnedBy)}
+                </td>
+                    
                 <td>
                   <div className="flex justify-end items-center">
                     <CommonButton
-                      label="Remove User"
+                      label="Mark as Returned"
                       onClick={() => {
-                        deleteUser(user.id);
-                        location.reload(); // next js router.refresh() was not working
+                        
+                        updateRequest(request)
                       }}
-                      altTextStyle="text-dark-blue"
-                      altStyle="bg-white"
+                      altTextStyle="text-white"
+                      altStyle="bg-blue"
                     />
                   </div>
                 </td>
