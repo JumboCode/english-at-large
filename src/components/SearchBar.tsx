@@ -1,34 +1,29 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import SearchIcon from "../assets/icons/Search";
-import { Book } from "@prisma/client";
-
+import { Book, BookSkills, BookLevel, BookStatus } from "@prisma/client";
 
 interface searchBarProps {
+  setFilteredBooks: (book: Book[]) => void
+  setSearchData: (searchData: string) => void
   button: React.ReactNode;
   button2: React.ReactNode;
   placeholderText: string;
   books: Book[]
+  onClick: () => void
 }
 
 const SearchBar = (props: searchBarProps) => {
-  const { button, button2, placeholderText, books } = props;
+  const { setFilteredBooks, setSearchData, button, button2, placeholderText, books, onClick } = props;
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  const [searchData, setSearchData] = useState("")
 
   const clickBar = () => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
   };
-  
-  const onClick = () => {
-    const foundBooks = books.filter((book) => (book.title.toLowerCase()).includes(searchData) || (book.author.toLowerCase()).includes(searchData));
-    console.log(foundBooks);
-  }
-  
+
   function handleKeyDown(event: { key: string; }) {
     if (event.key === "Enter") {
       onClick();
