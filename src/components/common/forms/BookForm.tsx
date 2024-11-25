@@ -3,11 +3,7 @@ import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
 import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
-<<<<<<< HEAD
-import { createBook, updateBook } from "@/lib/api/books";
-=======
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 import MultiSelectTagButton from "./MultiSelectTagButton";
 import { ConfirmationPopupState } from "../message/ConfirmationPopup";
 import imageToAdd from "../../../assets/images/harry_potter.jpg";
@@ -17,12 +13,6 @@ interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
-<<<<<<< HEAD
-}
-
-const BookForm = (props: BookFormProps) => {
-  const { setShowBookForm, existingBook, onSave } = props;
-=======
   setPopup?: (arg0: ConfirmationPopupState) => void;
 }
 
@@ -35,7 +25,6 @@ export enum BookFormConfirmationMessages {
 
 const BookForm = (props: BookFormProps) => {
   const { setShowBookForm, existingBook, onSave, setPopup } = props;
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -95,10 +84,6 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
-<<<<<<< HEAD
-  const handleSave = async () => {
-    try {
-=======
   const pullISBN = async () => {
     setShowBookForm(true);
     try {
@@ -142,7 +127,6 @@ const BookForm = (props: BookFormProps) => {
 
   const handleSave = async () => {
     try {
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
       if (editBook) {
         const editedBook = await updateBook(editBook);
         if (editedBook) {
@@ -160,10 +144,6 @@ const BookForm = (props: BookFormProps) => {
             onSave(createdBook);
           }
           setShowBookForm(false);
-<<<<<<< HEAD
-        } else {
-          throw new Error("Failed to create book!");
-=======
           if (setPopup) {
             setPopup({
               message: BookFormConfirmationMessages.SUCCESS,
@@ -180,7 +160,6 @@ const BookForm = (props: BookFormProps) => {
               shown: true,
             });
           }
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
         }
       }
     } catch (error) {
@@ -229,11 +208,7 @@ const BookForm = (props: BookFormProps) => {
             name="title"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
-<<<<<<< HEAD
-            defaultValue={editBook ? editBook.title : ""}
-=======
             value={editBook ? editBook.title : newBook.title}
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
             required
           />
         </div>
@@ -263,11 +238,7 @@ const BookForm = (props: BookFormProps) => {
             name="description"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
             onChange={bookChangeHandler}
-<<<<<<< HEAD
-            defaultValue={editBook ? editBook.description : ""}
-=======
             value={editBook ? editBook.description : newBook.description}
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
             required
           ></textarea>
         </div>
@@ -296,11 +267,7 @@ const BookForm = (props: BookFormProps) => {
               name="publisher"
               className="border-[1px] border-black border-solid rounded-lg h-8"
               onChange={bookChangeHandler}
-<<<<<<< HEAD
-              defaultValue={editBook ? editBook.publisher : ""}
-=======
               value={editBook ? editBook.publisher : newBook.publisher}
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
               required
             />
           </div>
