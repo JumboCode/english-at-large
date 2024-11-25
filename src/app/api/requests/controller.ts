@@ -1,13 +1,6 @@
 import { prisma } from "@/lib/prisma";
-<<<<<<< HEAD
-import { Request as BookRequest } from "@prisma/client";
-import { validateRequestData, emptyRequest } from "@/lib/util/types";
-import sgMail from "@sendgrid/mail"
-import { UserRole } from "@prisma/client";
-=======
 import { BookRequest } from "@prisma/client";
 import { validateRequestData } from "@/lib/util/types";
->>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 
 /**
  * Utility controller that gets all the Request in the backend.
@@ -70,46 +63,11 @@ export const postRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
-    // const newRequest = await prisma.request.create({
-    //   data: requestData,
-    // });
+    const newRequest = await prisma.bookRequest.create({
+      data: requestData,
+    });
 
-
-    const users = await prisma.user.findMany();
-
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
-
-    if (users) {
-      const admins = users.filter((user) => {
-        return user.role === UserRole.Admin;
-      });
-
-      for (let i = 0; i < admins.length; i++) {
-        const email = admins[i].email;
-        if (email) {
-            const msg = {
-                to: email, // Change to your recipient
-                from: "englishatlarge427@gmail.com", // Change to your verified sender
-                subject: "testing testing 123",
-                text: "testing testing 456",
-                html: "<strong>testing testing 789</strong>",
-              };
-      
-              sgMail
-                .send(msg)
-                .then((response) => {
-                  console.log(response[0].statusCode);
-                  console.log(response[0].headers);
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            }
-        }
-
-    }
-
-    return emptyRequest;
+    return newRequest;
   } catch (error) {
     console.error("Error in postRequestController:", error);
     throw error;
