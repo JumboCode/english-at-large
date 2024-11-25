@@ -1,8 +1,13 @@
 import { prisma } from "@/lib/prisma";
-import { BookRequest } from "@prisma/client";
+<<<<<<< HEAD
+import { Request as BookRequest } from "@prisma/client";
 import { validateRequestData, emptyRequest } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail"
 import { UserRole } from "@prisma/client";
+=======
+import { BookRequest } from "@prisma/client";
+import { validateRequestData } from "@/lib/util/types";
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 
 /**
  * Utility controller that gets all the Request in the backend.

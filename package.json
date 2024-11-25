@@ -1,3 +1,36 @@
+<<<<<<< HEAD
+{"name": "english-at-large",
+"version": "0.1.0",
+"private": true,
+"scripts": {
+  "dev": "prisma generate && next dev",
+  "build": "prisma generate && next build",
+  "start": "next start",
+  "lint": "next lint"
+},
+"dependencies": {
+  "@clerk/nextjs": "^5.7.5",
+  "@prisma/client": "^5.21.1",
+  "@sendgrid/mail": "^8.1.4",
+  "@vercel/postgres": "^0.9.0",
+  "axios": "^1.7.7",
+  "next": "^15.0.2-canary.6",
+  "react": "^18",
+  "react-dom": "^18",
+  "react-icons": "^5.3.0"
+},
+"devDependencies": {
+  "@clerk/types": "^4.26.0",
+  "@types/node": "^20",
+  "@types/react": "^18",
+  "@types/react-dom": "^18",
+  "eslint": "^8.57.1",
+  "eslint-config-next": "14.2.8",
+  "postcss": "^8",
+  "prisma": "^5.21.1",
+  "tailwindcss": "^3.4.1",
+  "typescript": "^5"
+=======
 {
   "name": "english-at-large",
   "version": "0.1.0",
@@ -12,7 +45,6 @@
     "@clerk/nextjs": "^6.3.4",
     "@headlessui/react": "^2.2.0",
     "@prisma/client": "^5.21.1",
-    "@sendgrid/mail": "^8.1.4",
     "@vercel/postgres": "^0.9.0",
     "axios": "^1.7.7",
     "next": "15.0.3",
@@ -36,4 +68,6 @@
     "@types/react": "npm:types-react@19.0.0-rc.1",
     "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
   }
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
+}
 }

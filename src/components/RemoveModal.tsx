@@ -3,7 +3,11 @@ import { deleteBook } from "@/lib/api/books";
 import CommonButton from "./common/button/CommonButton";
 import { Book } from "@prisma/client";
 import { useRouter } from "next/navigation";
+<<<<<<< HEAD
+import BookDetail from "./details";
+=======
 import BookDetail from "./Details";
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
 
 interface RemoveModalProps {
   setShowRemoveModal: (arg0: boolean) => void;
@@ -48,7 +52,10 @@ const RemoveModal = ({ setShowRemoveModal, book }: RemoveModalProps) => {
                 isbn={book.isbn}
                 publisher={book.publisher}
                 releaseDate={book.releaseDate}
+<<<<<<< HEAD
+=======
                 numPages={book.numPages}
+>>>>>>> 51bce2eaa3d89a963440803ec1ea2b6be7e2b7cb
                 copies={10}
                 lineSpacing="space-y-5"
                 fontSize="text-sm"
