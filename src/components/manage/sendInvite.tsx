@@ -9,13 +9,22 @@ import SmallCheckIcon from "@/assets/icons/SmallCheck";
 import XIcon from "@/assets/icons/X";
 import { emptyUser } from "@/lib/util/types";
 import { createUser } from "@/lib/api/users";
+import { ConfirmationPopupState } from "../common/message/ConfirmationPopup";
+
 interface SendInviteProps {
   isOpen: boolean;
   exit: () => void;
+  setPopup?: (arg0: ConfirmationPopupState) => void;
+}
+
+export enum UserConfirmationMessages {
+  SUCCESS = "Your invite has been sent",
+  FAILURE = "Couldn't send invite. Check your connection and retry.",
+  NONE = ""
 }
 
 const SendInvite = (props: SendInviteProps) => {
-  const { isOpen, exit } = props;
+  const { isOpen, exit, setPopup } = props;
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole | null>(null);
@@ -58,6 +67,13 @@ const SendInvite = (props: SendInviteProps) => {
             await updateUser(user);
           }
           setStatus(true);
+          if (setPopup) {
+            setPopup({
+              message: UserConfirmationMessages.SUCCESS,
+              success: true,
+              shown: true,
+            });
+          }
         } else {
           throw "Email already in use!";
         }
@@ -65,8 +81,14 @@ const SendInvite = (props: SendInviteProps) => {
         throw "Not all fields completed!";
       }
     } catch (error) {
-      console.error("Error creating invite: ", error);
       setStatus(false);
+      if (setPopup) {
+        setPopup({
+          message: UserConfirmationMessages.FAILURE,
+          success: true,
+          shown: true,
+        });
+      }
     }
   };
 

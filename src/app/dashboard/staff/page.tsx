@@ -10,10 +10,17 @@ import PendingChip from "@/assets/icons/pending_chip";
 import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
+import ConfirmationPopup, {
+  ConfirmationPopupState,
+  EmptyConfirmationState,
+} from "@/components/common/message/ConfirmationPopup";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
+  const [userInvitePopup, setUserInvitePopup] = useState<ConfirmationPopupState>(
+    EmptyConfirmationState
+  );
 
   useEffect(() => {
     const getUsers = async () => {
@@ -102,7 +109,16 @@ export default function Manage() {
           </tbody>
         </table>
       </div>
-      <SendInvite isOpen={popupOpen} exit={() => setPopupOpen(false)} />
+      <SendInvite isOpen={popupOpen} setPopup={setUserInvitePopup} exit={() => setPopupOpen(false)} />
+      <div>
+        {userInvitePopup.shown ? (
+        <ConfirmationPopup
+          message={userInvitePopup.message}
+          success={userInvitePopup.success}
+          onDisappear={() => setUserInvitePopup(EmptyConfirmationState)}
+        />
+        ) : null}
+      </div>
     </div>
   );
 }
