@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { BookRequest } from "@prisma/client";
 import { validateRequestData, emptyRequest } from "@/lib/util/types";
-import sgMail from "@sendgrid/mail"
+import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 
 /**
@@ -65,10 +65,9 @@ export const postRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
-    // const newRequest = await prisma.request.create({
+    // await prisma.bookRequest.create({
     //   data: requestData,
     // });
-
 
     const users = await prisma.user.findMany();
 
@@ -82,26 +81,25 @@ export const postRequestController = async (
       for (let i = 0; i < admins.length; i++) {
         const email = admins[i].email;
         if (email) {
-            const msg = {
-                to: email, // Change to your recipient
-                from: "englishatlarge427@gmail.com", // Change to your verified sender
-                subject: "testing testing 123",
-                text: "testing testing 456",
-                html: "<strong>testing testing 789</strong>",
-              };
-      
-              sgMail
-                .send(msg)
-                .then((response) => {
-                  console.log(response[0].statusCode);
-                  console.log(response[0].headers);
-                })
-                .catch((error) => {
-                  console.error(error);
-                });
-            }
-        }
+          const msg = {
+            to: email, // Change to your recipient
+            from: "englishatlarge427@gmail.com", // Change to your verified sender
+            subject: "testing testing 123",
+            text: "testing testing 456",
+            html: "<strong>testing testing 789</strong>",
+          };
 
+          sgMail
+            .send(msg)
+            .then((response) => {
+              console.log(response[0].statusCode);
+              console.log(response[0].headers);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
+      }
     }
 
     return emptyRequest;
