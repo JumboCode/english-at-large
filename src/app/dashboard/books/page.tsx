@@ -6,12 +6,11 @@ import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import BookForm from "@/components/common/forms/BookForm";
-import RemoveModal from "@/components/RemoveModal"
+import BookForm, { BookConfirmationMessages } from "@/components/common/forms/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
-// import { useSearchParams } from "next/navigation"
+import { PopupProvider, usePopup } from "@/components/common/message/PopupContext";
 import ConfirmationPopup, {
   ConfirmationPopupState,
   EmptyConfirmationState,
@@ -20,22 +19,16 @@ import ConfirmationPopup, {
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
-
-  // const searchParams = useSearchParams(); 
-  // const removeSuccess = searchParams.get('removeSuccess'); 
-
+  
   const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
     EmptyConfirmationState
   );
-  const [removeModalPopup, setRemoveModalPopup] = useState<ConfirmationPopupState>(
-    EmptyConfirmationState
-  );
+  const { hidePopup, popup } = usePopup();
 
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -133,24 +126,13 @@ const BooksPage = () => {
         />
       ) : null}
 
-      {/* TODO: showRemoveModal is connected to anything; needs another setShowRemoveModal(true) case. 
-      Not sure how to integrate it with removeModal file because of router redirecting ??? 
-      (react.usecontext [like global variables] */}
-      {showRemoveModal && 
-        <RemoveModal
-          setShowRemoveModal={setShowRemoveModal}
-          book={null}
-          setPopup={setRemoveModalPopup}
+      {popup.shown ? (
+        <ConfirmationPopup
+          message={popup.message}
+          success={popup.success}
+          onDisappear={() => hidePopup()}
         />
-      }
-
-      {removeModalPopup.shown ? (
-      <ConfirmationPopup
-        message={removeModalPopup.message}
-        success={removeModalPopup.success}
-        onDisappear={() => setRemoveModalPopup(EmptyConfirmationState)}
-      />
-      ) : null} 
+      ) : null}
 
       <FilterPopup
         isOpen={isFilterOpen}

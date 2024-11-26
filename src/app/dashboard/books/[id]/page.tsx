@@ -36,7 +36,6 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-
   const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
     EmptyConfirmationState
   );
@@ -139,11 +138,11 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                           />
                         }
                       />
-                      {showRemoveModal && (
+                      {showRemoveModal ? (
                         <RemoveModal
-                          setShowRemoveModal={setShowRemoveModal}
                           book={book}
-                        />)}
+                          setShowRemoveModal={setShowRemoveModal}
+                        />) : (null)}
                     </div>
                   </div>
                 </div>

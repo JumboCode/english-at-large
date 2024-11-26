@@ -16,11 +16,13 @@ interface BookFormProps {
   setPopup?: (arg0: ConfirmationPopupState) => void;
 }
 
-export enum BookFormConfirmationMessages {
+export enum BookConfirmationMessages {
   SUCCESS = "Book added!",
   FAILURE = "Couldn't add book. Check your connection and retry.",
   EDITSUCCESS = "Book saved successfully.",
   EDITFAILURE = "Couldn't save book. Check your connection and retry.",
+  REMSUCCESS = "Book removed successfully.",
+  REMFAILURE = "Couldn't remove book. Check your connection and retry.",
   // add more states as needed, e.g. different error messages, etc
   NONE = "",
 }
@@ -138,7 +140,7 @@ const BookForm = (props: BookFormProps) => {
           setShowBookForm(false);
           if (setPopup) {
             setPopup({
-              message: BookFormConfirmationMessages.EDITSUCCESS,
+              message: BookConfirmationMessages.EDITSUCCESS,
               success: true,
               shown: true,
             });
@@ -147,7 +149,7 @@ const BookForm = (props: BookFormProps) => {
           setShowBookForm(false);
           if (setPopup) {
             setPopup({
-              message: BookFormConfirmationMessages.EDITFAILURE,
+              message: BookConfirmationMessages.EDITFAILURE,
               success: false,
               shown: true,
             });
@@ -162,7 +164,7 @@ const BookForm = (props: BookFormProps) => {
           setShowBookForm(false);
           if (setPopup) {
             setPopup({
-              message: BookFormConfirmationMessages.SUCCESS,
+              message: BookConfirmationMessages.SUCCESS,
               success: true,
               shown: true,
             });
@@ -171,7 +173,7 @@ const BookForm = (props: BookFormProps) => {
           setShowBookForm(false);
           if (setPopup) {
             setPopup({
-              message: BookFormConfirmationMessages.FAILURE,
+              message: BookConfirmationMessages.FAILURE,
               success: false,
               shown: true,
             });
