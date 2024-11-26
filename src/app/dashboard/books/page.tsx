@@ -72,7 +72,7 @@ const BooksPage = () => {
       book.title.toLowerCase()).includes(searchData) || 
       book.author.toLowerCase().includes(searchData) || 
       book.isbn.includes(searchData));
-  }, [books, searchData]);
+  }, [searchData]);
 
   const onClick = () => {
     setFilteredBooks(foundBooks);
@@ -82,7 +82,7 @@ const BooksPage = () => {
     return [...foundBooks] // Create a shallow copy to avoid mutating the original `books` array
       .sort((a, b) => sortBooks(a, b)) // Use the sortBooks function to compare and sort
       .filter((book) => filterBooks(book)); // Use filterBooks to filter out the books
-  }, [books]);
+  }, [isFilterOpen]);
 
 
   useEffect(() => {
@@ -95,6 +95,7 @@ const BooksPage = () => {
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
+          setFilteredBooks(allBooks);
         }
       } catch (err) {
         console.error("Failed to get all books");
