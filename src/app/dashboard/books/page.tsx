@@ -6,15 +6,12 @@ import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import BookForm, { BookConfirmationMessages } from "@/components/common/forms/BookForm";
+import BookForm from "@/components/common/forms/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
-import { PopupProvider, usePopup } from "@/components/common/message/PopupContext";
-import ConfirmationPopup, {
-  ConfirmationPopupState,
-  EmptyConfirmationState,
-} from "@/components/common/message/ConfirmationPopup";
+import { usePopup } from "@/components/common/message/PopupContext";
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -24,10 +21,7 @@ const BooksPage = () => {
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
-  
-  const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
-    EmptyConfirmationState
-  );
+
   const { hidePopup, popup } = usePopup();
 
   const toggleFilterPopup = () => {
@@ -114,21 +108,13 @@ const BooksPage = () => {
         <BookForm
           setShowBookForm={setBookFormShown}
           existingBook={null}
-          setPopup={setBookFormPopup}
         />
       }
 
-      {bookFormPopup.shown ? (
-        <ConfirmationPopup
-          message={bookFormPopup.message}
-          success={bookFormPopup.success}
-          onDisappear={() => setBookFormPopup(EmptyConfirmationState)}
-        />
-      ) : null}
-
       {popup.shown ? (
         <ConfirmationPopup
-          message={popup.message}
+          type={popup.type}
+          action={popup.action}
           success={popup.success}
           onDisappear={() => hidePopup()}
         />

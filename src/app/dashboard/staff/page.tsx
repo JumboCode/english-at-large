@@ -10,18 +10,14 @@ import PendingChip from "@/assets/icons/pending_chip";
 import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
-import ConfirmationPopup, {
-  ConfirmationPopupState,
-  EmptyConfirmationState,
-} from "@/components/common/message/ConfirmationPopup";
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import { usePopup } from "@/components/common/message/PopupContext"
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
-  const [userInvitePopup, setUserInvitePopup] = useState<ConfirmationPopupState>(
-    EmptyConfirmationState
-  );
-
+  const { hidePopup, popup } = usePopup();
+  
   useEffect(() => {
     const getUsers = async () => {
       const allUsers = await getAllUsers();
@@ -109,15 +105,16 @@ export default function Manage() {
           </tbody>
         </table>
       </div>
-      <SendInvite isOpen={popupOpen} setPopup={setUserInvitePopup} exit={() => setPopupOpen(false)} />
+      <SendInvite isOpen={popupOpen} exit={() => setPopupOpen(false)} />
       <div>
-        {userInvitePopup.shown ? (
+        {popup.shown ? (
         <ConfirmationPopup
-          message={userInvitePopup.message}
-          success={userInvitePopup.success}
-          onDisappear={() => setUserInvitePopup(EmptyConfirmationState)}
+          type={popup.type}
+          action={popup.action}
+          success={popup.success}
+          onDisappear={() => hidePopup()}
         />
-        ) : null}
+      ) : null}
       </div>
     </div>
   );

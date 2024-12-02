@@ -16,10 +16,8 @@ import BookForm from "@/components/common/forms/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 
-import ConfirmationPopup, {
-  ConfirmationPopupState,
-  EmptyConfirmationState,
-} from "@/components/common/message/ConfirmationPopup";
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import { usePopup } from "@/components/common/message/PopupContext"
 
 type Params = Promise<{ id: string }>;
 
@@ -36,9 +34,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
-    EmptyConfirmationState
-  );
+
+  const { hidePopup, popup } = usePopup();
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -63,7 +60,6 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           onSave={(b: Book | null) => {
             setBook(b);
           }}
-          setPopup={setBookFormPopup}
         />
       ) : (
         <div>
@@ -203,13 +199,14 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           ) : null}
         </div>
       )}
-    {bookFormPopup.shown ? (
-    <ConfirmationPopup
-      message={bookFormPopup.message}
-      success={bookFormPopup.success}
-      onDisappear={() => setBookFormPopup(EmptyConfirmationState)}
-    />
-    ) : null}
+    {popup.shown ? (
+        <ConfirmationPopup
+          type={popup.type}
+          action={popup.action}
+          success={popup.success}
+          onDisappear={() => hidePopup()}
+        />
+      ) : null}
     </div>
   );
 };

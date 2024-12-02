@@ -9,26 +9,22 @@ import SmallCheckIcon from "@/assets/icons/SmallCheck";
 import XIcon from "@/assets/icons/X";
 import { emptyUser } from "@/lib/util/types";
 import { createUser } from "@/lib/api/users";
-import { ConfirmationPopupState } from "../common/message/ConfirmationPopup";
+import { PopupTypes, PopupActions } from "../common/message/ConfirmationPopup";
+import { usePopup } from "../common/message/PopupContext"
 
 interface SendInviteProps {
   isOpen: boolean;
   exit: () => void;
-  setPopup?: (arg0: ConfirmationPopupState) => void;
-}
-
-export enum UserConfirmationMessages {
-  SUCCESS = "Your invite has been sent",
-  FAILURE = "Couldn't send invite. Check your connection and retry.",
-  NONE = ""
 }
 
 const SendInvite = (props: SendInviteProps) => {
-  const { isOpen, exit, setPopup } = props;
+  const { isOpen, exit } = props;
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole | null>(null);
   const [status, setStatus] = useState<boolean | null>(null);
+
+  const { setShowPopup } = usePopup(); 
 
   const checkUserEmail = async (email: string) => {
     const users = await getAllUsers();
@@ -67,13 +63,7 @@ const SendInvite = (props: SendInviteProps) => {
             await updateUser(user);
           }
           setStatus(true);
-          if (setPopup) {
-            setPopup({
-              message: UserConfirmationMessages.SUCCESS,
-              success: true,
-              shown: true,
-            });
-          }
+          setShowPopup(PopupTypes.USER, PopupActions.INVITE, true);
         } else {
           throw "Email already in use!";
         }
@@ -82,13 +72,7 @@ const SendInvite = (props: SendInviteProps) => {
       }
     } catch (error) {
       setStatus(false);
-      if (setPopup) {
-        setPopup({
-          message: UserConfirmationMessages.FAILURE,
-          success: true,
-          shown: true,
-        });
-      }
+      setShowPopup(PopupTypes.USER, PopupActions.INVITE, false);
     }
   };
 
@@ -216,7 +200,6 @@ const SendInvite = (props: SendInviteProps) => {
       ) : (
         <div />
       )}
-      {/* This is a placeholder for the invite toast */}
       <p>{String(status)}</p>
     </div>
   );

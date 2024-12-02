@@ -5,25 +5,43 @@ import CloseIcon from "@/assets/icons/Close";
 import { useEffect } from "react";
 
 interface SuccessProps {
-  message: string;
+  type: PopupTypes;
+  action: PopupActions;
   success: boolean;
   onDisappear: () => void;
 }
 
 export interface ConfirmationPopupState {
-  message: string;
+  type: PopupTypes;
+  action: PopupActions;
   success: boolean;
   shown: boolean;
 }
 
+export enum PopupActions {
+  NONE = "",
+  ADD = "add",
+  EDIT = "edit",
+  REMOVE = "remove",
+  INVITE = "invite",
+}
+
+export enum PopupTypes {
+  NONE = "",
+  BOOK = "book",
+  USER = "user",
+  RESOURCE = "resource",
+}
+
 export const EmptyConfirmationState: ConfirmationPopupState = {
-  message: "",
+  type: PopupTypes.NONE,
+  action: PopupActions.NONE,
   success: false,
   shown: false,
 };
 
 const ConfirmationPopup = (props: SuccessProps) => {
-  const { message, success, onDisappear } = props;
+  const { type, action, success, onDisappear } = props;
 
   useEffect(() => {
     setTimeout(() => {
@@ -43,7 +61,7 @@ const ConfirmationPopup = (props: SuccessProps) => {
           <div className="my-auto">
             {success ? <CheckCircleIcon /> : <FailCircleIcon />}
           </div>
-          <div>{message}</div>
+          <div>{success ? `Successfully ${action}ed ${type}.` : `Couldn't ${action} ${type}. Check your connection and try again.`}</div>
         </div>
         <div className="my-auto">
           <button

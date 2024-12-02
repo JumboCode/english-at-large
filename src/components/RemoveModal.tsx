@@ -6,9 +6,8 @@ import { useRouter } from "next/navigation"
 import Image from "next/image";
 import BookDetail from "./Details";
 import { usePopup } from "./common/message/PopupContext";
-import { useState } from 'react'; 
 import imageToAdd from "../assets/images/harry_potter.jpg"
-import { BookConfirmationMessages } from "./common/forms/BookForm";
+import { PopupTypes, PopupActions } from "./common/message/ConfirmationPopup"
 
 interface RemoveModalProps {
   book: Book;
@@ -23,12 +22,12 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
       try {
         await deleteBook(book.id);
         setShowRemoveModal(false);
-        setShowPopup(BookConfirmationMessages.REMSUCCESS, true);
+        setShowPopup(PopupTypes.BOOK, PopupActions.REMOVE, true);
         router.push("/dashboard/books");
 
       } catch (error) {
         setShowRemoveModal(false); 
-        setShowPopup(BookConfirmationMessages.REMFAILURE, false); 
+        setShowPopup(PopupTypes.BOOK, PopupActions.REMOVE, false); 
         router.push("/dashboard/books");
     }
   };

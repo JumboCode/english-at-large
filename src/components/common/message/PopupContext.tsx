@@ -1,12 +1,11 @@
 "use client";
 import { createContext, useContext, useState } from "react";
-import { EmptyConfirmationState, ConfirmationPopupState } from "./ConfirmationPopup";
+import { EmptyConfirmationState, ConfirmationPopupState, PopupTypes, PopupActions } from "./ConfirmationPopup";
 
-// used for removeModal popup handling - can also be used for other popups
 
 export interface PopupContextType {
     popup: ConfirmationPopupState;
-    setShowPopup: (message: string, success?: boolean) => void;
+    setShowPopup: (type: PopupTypes, action: PopupActions, success?: boolean) => void;
     hidePopup: () => void;
 };
 
@@ -17,15 +16,15 @@ export const PopupProvider = ({ children }: { children: React.ReactNode }) => {
     EmptyConfirmationState
   );
 
-  const setShowPopup = (message: string, success = true) => {
+  const setShowPopup = (type = PopupTypes.NONE, action = PopupActions.NONE, success = true) => {
     setPopup({
-      message: message,
+      type: type,
+      action: action,
       success: success,
       shown: true,
     });
   }
   
-  // Function to hide the popup
   const hidePopup = () => {
     setPopup(EmptyConfirmationState);
   };
