@@ -12,7 +12,12 @@ import { validateRequestData } from "@/lib/util/types";
  */
 export const getAllRequestsController = async (): Promise<BookRequest[]> => {
   try {
-    const requests = await prisma.bookRequest.findMany();
+    const requests = await prisma.bookRequest.findMany({
+      include: {
+        user: true, // Fetch the related User
+        book: true, // Fetch the related Book
+      },
+    });
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
@@ -91,10 +96,14 @@ export const putRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
+    
+    const {book, user, ...newRequest} = requestData;
 
     const updatedRequest = await prisma.bookRequest.update({
-      where: { id: requestData.id },
-      data: requestData,
+      // where: { id: requestData.id },
+      // data: requestData,
+      where: { id: newRequest.id },
+      data: newRequest,
     });
     return updatedRequest;
   } catch (error) {
