@@ -14,7 +14,6 @@ interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
-  // setPopup?: (arg0: ConfirmationPopupState) => void;
 }
 
 const BookForm = (props: BookFormProps) => {
@@ -130,23 +129,9 @@ const BookForm = (props: BookFormProps) => {
             onSave(editedBook);
           }
           setShowBookForm(false);
-          // if (setPopup) {
-          //   setPopup({
-          //     message: BookConfirmationMessages.EDITSUCCESS,
-          //     success: true,
-          //     shown: true,
-          //   });
-          // }
           setShowPopup(PopupTypes.BOOK, PopupActions.EDIT, true); 
         } else {
           setShowBookForm(false);
-          // if (setPopup) {
-          //   setPopup({
-          //     message: BookConfirmationMessages.EDITFAILURE,
-          //     success: false,
-          //     shown: true,
-          //   });
-          // }
           setShowPopup(PopupTypes.BOOK, PopupActions.EDIT, false);
         }
       } else if (newBook) {
@@ -156,23 +141,9 @@ const BookForm = (props: BookFormProps) => {
             onSave(createdBook);
           }
           setShowBookForm(false);
-          // if (setPopup) {
-          //   setPopup({
-          //     message: BookConfirmationMessages.SUCCESS,
-          //     success: true,
-          //     shown: true,
-          //   });
-          // }
           setShowPopup(PopupTypes.BOOK, PopupActions.ADD, true);
         } else {
           setShowBookForm(false);
-          // if (setPopup) {
-          //   setPopup({
-          //     message: BookConfirmationMessages.FAILURE,
-          //     success: false,
-          //     shown: true,
-          //   });
-          // }
           setShowPopup(PopupTypes.BOOK, PopupActions.ADD, false);
         }
       }
