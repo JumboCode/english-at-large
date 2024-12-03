@@ -5,10 +5,10 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
-import {  PopupTypes, PopupActions } from "../message/ConfirmationPopup";
+import { PopupTypes, PopupActions } from "../message/ConfirmationPopup";
 import imageToAdd from "../../../assets/images/harry_potter.jpg";
 import axios from "axios";
-import { usePopup } from "../../common/message/PopupContext"
+import { usePopup } from "../../common/message/PopupContext";
 
 interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
@@ -129,7 +129,7 @@ const BookForm = (props: BookFormProps) => {
             onSave(editedBook);
           }
           setShowBookForm(false);
-          setShowPopup(PopupTypes.BOOK, PopupActions.EDIT, true); 
+          setShowPopup(PopupTypes.BOOK, PopupActions.EDIT, true);
         } else {
           setShowBookForm(false);
           setShowPopup(PopupTypes.BOOK, PopupActions.EDIT, false);
@@ -214,7 +214,8 @@ const BookForm = (props: BookFormProps) => {
         <div>
           <label
             htmlFor="description"
-            className="block text-lg ml-[5%] font-bold">
+            className="block text-lg ml-[5%] font-bold"
+          >
             Description
           </label>
           <textarea
@@ -327,8 +328,10 @@ const BookForm = (props: BookFormProps) => {
               id="numPages"
               name="numPages"
               className="border-[1px] border-black border-solid rounded-lg h-8"
-              value = {
-                editBook && editBook.numPages ? editBook.numPages : ""
+              value={
+                editBook && editBook.numPages
+                  ? editBook.numPages
+                  : newBook.numPages ?? 1
               }
               onChange={bookChangeHandler}
             />
