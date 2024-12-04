@@ -39,6 +39,10 @@ export const getOneRequestController = async (
   try {
     const request = await prisma.bookRequest.findUnique({
       where: { id: id },
+      include: {
+        user: true, // Fetch the related User
+        book: true, // Fetch the related Book
+      },
     });
 
     if (!request) {
@@ -96,8 +100,8 @@ export const putRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
-    
-    const {book, user, ...newRequest} = requestData;
+
+    const { book, user, ...newRequest } = requestData;
 
     const updatedRequest = await prisma.bookRequest.update({
       // where: { id: requestData.id },

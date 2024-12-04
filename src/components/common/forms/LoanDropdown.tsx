@@ -1,31 +1,28 @@
+import React, { useEffect, useState } from "react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
 import SmallCheckIcon from "@/assets/icons/SmallCheck";
 import { updateRequest } from "@/lib/api/requests";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { BookRequest, BookStatus } from "@prisma/client";
-import { useState } from "react";
 
 interface DropdownProps {
   report: BookRequest;
+  selectedValue: string;
+  oneRequest: BookRequest;
+  updateReq: (arg0: BookRequest) => void;
 }
 
 const LoanDropdown = (props: DropdownProps) => {
-  const { report } = props;
+  const { report, selectedValue, oneRequest, updateReq} = props;
   const [filterType, setFilterType] = useState<BookStatus>(report.status);
 
-  const updateReq = async (req: BookRequest) => {
-    await updateRequest(req);
-  };
+  useEffect(() => {
+    setFilterType(report.status)
+  }, [selectedValue])
 
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        {/* <MenuButton className="inline-flex min-w-28 w-full justify-center gap-2 rounded-lg bg-white p-3  text-gray-900 hover:bg-gray-50 border border-dark-blue">
-          <p className="text-sm font-medium text-dark-blue font-[family-name:var(--font-rubik)]">
-            {filterType}
-          </p>
-          <DropArrowIcon />
-        </MenuButton> */}
         {filterType == BookStatus.Pickup ? (
           <MenuButton className="inline-flex min-w-20 w-auto justify-center gap-1 rounded-lg bg-[#FFF1C2] p-2 text-black hover:bg-blue-600">
             <p className="text-sm font-medium font-rubik">{filterType}</p>
@@ -44,8 +41,6 @@ const LoanDropdown = (props: DropdownProps) => {
         className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
       >
         <div>
-          {/* {items.map((item, index) => {
-            return ( */}
           <MenuItem key={0}>
             {filterType == BookStatus.Pickup ? (
               <button
@@ -73,8 +68,6 @@ const LoanDropdown = (props: DropdownProps) => {
               </button>
             )}
           </MenuItem>
-          {/* );
-          })} */}
         </div>
       </MenuItems>
     </Menu>
