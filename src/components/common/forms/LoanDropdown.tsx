@@ -14,18 +14,29 @@ const LoanDropdown = (props: DropdownProps) => {
   const [filterType, setFilterType] = useState<BookStatus>(report.status);
 
   const updateReq = async (req: BookRequest) => {
-    await updateRequest(req)
-  }
+    await updateRequest(req);
+  };
 
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <MenuButton className="inline-flex min-w-28 w-full justify-center gap-2 rounded-lg bg-white p-3  text-gray-900 hover:bg-gray-50 border border-dark-blue">
+        {/* <MenuButton className="inline-flex min-w-28 w-full justify-center gap-2 rounded-lg bg-white p-3  text-gray-900 hover:bg-gray-50 border border-dark-blue">
           <p className="text-sm font-medium text-dark-blue font-[family-name:var(--font-rubik)]">
             {filterType}
           </p>
           <DropArrowIcon />
-        </MenuButton>
+        </MenuButton> */}
+        {filterType == BookStatus.Pickup ? (
+          <MenuButton className="inline-flex min-w-20 w-auto justify-center gap-1 rounded-lg bg-[#FFF1C2] p-2 text-black hover:bg-blue-600">
+            <p className="text-sm font-medium font-rubik">{filterType}</p>
+            <DropArrowIcon />
+          </MenuButton>
+        ) : (
+          <MenuButton className="inline-flex min-w-20 w-auto justify-center gap-1 rounded-lg bg-[#A0DEFF] p-2 text-black hover:bg-blue-600">
+            <p className="text-sm font-medium font-rubik">{filterType}</p>
+            <DropArrowIcon />
+          </MenuButton>
+        )}
       </div>
 
       <MenuItems
@@ -35,34 +46,34 @@ const LoanDropdown = (props: DropdownProps) => {
         <div>
           {/* {items.map((item, index) => {
             return ( */}
-              <MenuItem key={0}>
-                {filterType == BookStatus.Pickup ? (
-                    <button
-                    onClick={() => {
-                        setFilterType(BookStatus.Borrowed);
-                        updateReq({...report, status : BookStatus.Borrowed})
-                    }}
-                    className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
-                    >
-                        <div className="flex justify-between">
-                            <p className="text-sm text-black">Borrowed</p>
-                        </div>
-                    </button>
-                ) : (
-                    <button
-                    onClick={() => {
-                        setFilterType(BookStatus.Pickup);
-                        updateReq({...report, status : BookStatus.Pickup})
-                    }}
-                    className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
-                    >
-                        <div className="flex justify-between">
-                            <p className="text-sm text-black">Pick-up</p>
-                        </div>
-                    </button>
-                )}
-              </MenuItem>
-            {/* );
+          <MenuItem key={0}>
+            {filterType == BookStatus.Pickup ? (
+              <button
+                onClick={() => {
+                  setFilterType(BookStatus.Borrowed);
+                  updateReq({ ...report, status: BookStatus.Borrowed });
+                }}
+                className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
+              >
+                <div className="flex justify-between">
+                  <p className="text-sm text-black">Borrowed</p>
+                </div>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  setFilterType(BookStatus.Pickup);
+                  updateReq({ ...report, status: BookStatus.Pickup });
+                }}
+                className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
+              >
+                <div className="flex justify-between">
+                  <p className="text-sm text-black">Pick-up</p>
+                </div>
+              </button>
+            )}
+          </MenuItem>
+          {/* );
           })} */}
         </div>
       </MenuItems>

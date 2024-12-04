@@ -92,7 +92,10 @@ const Loans = () => {
       </h1>
       <SearchBar
         button={
-          <CommonDropdown items={["Request Date", "Return Date", "Pick-up", "Borrowed"]}  />
+          <CommonDropdown 
+            items={["Request Date", "Return Date", "Pick-up", "Borrowed"]} 
+            buttonText={"Sort by"} 
+            setFilter={setSelectedValue}/>
         }
         placeholderText="Search by name or email"
       />
@@ -176,8 +179,8 @@ const Loans = () => {
                       onClick={() => {
                         updateReq({...request, status : BookStatus.Returned})
                       }}
-                      altTextStyle="text-blue"
-                      altStyle="bg-white"
+                      altTextStyle="text-white"
+                      altStyle="bg-dark-blue"
                     />
                   </div>
                 </td>

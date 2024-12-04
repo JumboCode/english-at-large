@@ -14,6 +14,7 @@ import { dateToTimeString } from "@/lib/util/utilFunctions";
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
+  const [filter, setFilter] = useState<string>("");
 
   useEffect(() => {
     const getUsers = async () => {
@@ -31,7 +32,7 @@ export default function Manage() {
       </h1>
       <SearchBar
         button={
-          <CommonDropdown items={["All", "Tutors", "Admins", "Pending"]} />
+          <CommonDropdown items={["All", "Tutors", "Admins", "Pending"]} buttonText="All" setFilter={setFilter}/>
         }
         button2={
           <CommonButton
