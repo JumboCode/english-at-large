@@ -35,7 +35,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
 
-  const { hidePopup, popup } = usePopup();
+  const { hidePopup, popupStatus } = usePopup();
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -199,12 +199,13 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           ) : null}
         </div>
       )}
-    {popup.shown ? (
+    {popupStatus.shown ? (
         <ConfirmationPopup
-          type={popup.type}
-          action={popup.action}
-          success={popup.success}
+          type={popupStatus.type}
+          action={popupStatus.action}
+          success={popupStatus.success}
           onDisappear={() => hidePopup()}
+          custom={popupStatus.custom}
         />
       ) : null}
     </div>

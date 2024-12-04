@@ -22,7 +22,8 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
       try {
         await deleteBook(book.id);
         setShowRemoveModal(false);
-        setShowPopup(PopupTypes.BOOK, PopupActions.REMOVE, true);
+        // custom msg because remove ends w/ "e"; creates odd grammar otherwise 
+        setShowPopup(PopupTypes.NONE, PopupActions.NONE, true, "Book removed successfully.");
         router.push("/dashboard/books");
 
       } catch (error) {

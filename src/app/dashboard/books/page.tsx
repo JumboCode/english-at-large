@@ -22,7 +22,7 @@ const BooksPage = () => {
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
-  const { hidePopup, popup } = usePopup();
+  const { hidePopup, popupStatus} = usePopup();
 
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -111,12 +111,13 @@ const BooksPage = () => {
         />
       }
 
-      {popup.shown ? (
+      {popupStatus.shown ? (
         <ConfirmationPopup
-          type={popup.type}
-          action={popup.action}
-          success={popup.success}
+          type={popupStatus.type}
+          action={popupStatus.action}
+          success={popupStatus.success}
           onDisappear={() => hidePopup()}
+          custom={popupStatus.custom}
         />
       ) : null}
 

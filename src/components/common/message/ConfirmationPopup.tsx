@@ -9,6 +9,7 @@ interface SuccessProps {
   action: PopupActions;
   success: boolean;
   onDisappear: () => void;
+  custom?: string; 
 }
 
 export interface ConfirmationPopupState {
@@ -16,6 +17,7 @@ export interface ConfirmationPopupState {
   action: PopupActions;
   success: boolean;
   shown: boolean;
+  custom?: string; 
 }
 
 export enum PopupActions {
@@ -38,10 +40,11 @@ export const EmptyConfirmationState: ConfirmationPopupState = {
   action: PopupActions.NONE,
   success: false,
   shown: false,
+  custom: "",
 };
 
 const ConfirmationPopup = (props: SuccessProps) => {
-  const { type, action, success, onDisappear } = props;
+  const { type, action, success, onDisappear, custom } = props;
 
   useEffect(() => {
     setTimeout(() => {
@@ -61,7 +64,14 @@ const ConfirmationPopup = (props: SuccessProps) => {
           <div className="my-auto">
             {success ? <CheckCircleIcon /> : <FailCircleIcon />}
           </div>
-          <div>{success ? `Successfully ${action}ed ${type}.` : `Couldn't ${action} ${type}. Check your connection and try again.`}</div>
+          <div>
+          {custom
+            ? custom 
+            : success 
+              ? `Successfully ${action}ed ${type}.` 
+              : `Couldn't ${action} ${type}. Check your connection and try again.`
+          }  
+          </div>
         </div>
         <div className="my-auto">
           <button

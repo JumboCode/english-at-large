@@ -16,7 +16,7 @@ import { usePopup } from "@/components/common/message/PopupContext"
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
-  const { hidePopup, popup } = usePopup();
+  const { hidePopup, popupStatus } = usePopup();
   
   useEffect(() => {
     const getUsers = async () => {
@@ -107,12 +107,13 @@ export default function Manage() {
       </div>
       <SendInvite isOpen={popupOpen} exit={() => setPopupOpen(false)} />
       <div>
-        {popup.shown ? (
+        {popupStatus.shown ? (
         <ConfirmationPopup
-          type={popup.type}
-          action={popup.action}
-          success={popup.success}
+          type={popupStatus.type}
+          action={popupStatus.action}
+          success={popupStatus.success}
           onDisappear={() => hidePopup()}
+          custom={popupStatus.custom}
         />
       ) : null}
       </div>
