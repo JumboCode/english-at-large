@@ -1,9 +1,9 @@
 "use client";
-// import ResetPasswordForm from "@/components/reset-password/ResetPasswordForm";
+import ResetPasswordForm from "@/components/reset-password/ResetPasswordForm";
 import books from "@/images/books.jpg";
-import CommonButton from "@/components/common/button/CommonButton";
+// import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 
 
 const ResetPassword = () => {
@@ -24,16 +24,14 @@ const ResetPassword = () => {
           <h1>Reset link sent!</h1>
         </div>
 
-        <div className="text-m pb-10 text-zinc-500">
+        <div className="text-m pb-4 text-zinc-500">
           <p>
-            {" "}
-            Please check your email for a validation code in order to reset.{" "}
+            Please check your email for a validation code in order to reset.
           </p>
         </div>
-        {/* <ResetPasswordForm setEmail={setEmail} error={error}/>
-        {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>} */}
+        <ResetPasswordForm/> 
 
-        <div>
+        {/* <div>
           <Link href="/login">
             <CommonButton
               label="Back to login"
@@ -41,7 +39,7 @@ const ResetPassword = () => {
               altStyle="bg-white outline-dark-blue mt-3 w-full"
             />
           </Link>
-        </div>
+        </div> */}
 
       </div>
     </div>

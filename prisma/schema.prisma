@@ -8,53 +8,53 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String?
-  email     String?   @unique
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  role      UserRole
-  clerkId   String    @default("placeholder")
-  pending   Boolean   @default(false)
-  inviteID  String    @default("none")
-  requests  Request[]
+  id           String         @id @default(cuid())
+  name         String?
+  email        String?        @unique
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  role         UserRole
+  clerkId      String         @default("placeholder")
+  pending      Boolean        @default(false)
+  inviteID     String         @default("none")
+  BookRequests BookRequests[]
 
   @@map("users")
 }
 
 model Book {
-  id          Int          @id @default(autoincrement())
-  isbn        String
-  notes       String?
-  scanLink    String?
-  title       String
-  author      String
-  description String
-  publisher   String
-  releaseDate String?
-  skills      BookSkills[]
-  bookType    BookType
-  level       BookLevel
-  status      BookStatus   @default(Available)
-  numPages    Int?         @default(0)
-  coverURL    String       @default("placeholder")
-  requests    Request[]
+  id           Int            @id @default(autoincrement())
+  isbn         String
+  notes        String?
+  scanLink     String?
+  title        String
+  author       String
+  description  String
+  publisher    String
+  releaseDate  String?
+  skills       BookSkills[]
+  bookType     BookType
+  level        BookLevel
+  status       BookStatus     @default(Available)
+  numPages     Int?           @default(0)
+  coverURL     String         @default("placeholder")
+  BookRequests BookRequests[]
 
   @@map("Books")
 }
 
-model Request {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  bookId    Int
-  status    String
-  createdAt DateTime
-  message   String
-  bookTitle String
-  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("Requests")
+model BookRequests {
+  id          Int        @id @default(autoincrement())
+  userId      String
+  bookId      Int
+  status      BookStatus
+  createdAt   DateTime
+  message     String
+  bookTitle   String
+  requestedOn DateTime
+  returnedBy  DateTime
+  Books       Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  users       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum UserRole {
@@ -68,6 +68,8 @@ enum BookStatus {
   Requested
   Borrowed
   Lost
+  Pickup
+  Returned
 }
 
 enum BookSkills {
