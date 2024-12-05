@@ -25,7 +25,7 @@ const BooksPage = () => {
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
-  const [searchData, setSearchData] = useState("")
+  const [searchData, setSearchData] = useState("");
 
   const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
     EmptyConfirmationState
@@ -66,24 +66,27 @@ const BooksPage = () => {
   );
 
   const foundBooks = useMemo(() => {
-    return [...books]
-    // filter on title, author, ISBN
-    .filter((book) => (
-      book.title.toLowerCase()).includes(searchData) || 
-      book.author.toLowerCase().includes(searchData) || 
-      book.isbn.includes(searchData));
-  }, [searchData]);
+    return (
+      [...books]
+        // filter on title, author, ISBN
+        .filter(
+          (book) =>
+            book.title.toLowerCase().includes(searchData) ||
+            book.author.toLowerCase().includes(searchData) ||
+            book.isbn.includes(searchData)
+        )
+    );
+  }, [searchData, books]);
 
   const onClick = () => {
     setFilteredBooks(foundBooks);
-  }
+  };
 
   const tempFilteredBooks = useMemo(() => {
     return [...foundBooks] // Create a shallow copy to avoid mutating the original `books` array
       .sort((a, b) => sortBooks(a, b)) // Use the sortBooks function to compare and sort
       .filter((book) => filterBooks(book)); // Use filterBooks to filter out the books
-  }, [isFilterOpen]);
-
+  }, [filterBooks, foundBooks, sortBooks]);
 
   useEffect(() => {
     setFilteredBooks(tempFilteredBooks);
@@ -129,7 +132,6 @@ const BooksPage = () => {
           />
         }
         placeholderText="Search for books"
-        books={books}
       />
 
       {bookFormShown ? (

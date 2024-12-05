@@ -97,6 +97,8 @@ export const createQuickRequest = async (
       status: BookStatus.Requested,
       message: "",
       bookTitle: book.title,
+      requestedOn: new Date(),
+      returnedBy: new Date(),
     };
 
     const response = await axios.post("/api/requests", request);

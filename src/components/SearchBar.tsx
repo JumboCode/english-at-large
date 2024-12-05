@@ -1,20 +1,19 @@
 "use client";
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
-import { Book, BookSkills, BookLevel, BookStatus } from "@prisma/client";
+import { Book } from "@prisma/client";
 
 interface searchBarProps {
-  setFilteredBooks: (book: Book[]) => void
-  setSearchData: (searchData: string) => void
+  setFilteredBooks: ((book: Book[]) => void) | null;
+  setSearchData: ((searchData: string) => void) | null;
   button: React.ReactNode;
   button2: React.ReactNode;
   placeholderText: string;
-  books: Book[]
-  onClick: () => void
+  onClick: () => void;
 }
 
 const SearchBar = (props: searchBarProps) => {
-  const { setFilteredBooks, setSearchData, button, button2, placeholderText, books, onClick } = props;
+  const { setSearchData, button, button2, placeholderText, onClick } = props;
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -24,7 +23,7 @@ const SearchBar = (props: searchBarProps) => {
     }
   };
 
-  function handleKeyDown(event: { key: string; }) {
+  function handleKeyDown(event: { key: string }) {
     if (event.key === "Enter") {
       onClick();
     }
@@ -32,7 +31,10 @@ const SearchBar = (props: searchBarProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setSearchData(value.toLowerCase());
+
+    if (setSearchData) {
+      setSearchData(value.toLowerCase());
+    }
   };
 
   return (
@@ -46,7 +48,7 @@ const SearchBar = (props: searchBarProps) => {
           className="w-full focus:outline-none text-black placeholder-medium-grey-border text-base"
           name="search bar"
           onChange={handleInputChange}
-          onKeyDown= {handleKeyDown}
+          onKeyDown={handleKeyDown}
           placeholder={placeholderText}
         />
         <button onClick={onClick}>
@@ -60,6 +62,5 @@ const SearchBar = (props: searchBarProps) => {
     </div>
   );
 };
-/*Lifting state up of showBookForm */
 
 export default SearchBar;
