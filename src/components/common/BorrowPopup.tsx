@@ -8,6 +8,7 @@ import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { createQuickRequest } from "@/lib/api/requests";
+
 interface BorrowPopupProps {
   book: Book;
   toggleOpen: () => void;
@@ -21,8 +22,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
     toggleOpen();
   };
 
-  //this also needs to be changed to a request
-
+  // this also needs to be changed to a request
   const toggleNextBorrow = async () => {
     if (user) {
       await createQuickRequest(book, user);

@@ -89,8 +89,8 @@ export const createQuickRequest = async (
       throw new Error("Missing request fields");
     }
 
-    const request: BookRequest = {
-      id: 0, // or handle it as undefined
+    const request: Omit<BookRequest, "id"> = {
+      // id: 0, // or handle it as undefined
       userId: user.id,
       bookId: book.id,
       createdAt: new Date(),
