@@ -17,7 +17,7 @@ export default function Manage() {
   const user = useCurrentUser();
 
   useEffect(() => {
-    if (user?.role != "Admin" && user?.role != undefined) {
+    if (user?.role !== "Admin" && user?.role != undefined) {
       redirect("/dashboard");
     }
   }, [user]);

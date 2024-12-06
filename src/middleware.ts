@@ -1,6 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-//import {useCurrentUser } from "./lib/hooks/useCurrentUser"
 
 // Define protected routes
 const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
