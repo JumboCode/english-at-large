@@ -65,11 +65,12 @@ export const postRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
-    // THIS IS CAUSING AN ERROR, MUST BE FIXED <-------------------------------------------------------------------- 
-    // const request = await prisma.bookRequest.create({
-    //   data: requestData,
-    // });
 
+    const request = await prisma.bookRequest.create({
+      data: requestData,
+    });
+
+    // email logic
     const users = await prisma.user.findMany();
 
     sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
@@ -83,20 +84,23 @@ export const postRequestController = async (
         const email = admins[i].email;
         if (email) {
           const borrower = await prisma.user.findUnique({
-            where: { id: requestData.userId }});
+            where: { id: requestData.userId },
+          });
           const msg = {
-            to: email, 
+            to: email,
             from: "englishatlarge427@gmail.com",
             subject: `${borrower?.name ?? "[No Username]"} Borrowed a Book`,
             text: `Borrower Name: ${borrower?.name ?? "[No Username]"} \n
             Borrower ID: ${requestData.userId} \n
-            Book Borrowed: ${requestData.bookTitle} \n 
+            Book Borrowed: ${requestData.bookTitle} \n
             Book ID: ${requestData.bookId} \n
             Borrowed on: ${requestData.requestedOn}`,
             html: `<p>
-            <strong>Borrower Name:</strong> ${borrower?.name ?? "[No Username]"} <br>
+            <strong>Borrower Name:</strong> ${
+              borrower?.name ?? "[No Username]"
+            } <br>
             <strong> Borrower ID:</strong> ${requestData.userId} <br>
-            <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br> 
+            <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br>
             <strong>Book ID: </strong>${requestData.bookId} <br>
             <strong>Borrowed on:</strong> ${requestData.requestedOn}
             </p>`,
@@ -115,9 +119,7 @@ export const postRequestController = async (
       }
     }
 
-    // temporary, this should return the actual request when it isn't erroring
-    return emptyRequest;
-    // return request;
+    return request;
   } catch (error) {
     console.error("Error in postRequestController:", error);
     throw error;
