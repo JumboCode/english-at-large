@@ -77,10 +77,8 @@ export const postRequestController = async (
     if (users) {
       const admins = users.filter((user) => {
         return user.role === UserRole.Admin;
-      });
-
-      for (let i = 0; i < admins.length; i++) {
-        const email = admins[i].email;
+      }).map(async (user) => {
+        const email = user.email;
         if (email) {
           const borrower = await prisma.user.findUnique({
             where: { id: requestData.userId }});
@@ -103,16 +101,12 @@ export const postRequestController = async (
           };
 
           sgMail
-            .send(msg)
-            .then((response) => {
-              console.log(response[0].statusCode);
-              console.log(response[0].headers);
-            })
-            .catch((error) => {
+            .send(msg).catch((error) => {
               console.error(error);
             });
-        }
-      }
+        }})
+
+      await Promise.all(admins)
     }
 
     // temporary, this should return the actual request when it isn't erroring
