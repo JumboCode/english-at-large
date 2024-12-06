@@ -4,16 +4,14 @@ import SearchIcon from "../assets/icons/Search";
 import { Book } from "@prisma/client";
 
 interface searchBarProps {
-  setFilteredBooks: ((book: Book[]) => void) | null;
   setSearchData: ((searchData: string) => void) | null;
   button: React.ReactNode;
   button2: React.ReactNode;
   placeholderText: string;
-  onClick: () => void;
 }
 
 const SearchBar = (props: searchBarProps) => {
-  const { setSearchData, button, button2, placeholderText, onClick } = props;
+  const { setSearchData, button, button2, placeholderText, } = props;
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +23,7 @@ const SearchBar = (props: searchBarProps) => {
 
   function handleKeyDown(event: { key: string }) {
     if (event.key === "Enter") {
-      onClick();
+      
     }
   }
 
@@ -48,10 +46,9 @@ const SearchBar = (props: searchBarProps) => {
           className="w-full focus:outline-none text-black placeholder-medium-grey-border text-base"
           name="search bar"
           onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
           placeholder={placeholderText}
         />
-        <button onClick={onClick}>
+        <button>
           <SearchIcon />
         </button>
       </div>
