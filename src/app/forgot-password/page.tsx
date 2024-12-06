@@ -6,24 +6,28 @@ import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useSignIn } from "@clerk/nextjs";
 import { getAllUsers } from "@/lib/api/users";
 
-
 const ForgotPassword = () => {
-  const [email, setEmail] = useState(''); 
+  const [email, setEmail] = useState("");
   const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState("");
+  const { isLoaded, signIn } = useSignIn();
 
-  
+  const router = useRouter();
+  if (!isLoaded) {
+    return null;
+  }
 
   const checkUserEmail = async (email: string) => {
     const users = await getAllUsers();
     return users ? !users.some((user) => user.email === email) : false;
   };
 
-  const handleReset = async () => {
-    setErrorMessage('');
+  async function handleReset(e: React.FormEvent) {
+    e.preventDefault();
+    setErrorMessage("");
     setError(false);
 
     if (!email) {
@@ -32,28 +36,36 @@ const ForgotPassword = () => {
       return;
     }
 
-    console.log("email: ", email);
-
     const invalidEmail = await checkUserEmail(email);
 
     if (invalidEmail) {
-      console.log("unsucessful!");
       setError(true);
-      setErrorMessage("Please enter a valid email address.");
-    } else {
-      
-
-
-
-      setError(false);
-      console.log("success!");
-      router.push("/reset-password");
+      setErrorMessage("Email not found. Please try again.");
+      return;
     }
 
-    return;
-  };
+    if (!signIn) {
+      setError(true);
+      setErrorMessage(
+        "Sign-in functionality is not initialized. Please try again later."
+      );
+      return;
+    }
 
-  
+    try {
+      await signIn.create({
+        strategy: "reset_password_email_code",
+        identifier: email,
+      });
+      router.push("/reset-password");
+    } catch (err) {
+      console.error(err);
+      setError(true);
+      setErrorMessage(
+        err.errors?.[0]?.longMessage || "Failed to send reset email."
+      );
+    }
+  }
 
   return (
     <div className="font-family-name:var(--font-geist-sans)] grid grid-cols-7 items-center">
@@ -79,8 +91,10 @@ const ForgotPassword = () => {
             link to reset your password.{" "}
           </p>
         </div>
-        <ForgotPasswordForm setEmail={setEmail} error={error}/>
-        {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+        <ForgotPasswordForm setEmail={setEmail} error={error} />
+        {errorMessage && (
+          <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+        )}
 
         <div>
           <CommonButton
@@ -97,7 +111,6 @@ const ForgotPassword = () => {
             />
           </Link>
         </div>
-
       </div>
     </div>
   );

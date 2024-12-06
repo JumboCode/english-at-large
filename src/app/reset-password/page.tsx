@@ -5,7 +5,6 @@ import books from "@/images/books.jpg";
 import Image from "next/image";
 // import Link from "next/link";
 
-
 const ResetPassword = () => {
   return (
     <div className="font-family-name:var(--font-geist-sans)] grid grid-cols-7 items-center">
@@ -29,18 +28,7 @@ const ResetPassword = () => {
             Please check your email for a validation code in order to reset.
           </p>
         </div>
-        <ResetPasswordForm/> 
-
-        {/* <div>
-          <Link href="/login">
-            <CommonButton
-              label="Back to login"
-              altTextStyle="text-dark-blue"
-              altStyle="bg-white outline-dark-blue mt-3 w-full"
-            />
-          </Link>
-        </div> */}
-
+        <ResetPasswordForm />
       </div>
     </div>
   );
