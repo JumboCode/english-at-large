@@ -44,6 +44,9 @@ export default function Manage() {
           />
         }
         placeholderText="Search by name or email"
+        setFilteredBooks={null}
+        setSearchData={null}
+        onClick={() => {}}
       />
       <div className="px-16">
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">

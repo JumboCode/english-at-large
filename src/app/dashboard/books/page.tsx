@@ -17,12 +17,15 @@ import ConfirmationPopup, {
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
+
+  const [searchData, setSearchData] = useState("");
 
   const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
     EmptyConfirmationState
@@ -62,11 +65,32 @@ const BooksPage = () => {
     [bookSortBy]
   );
 
-  const filteredBooks = useMemo(() => {
-    return [...books] // Create a shallow copy to avoid mutating the original `books` array
+  const foundBooks = useMemo(() => {
+    return (
+      [...books]
+        // filter on title, author, ISBN
+        .filter(
+          (book) =>
+            book.title.toLowerCase().includes(searchData) ||
+            book.author.toLowerCase().includes(searchData) ||
+            book.isbn.includes(searchData)
+        )
+    );
+  }, [searchData, books]);
+
+  const onClick = () => {
+    setFilteredBooks(foundBooks);
+  };
+
+  const tempFilteredBooks = useMemo(() => {
+    return [...foundBooks] // Create a shallow copy to avoid mutating the original `books` array
       .sort((a, b) => sortBooks(a, b)) // Use the sortBooks function to compare and sort
       .filter((book) => filterBooks(book)); // Use filterBooks to filter out the books
-  }, [books, filterBooks, sortBooks]);
+  }, [filterBooks, foundBooks, sortBooks]);
+
+  useEffect(() => {
+    setFilteredBooks(tempFilteredBooks);
+  }, [tempFilteredBooks]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,6 +98,7 @@ const BooksPage = () => {
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
+          setFilteredBooks(allBooks);
         }
       } catch (err) {
         console.error("Failed to get all books");
@@ -85,8 +110,9 @@ const BooksPage = () => {
   return (
     <div>
       <SearchBar
-        // filterOnPress={toggleFilterPopup}
-        // setShowBookForm={setBookFormShown}
+        setFilteredBooks={setFilteredBooks}
+        setSearchData={setSearchData}
+        onClick={onClick}
         button={
           <CommonButton
             label={"Filter"}
