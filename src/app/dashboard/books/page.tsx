@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
@@ -17,7 +17,6 @@ import ConfirmationPopup, {
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
@@ -65,32 +64,15 @@ const BooksPage = () => {
     [bookSortBy]
   );
 
-  const foundBooks = useMemo(() => {
-    return (
-      [...books]
-        // filter on title, author, ISBN
-        .filter(
-          (book) =>
-            book.title.toLowerCase().includes(searchData) ||
-            book.author.toLowerCase().includes(searchData) ||
-            book.isbn.includes(searchData)
-        )
-    );
-  }, [searchData, books]);
-
-  const onClick = () => {
-    setFilteredBooks(foundBooks);
-  };
-
-  const tempFilteredBooks = useMemo(() => {
-    return [...foundBooks] // Create a shallow copy to avoid mutating the original `books` array
-      .sort((a, b) => sortBooks(a, b)) // Use the sortBooks function to compare and sort
-      .filter((book) => filterBooks(book)); // Use filterBooks to filter out the books
-  }, [filterBooks, foundBooks, sortBooks]);
-
-  useEffect(() => {
-    setFilteredBooks(tempFilteredBooks);
-  }, [tempFilteredBooks]);
+  const subsetBooks = structuredClone(books)
+    .filter(
+      (book) =>
+        book.title.toLowerCase().includes(searchData) ||
+        book.author.toLowerCase().includes(searchData) ||
+        book.isbn.includes(searchData)
+    )
+    .sort((a, b) => sortBooks(a, b))
+    .filter((book) => filterBooks(book));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -98,7 +80,6 @@ const BooksPage = () => {
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
-          setFilteredBooks(allBooks);
         }
       } catch (err) {
         console.error("Failed to get all books");
@@ -110,9 +91,7 @@ const BooksPage = () => {
   return (
     <div>
       <SearchBar
-        setFilteredBooks={setFilteredBooks}
         setSearchData={setSearchData}
-        onClick={onClick}
         button={
           <CommonButton
             label={"Filter"}
@@ -165,12 +144,12 @@ const BooksPage = () => {
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500">
-              {filteredBooks.length} {"titles"}
+              {subsetBooks.length} {"titles"}
             </p>
           </div>
         </div>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredBooks.map((book, index) => (
+          {subsetBooks.map((book, index) => (
             <li key={index}>
               <div>
                 <div className="p-4 bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">
