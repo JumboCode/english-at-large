@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { BookRequest } from "@prisma/client";
-import { validateRequestData, emptyRequest } from "@/lib/util/types";
+import { validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 
@@ -50,7 +50,7 @@ export const getOneRequestController = async (
 };
 
 /**
- * Utility controller that validates requests fields, then creates a BookRequest in backend.
+ * Utility controller that validates requests fields, then creates a BookRequest in backend. Also emails all administators.
  *
  * @returns requestData (with id) if request is valid, error otherwise
  * @params requestData without an "id" field
@@ -76,41 +76,45 @@ export const postRequestController = async (
     sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
 
     if (users) {
-      const admins = users.filter((user) => {
-        return user.role === UserRole.Admin;
-      }).map(async (user) => {
-        const email = user.email;
-        if (email) {
-          const borrower = await prisma.user.findUnique({
-            where: { id: requestData.userId },
-          });
-          const msg = {
-            to: email,
-            from: "englishatlarge427@gmail.com",
-            subject: `${borrower?.name ?? "[No Username]"} Borrowed a Book`,
-            text: `Borrower Name: ${borrower?.name ?? "[No Username]"} \n
-            Borrower ID: ${requestData.userId} \n
-            Book Borrowed: ${requestData.bookTitle} \n
-            Book ID: ${requestData.bookId} \n
-            Borrowed on: ${requestData.requestedOn}`,
-            html: `<p>
-            <strong>Borrower Name:</strong> ${
-              borrower?.name ?? "[No Username]"
-            } <br>
-            <strong> Borrower ID:</strong> ${requestData.userId} <br>
-            <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br>
-            <strong>Book ID: </strong>${requestData.bookId} <br>
-            <strong>Borrowed on:</strong> ${requestData.requestedOn}
-            </p>`,
-          };
+      const admins = users
+        .filter((user) => {
+          return user.role === UserRole.Admin;
+        })
+        .map(async (user) => {
+          const email = user.email;
+          if (email) {
+            const borrower = await prisma.user.findUnique({
+              where: { id: requestData.userId },
+            });
+            const msg = {
+              to: email,
+              from: "englishatlarge427@gmail.com",
+              subject: `${borrower?.name ?? "[No Username]"} Borrowed a Book`,
 
-          sgMail
-            .send(msg).catch((error) => {
+              text: `Borrower Name: ${borrower?.name ?? "[No Username]"} \n
+              Borrower ID: ${requestData.userId} \n
+              Book Borrowed: ${requestData.bookTitle} \n
+              Book ID: ${requestData.bookId} \n
+              Borrowed on: ${requestData.requestedOn}`,
+
+              html: `<p>
+              <strong>Borrower Name:</strong> ${
+                borrower?.name ?? "[No Username]"
+              } <br>
+              <strong> Borrower ID:</strong> ${requestData.userId} <br>
+              <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br>
+              <strong>Book ID: </strong>${requestData.bookId} <br>
+              <strong>Borrowed on:</strong> ${requestData.requestedOn}
+              </p>`,
+            };
+
+            await sgMail.send(msg).catch((error: unknown) => {
               console.error(error);
             });
-        }})
+          }
+        });
 
-      await Promise.all(admins)
+      await Promise.all(admins);
     }
 
     return request;
