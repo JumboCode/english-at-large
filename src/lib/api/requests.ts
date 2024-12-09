@@ -106,6 +106,7 @@ export const createQuickRequest = async (
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);
+    return undefined;
   }
 };
 

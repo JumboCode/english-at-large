@@ -1,14 +1,18 @@
 "use client";
 import { useState } from "react";
 import BookDetail from "@/components/Details";
-import ConfirmPopup from "./ConfirmPopup";
+import ConfirmBookRequestPopup from "./ConfirmBookRequestPopup";
 import CommonButton from "@/components/common/button/CommonButton";
 import { Book } from "@prisma/client";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { createQuickRequest } from "@/lib/api/requests";
-
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+  usePopup,
+} from "@/lib/context/ConfirmPopupContext";
 interface BorrowPopupProps {
   book: Book;
   toggleOpen: () => void;
@@ -18,6 +22,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
   const { toggleOpen, book } = props;
   const [isNextBorrowOpen, setIsNextBorrowOpen] = useState(true);
   const user = useCurrentUser(); // currently logged in user
+  const { setConfirmPopup } = usePopup();
   const exit = () => {
     toggleOpen();
   };
@@ -25,7 +30,13 @@ const BorrowPopup = (props: BorrowPopupProps) => {
   // this also needs to be changed to a request
   const toggleNextBorrow = async () => {
     if (user) {
-      await createQuickRequest(book, user);
+      const request = await createQuickRequest(book, user);
+
+      setConfirmPopup({
+        type: ConfirmPopupTypes.BOOK,
+        action: ConfirmPopupActions.BORROW,
+        success: !!request,
+      });
     } // you shouldn't be here if you're not authenticated...
     setIsNextBorrowOpen(!isNextBorrowOpen);
   };
@@ -84,7 +95,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
         </div>
       ) : (
         <div>
-          <ConfirmPopup toggle={toggleOpen} />
+          <ConfirmBookRequestPopup toggle={toggleOpen} />
         </div>
       )}
     </div>

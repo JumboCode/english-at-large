@@ -10,10 +10,13 @@ import PendingChip from "@/assets/icons/pending_chip";
 import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [popupOpen, setPopupOpen] = useState<boolean>(false);
+  const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
+  const { hidePopup, popupStatus } = usePopup();
 
   useEffect(() => {
     const getUsers = async () => {
@@ -37,7 +40,7 @@ export default function Manage() {
           <CommonButton
             label="Invite User"
             onClick={() => {
-              setPopupOpen(true);
+              setInvitePopupOpen(true);
             }}
             altTextStyle="text-white"
             altStyle="bg-dark-blue"
@@ -104,7 +107,21 @@ export default function Manage() {
           </tbody>
         </table>
       </div>
-      <SendInvite isOpen={popupOpen} exit={() => setPopupOpen(false)} />
+      <SendInvite
+        isOpen={invitePopupOpen}
+        exit={() => setInvitePopupOpen(false)}
+      />
+      <div>
+        {popupStatus.shown ? (
+          <ConfirmationPopup
+            type={popupStatus.type}
+            action={popupStatus.action}
+            success={popupStatus.success}
+            onDisappear={() => hidePopup()}
+            custom={popupStatus.custom}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

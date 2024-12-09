@@ -5,26 +5,22 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
-import { ConfirmationPopupState } from "../message/ConfirmationPopup";
+import {
+  ConfirmPopupTypes,
+  ConfirmPopupActions,
+} from "@/lib/context/ConfirmPopupContext";
 import imageToAdd from "../../../assets/images/harry_potter.jpg";
 import axios from "axios";
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
-  setPopup?: (arg0: ConfirmationPopupState) => void;
-}
-
-export enum BookFormConfirmationMessages {
-  SUCCESS = "Book added!",
-  FAILURE = "Couldn't add book. Check your connection and retry.",
-  // add more states as needed, e.g. different error messages, etc
-  NONE = "",
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { setShowBookForm, existingBook, onSave, setPopup } = props;
+  const { setShowBookForm, existingBook, onSave } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -34,6 +30,8 @@ const BookForm = (props: BookFormProps) => {
   const [editBook, setEditBook] = useState<Book | null | undefined>(
     existingBook
   );
+
+  const { setConfirmPopup } = usePopup();
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -129,37 +127,29 @@ const BookForm = (props: BookFormProps) => {
     try {
       if (editBook) {
         const editedBook = await updateBook(editBook);
-        if (editedBook) {
-          if (onSave) {
-            onSave(editedBook);
-          }
-          setShowBookForm(false);
-        } else {
-          throw new Error("Failed to update book!");
+        setShowBookForm(false);
+
+        setConfirmPopup({
+          type: ConfirmPopupTypes.BOOK,
+          action: ConfirmPopupActions.ADD,
+          success: !!editedBook,
+        });
+
+        if (editedBook && onSave) {
+          onSave(editedBook);
         }
       } else if (newBook) {
         const createdBook = await createBook(newBook);
-        if (createdBook) {
-          if (onSave) {
-            onSave(createdBook);
-          }
-          setShowBookForm(false);
-          if (setPopup) {
-            setPopup({
-              message: BookFormConfirmationMessages.SUCCESS,
-              success: true,
-              shown: true,
-            });
-          }
-        } else {
-          setShowBookForm(false);
-          if (setPopup) {
-            setPopup({
-              message: BookFormConfirmationMessages.FAILURE,
-              success: false,
-              shown: true,
-            });
-          }
+        setShowBookForm(false);
+
+        setConfirmPopup({
+          type: ConfirmPopupTypes.BOOK,
+          action: ConfirmPopupActions.ADD,
+          success: !!createdBook,
+        });
+
+        if (createdBook && onSave) {
+          onSave(createdBook);
         }
       }
     } catch (error) {
@@ -343,7 +333,11 @@ const BookForm = (props: BookFormProps) => {
               id="numPages"
               name="numPages"
               className="border-[1px] border-black border-solid rounded-lg h-8"
-              value={newBook.numPages || ""}
+              value={
+                editBook && editBook.numPages
+                  ? editBook.numPages
+                  : newBook.numPages ?? 1
+              }
               onChange={bookChangeHandler}
             />
           </div>

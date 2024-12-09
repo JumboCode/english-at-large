@@ -10,10 +10,8 @@ import BookForm from "@/components/common/forms/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
-import ConfirmationPopup, {
-  ConfirmationPopupState,
-  EmptyConfirmationState,
-} from "@/components/common/message/ConfirmationPopup";
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -24,11 +22,8 @@ const BooksPage = () => {
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
+  const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
-
-  const [bookFormPopup, setBookFormPopup] = useState<ConfirmationPopupState>(
-    EmptyConfirmationState
-  );
 
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -113,21 +108,20 @@ const BooksPage = () => {
         placeholderText="Search for books"
       />
 
-      {bookFormShown ? (
-        <BookForm
-          setShowBookForm={setBookFormShown}
-          existingBook={null}
-          setPopup={setBookFormPopup}
+      {bookFormShown && (
+        <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
+      )}
+
+      {popupStatus.shown ? (
+        <ConfirmationPopup
+          type={popupStatus.type}
+          action={popupStatus.action}
+          success={popupStatus.success}
+          onDisappear={() => hidePopup()}
+          custom={popupStatus.custom}
         />
       ) : null}
 
-      {bookFormPopup.shown ? (
-        <ConfirmationPopup
-          message={bookFormPopup.message}
-          success={bookFormPopup.success}
-          onDisappear={() => setBookFormPopup(EmptyConfirmationState)}
-        />
-      ) : null}
       <FilterPopup
         isOpen={isFilterOpen}
         toggle={toggleFilterPopup}
