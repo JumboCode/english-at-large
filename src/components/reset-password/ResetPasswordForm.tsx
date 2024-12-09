@@ -62,6 +62,7 @@ const ResetPasswordForm = () => {
     } catch (err) {
       console.error(err);
       setError(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setErrorMessage(
         err.errors?.[0]?.longMessage || "Invalid code or password reset failed."
       );
