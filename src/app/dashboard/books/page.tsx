@@ -17,6 +17,7 @@ import ConfirmationPopup, {
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
+  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
@@ -64,14 +65,15 @@ const BooksPage = () => {
     [bookSortBy]
   );
 
-
-  const subsetBooks = structuredClone(books).filter(
-    (book) =>
-      book.title.toLowerCase().includes(searchData) ||
-      book.author.toLowerCase().includes(searchData) ||
-      book.isbn.includes(searchData)
-  ).sort((a, b) => sortBooks(a, b)).filter((book) => filterBooks(book));
-
+  const subsetBooks = structuredClone(books)
+    .filter(
+      (book) =>
+        book.title.toLowerCase().includes(searchData) ||
+        book.author.toLowerCase().includes(searchData) ||
+        book.isbn.includes(searchData)
+    )
+    .sort((a, b) => sortBooks(a, b))
+    .filter((book) => filterBooks(book));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +81,7 @@ const BooksPage = () => {
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
+          setFilteredBooks(allBooks);
         }
       } catch (err) {
         console.error("Failed to get all books");

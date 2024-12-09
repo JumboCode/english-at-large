@@ -8,10 +8,11 @@ interface searchBarProps {
   button: React.ReactNode;
   button2: React.ReactNode;
   placeholderText: string;
+  onClick: () => void;
 }
 
 const SearchBar = (props: searchBarProps) => {
-  const { setSearchData, button, button2, placeholderText, } = props;
+  const { setSearchData, button, button2, placeholderText } = props;
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,11 +22,12 @@ const SearchBar = (props: searchBarProps) => {
     }
   };
 
-  function handleKeyDown(event: { key: string }) {
-    if (event.key === "Enter") {
-      
-    }
-  }
+  // may use this function later, also TODO: turn this into a useCallback
+  // function handleKeyDown(event: { key: string }) {
+  //   if (event.key === "Enter") {
+
+  //   }
+  // }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
