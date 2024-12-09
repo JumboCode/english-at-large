@@ -12,6 +12,8 @@ import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { redirect } from "next/navigation";
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 export default function Manage() {
   const user = useCurrentUser();
@@ -23,7 +25,8 @@ export default function Manage() {
   }, [user]);
 
   const [users, setUsers] = useState<User[]>([]);
-  const [popupOpen, setPopupOpen] = useState<boolean>(false);
+  const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
+  const { hidePopup, popupStatus } = usePopup();
 
   useEffect(() => {
     const getUsers = async () => {
@@ -49,13 +52,14 @@ export default function Manage() {
               <CommonButton
                 label="Invite User"
                 onClick={() => {
-                  setPopupOpen(true);
+                  setInvitePopupOpen(true);
                 }}
                 altTextStyle="text-white"
                 altStyle="bg-dark-blue"
               />
             }
             placeholderText="Search by name or email"
+            setSearchData={null}
           />
           <div className="px-16">
             <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
@@ -114,8 +118,21 @@ export default function Manage() {
               </tbody>
             </table>
           </div>
-          <SendInvite isOpen={popupOpen} exit={() => setPopupOpen(false)} />
+          <SendInvite
+            isOpen={invitePopupOpen}
+            exit={() => setInvitePopupOpen(false)}
+          />
         </div>
+      ) : null}
+
+      {popupStatus.shown ? (
+        <ConfirmationPopup
+          type={popupStatus.type}
+          action={popupStatus.action}
+          success={popupStatus.success}
+          onDisappear={() => hidePopup()}
+          custom={popupStatus.custom}
+        />
       ) : null}
     </div>
   );
