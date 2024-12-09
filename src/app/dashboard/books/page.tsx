@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
@@ -22,7 +22,8 @@ const BooksPage = () => {
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
-  const { hidePopup, popupStatus} = usePopup();
+  const { hidePopup, popupStatus } = usePopup();
+  const [searchData, setSearchData] = useState("");
 
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -58,11 +59,15 @@ const BooksPage = () => {
     [bookSortBy]
   );
 
-  const filteredBooks = useMemo(() => {
-    return [...books] // Create a shallow copy to avoid mutating the original `books` array
-      .sort((a, b) => sortBooks(a, b)) // Use the sortBooks function to compare and sort
-      .filter((book) => filterBooks(book)); // Use filterBooks to filter out the books
-  }, [books, filterBooks, sortBooks]);
+  const subsetBooks = structuredClone(books)
+    .filter(
+      (book) =>
+        book.title.toLowerCase().includes(searchData) ||
+        book.author.toLowerCase().includes(searchData) ||
+        book.isbn.includes(searchData)
+    )
+    .sort((a, b) => sortBooks(a, b))
+    .filter((book) => filterBooks(book));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,8 +86,7 @@ const BooksPage = () => {
   return (
     <div>
       <SearchBar
-        // filterOnPress={toggleFilterPopup}
-        // setShowBookForm={setBookFormShown}
+        setSearchData={setSearchData}
         button={
           <CommonButton
             label={"Filter"}
@@ -104,12 +108,9 @@ const BooksPage = () => {
         placeholderText="Search for books"
       />
 
-      {bookFormShown && 
-        <BookForm
-          setShowBookForm={setBookFormShown}
-          existingBook={null}
-        />
-      }
+      {bookFormShown && (
+        <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
+      )}
 
       {popupStatus.shown ? (
         <ConfirmationPopup
@@ -137,12 +138,12 @@ const BooksPage = () => {
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500">
-              {filteredBooks.length} {"titles"}
+              {subsetBooks.length} {"titles"}
             </p>
           </div>
         </div>
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredBooks.map((book, index) => (
+          {subsetBooks.map((book, index) => (
             <li key={index}>
               <div>
                 <div className="p-4 bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">

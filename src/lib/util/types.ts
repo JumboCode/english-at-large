@@ -90,7 +90,6 @@ export const emptyRequest: BookRequest = {
   bookTitle: "updated book",
   requestedOn: new Date(),
   returnedBy: new Date(),
-
 };
 
 export const newEmptyRequest: Omit<BookRequest, "id"> = {
