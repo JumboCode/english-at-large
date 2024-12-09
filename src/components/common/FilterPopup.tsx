@@ -87,7 +87,7 @@ const FilterPopup = (props: FilterPopupProps) => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-2xl">
             {/* title and x button */}
             <div className="grid grid-cols-2 gap-4">
-              <h1 className="text-black text-xl font-semibold mt-4 ml-4">
+              <h1 className="text-black text-xl font-semibold mt-4 ml-4 font-[family-name:var(--font-rubik)]">
                 Filters
               </h1>
               <div className="flex justify-end items-center h-full">
@@ -113,10 +113,10 @@ const FilterPopup = (props: FilterPopupProps) => {
               </div>
             </div>
 
-            <p className="ml-4 text-slate-400 text-sm">
-              select filter to apply
+            <p className="ml-4 text-slate-400 text-sm font-[family-name:var(--font-rubik)]">
+              Select filter to apply
             </p>
-            <hr className="h-px ml-4 my-3 mr-4 bg-gray-200 border-0 dark:bg-gray-700" />
+            <hr className="h-px mx-4 my-3 bg-gray-200 border-0 dark:bg-gray-700" />
 
             <h2 className="text-black text-l font-semibold ml-4 mb-3">
               Sort By
@@ -131,9 +131,9 @@ const FilterPopup = (props: FilterPopupProps) => {
                 />
               ))}
             </div>
-            <hr className="h-px ml-4 my-3 mr-4 bg-gray-200 border-0 dark:bg-gray-700" />
+            <hr className="h-px mx-4 my-3 bg-gray-200 border-0 dark:bg-gray-700" />
 
-            <h2 className="text-black text-l font-semibold ml-4 mb-3">
+            <h2 className="text-black text-l font-semibold ml-4 mb-3 ">
               Availability
             </h2>
             <div className="flex flex-wrap gap-2 ml-4">
@@ -144,7 +144,7 @@ const FilterPopup = (props: FilterPopupProps) => {
                 onSelect={handleStatusChange}
               />
             </div>
-            <hr className="h-px ml-4 my-3 mr-4 bg-gray-200 border-0 dark:bg-gray-700" />
+            <hr className="h-px mx-4 my-3 bg-gray-200 border-0 dark:bg-gray-700" />
 
             <h2 className="text-black text-l font-semibold mb-2 ml-4">Level</h2>
             <div className="flex flex-wrap gap-2 ml-4">
@@ -174,9 +174,9 @@ const FilterPopup = (props: FilterPopupProps) => {
                 />
               ))}
             </div>
-            <hr className="h-px ml-4 my-3 mr-4 bg-gray-200 border-0 dark:bg-gray-700" />
+            <hr className="h-px mx-4 my-3 bg-gray-200 border-0 dark:bg-gray-700" />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mx-4">
               <CommonButton label="Reset" onClick={reset} />
 
               <CommonButton
