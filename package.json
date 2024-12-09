@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "prisma db pull && prisma generate && next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "prisma db pull && prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -12,7 +12,6 @@
     "@clerk/nextjs": "^6.3.4",
     "@headlessui/react": "^2.2.0",
     "@prisma/client": "^5.21.1",
-    "@sendgrid/mail": "^8.1.4",
     "@vercel/postgres": "^0.9.0",
     "axios": "^1.7.7",
     "next": "15.0.3",
