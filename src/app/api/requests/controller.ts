@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Request as BookRequest } from "@prisma/client";
+import { BookRequest } from "@prisma/client";
 import { validateRequestData } from "@/lib/util/types";
 
 /**
@@ -12,7 +12,7 @@ import { validateRequestData } from "@/lib/util/types";
  */
 export const getAllRequestsController = async (): Promise<BookRequest[]> => {
   try {
-    const requests = await prisma.request.findMany();
+    const requests = await prisma.bookRequest.findMany();
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
@@ -32,7 +32,7 @@ export const getOneRequestController = async (
   id: number
 ): Promise<BookRequest> => {
   try {
-    const request = await prisma.request.findUnique({
+    const request = await prisma.bookRequest.findUnique({
       where: { id: id },
     });
 
@@ -63,7 +63,7 @@ export const postRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
-    const newRequest = await prisma.request.create({
+    const newRequest = await prisma.bookRequest.create({
       data: requestData,
     });
 
@@ -92,7 +92,7 @@ export const putRequestController = async (
       throw new Error("Missing required request properties");
     }
 
-    const updatedRequest = await prisma.request.update({
+    const updatedRequest = await prisma.bookRequest.update({
       where: { id: requestData.id },
       data: requestData,
     });
@@ -115,7 +115,7 @@ export const deleteRequestController = async (
   id: number
 ): Promise<BookRequest> => {
   try {
-    const deletedBook = await prisma.request.delete({
+    const deletedBook = await prisma.bookRequest.delete({
       where: { id: id },
     });
     if (!deletedBook) {

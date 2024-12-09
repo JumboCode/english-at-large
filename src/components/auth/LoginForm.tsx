@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import { useSignIn, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
@@ -21,11 +21,6 @@ const LoginForm = () => {
       router.replace("/dashboard");
     }
   }, [isSignedIn, router]);
-
-  const invalidInputs = useMemo(() => {
-    // Validate email and password
-    return !email.trim() || !password.trim();
-  }, [email, password]);
 
   const handleRememberChange = () => {
     setRemember((prev) => !prev);
@@ -105,10 +100,8 @@ const LoginForm = () => {
         onClick={handleLogin}
         label={isLoading ? "Logging in..." : "Login"}
         altTextStyle="text-white"
-        altStyle={`${
-          invalidInputs ? "bg-light-blue" : "bg-dark-blue"
-        } mt-10 w-full`}
-        disabled={isLoading || invalidInputs}
+        altStyle={`${"bg-dark-blue"} mt-10 w-full`}
+        disabled={isLoading}
         type="submit"
       />
     </>

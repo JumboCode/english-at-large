@@ -15,6 +15,5 @@ export default function Home() {
     // Redirect to /dashboard/books when the component mounts
     router.push("/dashboard/books");
   }, [router]);
-
   return <div></div>;
 }

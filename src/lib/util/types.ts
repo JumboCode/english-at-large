@@ -1,5 +1,5 @@
 import { Book, BookLevel, BookStatus, BookType } from "@prisma/client";
-import { Request as BookRequest } from "@prisma/client";
+import { BookRequest } from "@prisma/client";
 import { User } from "@prisma/client";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,19 +84,23 @@ export const emptyRequest: BookRequest = {
   id: 0, // Autoincremented, so can be 0 for dummy purposes
   userId: "cm2f3a8ra0000sl8zdb10q3d1 ", // Foreign key to User
   bookId: 0, // Foreign key to Book
-  status: "",
+  status: BookStatus.Requested,
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",
+  requestedOn: new Date(),
+  returnedBy: new Date(),
 };
 
 export const newEmptyRequest: Omit<BookRequest, "id"> = {
   userId: "cm2f3a8ra0000sl8zdb10q3d1", // Foreign key to User
   bookId: 1, // Foreign key to Book
-  status: "",
+  status: BookStatus.Requested,
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",
+  requestedOn: new Date(),
+  returnedBy: new Date(),
 };
 
 /**

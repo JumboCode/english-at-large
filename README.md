@@ -55,7 +55,7 @@ interface ComponentProps {
 
 /**
  * Use JSDoc styling right above the header if this component is important.
- * 
+ * z`
  * Also, the name of the component should capitalized, and the file should be the same. 
  * */
 const Component = (props: ComponentProps) => {
@@ -83,8 +83,6 @@ Use it when you can, rather than multiple `return` statements that can be hard t
 { condition ? <div>"render if true"</div> : null}
 
 ```
-
-
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

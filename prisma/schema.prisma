@@ -8,42 +8,42 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(cuid())
-  name         String?
-  email        String?        @unique
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
-  role         UserRole
-  clerkId      String         @default("placeholder")
-  pending      Boolean        @default(false)
-  inviteID     String         @default("none")
-  BookRequests BookRequests[]
+  id        String        @id @default(cuid())
+  name      String?
+  email     String?       @unique
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  role      UserRole
+  clerkId   String        @default("placeholder")
+  pending   Boolean       @default(false)
+  inviteID  String        @default("none")
+  requests  BookRequest[]
 
   @@map("users")
 }
 
 model Book {
-  id           Int            @id @default(autoincrement())
-  isbn         String
-  notes        String?
-  scanLink     String?
-  title        String
-  author       String
-  description  String
-  publisher    String
-  releaseDate  String?
-  skills       BookSkills[]
-  bookType     BookType
-  level        BookLevel
-  status       BookStatus     @default(Available)
-  numPages     Int?           @default(0)
-  coverURL     String         @default("placeholder")
-  BookRequests BookRequests[]
+  id          Int           @id @default(autoincrement())
+  isbn        String
+  notes       String?
+  scanLink    String?
+  title       String
+  author      String
+  description String
+  publisher   String
+  releaseDate String?
+  skills      BookSkills[]
+  bookType    BookType
+  level       BookLevel
+  status      BookStatus    @default(Available)
+  numPages    Int?          @default(0)
+  coverURL    String        @default("placeholder")
+  requests    BookRequest[]
 
   @@map("Books")
 }
 
-model BookRequests {
+model BookRequest {
   id          Int        @id @default(autoincrement())
   userId      String
   bookId      Int
@@ -53,8 +53,10 @@ model BookRequests {
   bookTitle   String
   requestedOn DateTime
   returnedBy  DateTime
-  Books       Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  users       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book        Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("BookRequests")
 }
 
 enum UserRole {
