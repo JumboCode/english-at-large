@@ -5,10 +5,13 @@ import { useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
-import { PopupTypes, PopupActions } from "../message/ConfirmationPopup";
+import {
+  ConfirmPopupTypes,
+  ConfirmPopupActions,
+} from "@/lib/context/ConfirmPopupContext";
 import imageToAdd from "../../../assets/images/harry_potter.jpg";
 import axios from "axios";
-import { usePopup } from "../../common/message/PopupContext";
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
@@ -28,7 +31,7 @@ const BookForm = (props: BookFormProps) => {
     existingBook
   );
 
-  const { setShowPopup } = usePopup();
+  const { setConfirmPopup } = usePopup();
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -124,27 +127,29 @@ const BookForm = (props: BookFormProps) => {
     try {
       if (editBook) {
         const editedBook = await updateBook(editBook);
-        if (editedBook) {
-          if (onSave) {
-            onSave(editedBook);
-          }
-          setShowBookForm(false);
-          setShowPopup(PopupTypes.BOOK, PopupActions.EDIT, true);
-        } else {
-          setShowBookForm(false);
-          setShowPopup(PopupTypes.BOOK, PopupActions.EDIT, false);
+        setShowBookForm(false);
+
+        setConfirmPopup({
+          type: ConfirmPopupTypes.BOOK,
+          action: ConfirmPopupActions.ADD,
+          success: !!editedBook,
+        });
+
+        if (editedBook && onSave) {
+          onSave(editedBook);
         }
       } else if (newBook) {
         const createdBook = await createBook(newBook);
-        if (createdBook) {
-          if (onSave) {
-            onSave(createdBook);
-          }
-          setShowBookForm(false);
-          setShowPopup(PopupTypes.BOOK, PopupActions.ADD, true);
-        } else {
-          setShowBookForm(false);
-          setShowPopup(PopupTypes.BOOK, PopupActions.ADD, false);
+        setShowBookForm(false);
+
+        setConfirmPopup({
+          type: ConfirmPopupTypes.BOOK,
+          action: ConfirmPopupActions.ADD,
+          success: !!createdBook,
+        });
+
+        if (createdBook && onSave) {
+          onSave(createdBook);
         }
       }
     } catch (error) {

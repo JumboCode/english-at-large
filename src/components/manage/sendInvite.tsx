@@ -9,8 +9,11 @@ import SmallCheckIcon from "@/assets/icons/SmallCheck";
 import XIcon from "@/assets/icons/X";
 import { emptyUser } from "@/lib/util/types";
 import { createUser } from "@/lib/api/users";
-import { PopupTypes, PopupActions } from "../common/message/ConfirmationPopup";
-import { usePopup } from "../common/message/PopupContext"
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+  usePopup,
+} from "@/lib/context/ConfirmPopupContext";
 
 interface SendInviteProps {
   isOpen: boolean;
@@ -24,7 +27,7 @@ const SendInvite = (props: SendInviteProps) => {
   const [role, setRole] = useState<UserRole | null>(null);
   const [status, setStatus] = useState<boolean | null>(null);
 
-  const { setShowPopup } = usePopup(); 
+  const { setConfirmPopup } = usePopup();
 
   const checkUserEmail = async (email: string) => {
     const users = await getAllUsers();
@@ -63,7 +66,11 @@ const SendInvite = (props: SendInviteProps) => {
             await updateUser(user);
           }
           setStatus(true);
-          setShowPopup(PopupTypes.USER, PopupActions.INVITE, true);
+          setConfirmPopup({
+            type: ConfirmPopupTypes.USER,
+            action: ConfirmPopupActions.INVITE,
+            success: true,
+          });
         } else {
           throw "Email already in use!";
         }
@@ -72,7 +79,11 @@ const SendInvite = (props: SendInviteProps) => {
       }
     } catch (error) {
       setStatus(false);
-      setShowPopup(PopupTypes.USER, PopupActions.INVITE, false);
+      setConfirmPopup({
+        type: ConfirmPopupTypes.USER,
+        action: ConfirmPopupActions.INVITE,
+        success: false,
+      });
     }
   };
 

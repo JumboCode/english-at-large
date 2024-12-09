@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { PopupProvider } from "@/components/common/message/PopupContext";
+import { PopupProvider } from "@/lib/context/ConfirmPopupContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -41,9 +41,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} antialiased`}
         >
-        <PopupProvider>
-          {children}
-        </PopupProvider>
+          <PopupProvider>{children}</PopupProvider>
         </body>
       </html>
     </ClerkProvider>

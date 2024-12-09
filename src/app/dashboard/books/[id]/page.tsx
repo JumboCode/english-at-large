@@ -17,7 +17,7 @@ import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-import { usePopup } from "@/components/common/message/PopupContext"
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 type Params = Promise<{ id: string }>;
 
@@ -138,7 +138,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         <RemoveModal
                           book={book}
                           setShowRemoveModal={setShowRemoveModal}
-                        />) : (null)}
+                        />
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -199,7 +200,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           ) : null}
         </div>
       )}
-    {popupStatus.shown ? (
+      {popupStatus.shown ? (
         <ConfirmationPopup
           type={popupStatus.type}
           action={popupStatus.action}

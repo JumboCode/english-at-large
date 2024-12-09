@@ -2,12 +2,15 @@
 import { deleteBook } from "@/lib/api/books";
 import CommonButton from "./common/button/CommonButton";
 import { Book } from "@prisma/client";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import BookDetail from "./Details";
-import { usePopup } from "./common/message/PopupContext";
-import imageToAdd from "../assets/images/harry_potter.jpg"
-import { PopupTypes, PopupActions } from "./common/message/ConfirmationPopup"
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+  usePopup,
+} from "@/lib/context/ConfirmPopupContext";
+import imageToAdd from "../assets/images/harry_potter.jpg";
 
 interface RemoveModalProps {
   book: Book;
@@ -16,25 +19,33 @@ interface RemoveModalProps {
 
 const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
   const router = useRouter();
-  const { setShowPopup } = usePopup();
+  const { setConfirmPopup } = usePopup();
 
   const handleDelete = async () => {
-      try {
-        await deleteBook(book.id);
-        setShowRemoveModal(false);
-        // custom msg because remove ends w/ "e"; creates odd grammar otherwise 
-        setShowPopup(PopupTypes.NONE, PopupActions.NONE, true, "Book removed successfully.");
-        router.push("/dashboard/books");
-
-      } catch (error) {
-        setShowRemoveModal(false); 
-        setShowPopup(PopupTypes.BOOK, PopupActions.REMOVE, false); 
-        router.push("/dashboard/books");
+    try {
+      await deleteBook(book.id);
+      setShowRemoveModal(false);
+      // custom msg because remove ends w/ "e"; creates odd grammar otherwise
+      setConfirmPopup({
+        type: ConfirmPopupTypes.NONE,
+        action: ConfirmPopupActions.NONE,
+        success: true,
+        customMessage: "Book removed successfully.",
+      });
+      router.push("/dashboard/books");
+    } catch (error) {
+      setShowRemoveModal(false);
+      setConfirmPopup({
+        type: ConfirmPopupTypes.BOOK,
+        action: ConfirmPopupActions.REMOVE,
+        success: false,
+      });
+      router.push("/dashboard/books");
     }
   };
 
   return (
-      <div className="flex fixed backdrop-brightness-50 inset-0 justify-center items-center z-50 rounded-xl">
+    <div className="flex fixed backdrop-brightness-50 inset-0 justify-center items-center z-50 rounded-xl">
       <div className="bg-[#FFFFFF] rounded-md py-5 px-12">
         <h1 className="text-black text-2xl font-[family-name:var(--font-rubik)] font-semibold place-self-start">
           Remove book
@@ -45,14 +56,14 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
         <hr className="h-px my-6 bg-gray-300 border-0 w-[512px]" />
         <div className="flex">
           <div className="w-[150px] h-[215px] flex justify-center items-center">
-              <Image
-                src={book.coverURL || imageToAdd.src}
-                alt="Book Cover"
-                width={150}
-                height={215}
-                className="w-full h-full object-fill"
-              />
-            </div> 
+            <Image
+              src={book.coverURL || imageToAdd.src}
+              alt="Book Cover"
+              width={150}
+              height={215}
+              className="w-full h-full object-fill"
+            />
+          </div>
           <div className="ml-7">
             <h1 className="text-black text-lg font-[family-name:var(--font-rubik)] font-semibold">
               {book.title}

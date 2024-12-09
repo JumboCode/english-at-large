@@ -63,6 +63,7 @@ export const postRequestController = async (
     if (!validateRequestData(requestData)) {
       throw new Error("Missing required request properties");
     }
+
     const newRequest = await prisma.bookRequest.create({
       data: requestData,
     });

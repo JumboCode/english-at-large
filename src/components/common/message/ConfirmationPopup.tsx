@@ -3,45 +3,18 @@ import CheckCircleIcon from "@/assets/icons/CheckCircle";
 import FailCircleIcon from "@/assets/icons/FailCircle";
 import CloseIcon from "@/assets/icons/Close";
 import { useEffect } from "react";
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+} from "@/lib/context/ConfirmPopupContext";
 
 interface SuccessProps {
-  type: PopupTypes;
-  action: PopupActions;
+  type: ConfirmPopupTypes;
+  action: ConfirmPopupActions;
   success: boolean;
   onDisappear: () => void;
-  custom?: string; 
+  custom?: string;
 }
-
-export interface ConfirmationPopupState {
-  type: PopupTypes;
-  action: PopupActions;
-  success: boolean;
-  shown: boolean;
-  custom?: string; 
-}
-
-export enum PopupActions {
-  NONE = "",
-  ADD = "add",
-  EDIT = "edit",
-  REMOVE = "remove",
-  INVITE = "invite",
-}
-
-export enum PopupTypes {
-  NONE = "",
-  BOOK = "book",
-  USER = "user",
-  RESOURCE = "resource",
-}
-
-export const EmptyConfirmationState: ConfirmationPopupState = {
-  type: PopupTypes.NONE,
-  action: PopupActions.NONE,
-  success: false,
-  shown: false,
-  custom: "",
-};
 
 const ConfirmationPopup = (props: SuccessProps) => {
   const { type, action, success, onDisappear, custom } = props;
@@ -65,12 +38,11 @@ const ConfirmationPopup = (props: SuccessProps) => {
             {success ? <CheckCircleIcon /> : <FailCircleIcon />}
           </div>
           <div>
-          {custom
-            ? custom 
-            : success 
-              ? `Successfully ${action}ed ${type}.` 
-              : `Couldn't ${action} ${type}. Check your connection and try again.`
-          }  
+            {custom
+              ? custom
+              : success
+              ? `Successfully ${action}ed ${type}.`
+              : `Couldn't ${action} ${type}. Check your connection and try again.`}
           </div>
         </div>
         <div className="my-auto">

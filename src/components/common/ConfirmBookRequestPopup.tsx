@@ -1,10 +1,10 @@
 import checkmark from "../../assets/icons/checkmark.svg";
 import Image from "next/image";
-interface ConfirmPopupProps {
+interface ConfirmBookRequestProps {
   toggle: () => void;
 }
 
-const ConfirmPopup = (props: ConfirmPopupProps) => {
+const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
   const { toggle } = props;
   const exit = () => {
     toggle();
@@ -73,4 +73,4 @@ const ConfirmPopup = (props: ConfirmPopupProps) => {
   );
 };
 
-export default ConfirmPopup;
+export default ConfirmBookRequestPopup;
