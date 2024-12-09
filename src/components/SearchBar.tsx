@@ -1,14 +1,12 @@
 "use client";
 import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
-import { Book } from "@prisma/client";
 
 interface searchBarProps {
   setSearchData: ((searchData: string) => void) | null;
   button: React.ReactNode;
   button2: React.ReactNode;
   placeholderText: string;
-  onClick: () => void;
 }
 
 const SearchBar = (props: searchBarProps) => {

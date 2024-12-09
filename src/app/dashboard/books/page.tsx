@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
@@ -17,7 +17,6 @@ import ConfirmationPopup, {
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
-  const [filteredBooks, setFilteredBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
@@ -81,7 +80,6 @@ const BooksPage = () => {
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
-          setFilteredBooks(allBooks);
         }
       } catch (err) {
         console.error("Failed to get all books");
