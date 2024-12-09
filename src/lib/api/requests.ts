@@ -89,14 +89,16 @@ export const createQuickRequest = async (
       throw new Error("Missing request fields");
     }
 
-    const request: BookRequest = {
-      id: 0, // or handle it as undefined
+    const request: Omit<BookRequest, "id"> = {
+      // id: 0, // or handle it as undefined
       userId: user.id,
       bookId: book.id,
       createdAt: new Date(),
       status: BookStatus.Requested,
       message: "",
       bookTitle: book.title,
+      requestedOn: new Date(),
+      returnedBy: new Date(),
     };
 
     const response = await axios.post("/api/requests", request);
@@ -104,6 +106,7 @@ export const createQuickRequest = async (
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);
+    return undefined;
   }
 };
 

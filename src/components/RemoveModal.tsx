@@ -3,22 +3,44 @@ import { deleteBook } from "@/lib/api/books";
 import CommonButton from "./common/button/CommonButton";
 import { Book } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import BookDetail from "./Details";
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+  usePopup,
+} from "@/lib/context/ConfirmPopupContext";
+import imageToAdd from "../assets/images/harry_potter.jpg";
 
 interface RemoveModalProps {
-  setShowRemoveModal: (arg0: boolean) => void;
   book: Book;
+  setShowRemoveModal: (arg0: boolean) => void;
 }
 
-const RemoveModal = ({ setShowRemoveModal, book }: RemoveModalProps) => {
+const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
   const router = useRouter();
+  const { setConfirmPopup } = usePopup();
+
   const handleDelete = async () => {
     try {
       await deleteBook(book.id);
       setShowRemoveModal(false);
+      // custom msg because remove ends w/ "e"; creates odd grammar otherwise
+      setConfirmPopup({
+        type: ConfirmPopupTypes.NONE,
+        action: ConfirmPopupActions.NONE,
+        success: true,
+        customMessage: "Book removed successfully.",
+      });
       router.push("/dashboard/books");
     } catch (error) {
-      console.error(error);
+      setShowRemoveModal(false);
+      setConfirmPopup({
+        type: ConfirmPopupTypes.BOOK,
+        action: ConfirmPopupActions.REMOVE,
+        success: false,
+      });
+      router.push("/dashboard/books");
     }
   };
 
@@ -33,8 +55,15 @@ const RemoveModal = ({ setShowRemoveModal, book }: RemoveModalProps) => {
         </p>
         <hr className="h-px my-6 bg-gray-300 border-0 w-[512px]" />
         <div className="flex">
-          {/* TODO: replace with book cover image once implemented */}
-          <div className="bg-gray-500 w-[146px] h-[215px]" />
+          <div className="w-[150px] h-[215px] flex justify-center items-center">
+            <Image
+              src={book.coverURL || imageToAdd.src}
+              alt="Book Cover"
+              width={150}
+              height={215}
+              className="w-full h-full object-fill"
+            />
+          </div>
           <div className="ml-7">
             <h1 className="text-black text-lg font-[family-name:var(--font-rubik)] font-semibold">
               {book.title}

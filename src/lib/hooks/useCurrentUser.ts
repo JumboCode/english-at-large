@@ -3,7 +3,13 @@ import { useState, useEffect } from "react";
 import { getOneUserByClerkid } from "../api/users";
 import { User } from "@prisma/client";
 
-// Custom hook to fetch current user data
+/**
+ * a hook that grabs the currently authenticated user from Clerk and returns the corresponding user from neon.tech.
+ *
+ * @returns the currently signed in user (neon.tech)
+ * @notes use this rather than the useUser hook from Clerk, since we need to grab other information from the user, like their current holds.
+ *
+ */
 const useCurrentUser = () => {
   const { user } = useUser(); // Clerk user
   const [currentUser, setCurrentUser] = useState<User | null | undefined>(null);

@@ -3,27 +3,21 @@ import CheckCircleIcon from "@/assets/icons/CheckCircle";
 import FailCircleIcon from "@/assets/icons/FailCircle";
 import CloseIcon from "@/assets/icons/Close";
 import { useEffect } from "react";
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+} from "@/lib/context/ConfirmPopupContext";
 
 interface SuccessProps {
-  message: string;
+  type: ConfirmPopupTypes;
+  action: ConfirmPopupActions;
   success: boolean;
   onDisappear: () => void;
+  custom?: string;
 }
-
-export interface ConfirmationPopupState {
-  message: string;
-  success: boolean;
-  shown: boolean;
-}
-
-export const EmptyConfirmationState: ConfirmationPopupState = {
-  message: "",
-  success: false,
-  shown: false,
-};
 
 const ConfirmationPopup = (props: SuccessProps) => {
-  const { message, success, onDisappear } = props;
+  const { type, action, success, onDisappear, custom } = props;
 
   useEffect(() => {
     setTimeout(() => {
@@ -43,7 +37,13 @@ const ConfirmationPopup = (props: SuccessProps) => {
           <div className="my-auto">
             {success ? <CheckCircleIcon /> : <FailCircleIcon />}
           </div>
-          <div>{message}</div>
+          <div>
+            {custom
+              ? custom
+              : success
+              ? `Successfully ${action}ed ${type}.`
+              : `Couldn't ${action} ${type}. Check your connection and try again.`}
+          </div>
         </div>
         <div className="my-auto">
           <button
