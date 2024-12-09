@@ -37,7 +37,7 @@ const BookDetail = (props: DetailProps) => {
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Release</div>
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Copies</div>
         <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
-          No of Pages
+          No. of Pages
         </div>
       </div>
       <div className={`${lineSpacing} ${verticalSpacing} ${fontSize}`}>
