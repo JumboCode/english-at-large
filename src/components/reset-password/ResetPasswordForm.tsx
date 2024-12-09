@@ -59,10 +59,11 @@ const ResetPasswordForm = () => {
         setError(true);
         setErrorMessage("An error occurred. Please try again.");
       }
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       console.error(err);
       setError(true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       setErrorMessage(
         err.errors?.[0]?.longMessage || "Invalid code or password reset failed."
       );
