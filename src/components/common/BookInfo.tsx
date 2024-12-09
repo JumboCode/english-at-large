@@ -40,14 +40,14 @@ const BookInfo = (props: BookProps) => {
           </div>
 
           <div className="flex flex-wrap items-start space-x-4 ml-2">
-            <div className="flex flex-wrap gap-4 mt-2">
+            <div className="flex flex-wrap gap-2 mt-2">
               <div className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
                 <p>{book.bookType}</p>
               </div>
               <div className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
                 <p>{book.level.replace("_", " ")}</p>
               </div>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-2">
                 {book.skills.map((skill, index) => (
                   <div
                     key={index}
