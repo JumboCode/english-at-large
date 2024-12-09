@@ -1,9 +1,7 @@
 "use client";
 import ResetPasswordForm from "@/components/reset-password/ResetPasswordForm";
 import books from "@/images/books.jpg";
-// import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-// import Link from "next/link";
 
 const ResetPassword = () => {
   return (

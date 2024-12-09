@@ -10,9 +10,9 @@ import { useSignIn } from "@clerk/nextjs";
 import { getAllUsers } from "@/lib/api/users";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const { isLoaded, signIn } = useSignIn();
 
   const router = useRouter();
@@ -58,7 +58,8 @@ const ForgotPassword = () => {
         identifier: email,
       });
       router.push("/reset-password");
-    } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       console.error(err);
       setError(true);
       setErrorMessage(
