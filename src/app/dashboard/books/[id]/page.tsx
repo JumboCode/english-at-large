@@ -2,7 +2,7 @@
 import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-import bookIcon from "../../../../assets/icons/bookmark_add.svg";
+// import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
 import BorrowPopup from "@/components/common/BorrowPopup";
 
@@ -92,9 +92,9 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                           leftIcon={
                             <Image
                               src={
-                                book.status === BookStatus.Available
-                                  ? bookIcon
-                                  : bookIconGreyed
+                                // book.status === BookStatus.Available
+                                  // ? bookIcon
+                                  bookIconGreyed
                               }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"

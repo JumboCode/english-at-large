@@ -27,8 +27,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
     toggleOpen();
   };
 
-  //this also needs to be changed to a request
-
+  // this also needs to be changed to a request
   const toggleNextBorrow = async () => {
     if (user) {
       const request = await createQuickRequest(book, user);
