@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { BookRequest } from "@prisma/client";
+import { Book, BookRequest, User } from "@prisma/client";
 import { validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
@@ -12,9 +12,16 @@ import { UserRole } from "@prisma/client";
  * @remarks
  *  - This controller can later be modified to call other backend functions as needed.
  */
-export const getAllRequestsController = async (): Promise<BookRequest[]> => {
+export const getAllRequestsController = async (): Promise<
+  (BookRequest & { user: User; book: Book })[]
+> => {
   try {
-    const requests = await prisma.bookRequest.findMany();
+    const requests = await prisma.bookRequest.findMany({
+      include: {
+        user: true, // Fetch the related User
+        book: true, // Fetch the related Book
+      },
+    });
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
@@ -36,6 +43,10 @@ export const getOneRequestController = async (
   try {
     const request = await prisma.bookRequest.findUnique({
       where: { id: id },
+      include: {
+        user: true, // Fetch the related User
+        book: true, // Fetch the related Book
+      },
     });
 
     if (!request) {
@@ -133,7 +144,7 @@ export const postRequestController = async (
  * @returns requestData if request is valid, error otherwise
  */
 export const putRequestController = async (
-  requestData: BookRequest
+  requestData: BookRequest & { user: User; book: Book }
 ): Promise<BookRequest> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   // handle id validation as well since validateBookData doesn't validate ID
@@ -142,9 +153,15 @@ export const putRequestController = async (
       throw new Error("Missing required request properties");
     }
 
+    // ugly but necessary for destructing...
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { user, book, ...newRequest } = requestData;
+
     const updatedRequest = await prisma.bookRequest.update({
-      where: { id: requestData.id },
-      data: requestData,
+      // where: { id: requestData.id },
+      // data: requestData,
+      where: { id: newRequest.id },
+      data: newRequest,
     });
     return updatedRequest;
   } catch (error) {

@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { getOneBook } from "@/lib/api/books"; // Adjust the path as necessary
-// import { emptyBook } from "@/lib/util/types";
 
 const GetOneBookButton = () => {
   const [loading, setLoading] = useState(false);

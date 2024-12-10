@@ -83,7 +83,9 @@ const BooksPage = () => {
     fetchData();
   }, []);
 
-  return (
+  return bookFormShown ? (
+    <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
+  ) : (
     <div>
       <SearchBar
         setSearchData={setSearchData}
@@ -108,10 +110,6 @@ const BooksPage = () => {
         placeholderText="Search for books"
       />
 
-      {bookFormShown && (
-        <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
-      )}
-
       {popupStatus.shown ? (
         <ConfirmationPopup
           type={popupStatus.type}
@@ -134,10 +132,10 @@ const BooksPage = () => {
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />
-      <div className="p-4 bg-gray-100">
+      <div className="p-4 px-16 bg-white border">
         <div className="text-left">
           <div className="whitespace-normal">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 mb-6">
               {subsetBooks.length} {"titles"}
             </p>
           </div>
@@ -146,7 +144,8 @@ const BooksPage = () => {
           {subsetBooks.map((book, index) => (
             <li key={index}>
               <div>
-                <div className="p-4 bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">
+                {/* TODO: add grey border to this */}
+                <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md  hover:bg-blue-100 transition duration-200">
                   <BookInfo book={book} />
                 </div>
               </div>

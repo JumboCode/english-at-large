@@ -62,7 +62,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           }}
         />
       ) : (
-        <div>
+        <div className="pb-12">
           {book ? (
             <div>
               <div className="grid grid-rows-1 grid-flow-col xs:grid-rows-2">
@@ -189,6 +189,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     releaseDate={book.releaseDate}
                     copies={10}
                     numPages={book.numPages}
+                    lineSpacing="space-y-6"
                   />
                 </div>
               </div>

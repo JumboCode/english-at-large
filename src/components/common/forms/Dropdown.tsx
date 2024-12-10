@@ -5,11 +5,13 @@ import { useState } from "react";
 
 interface DropdownProps {
   items: string[];
+  buttonText: string;
+  setFilter: (arg0: string) => void;
 }
 
 const CommonDropdown = (props: DropdownProps) => {
-  const { items } = props;
-  const [filterType, setFilterType] = useState<string>("All");
+  const { items, buttonText, setFilter } = props;
+  const [filterType, setFilterType] = useState<string>(buttonText);
 
   return (
     <Menu as="div" className="relative inline-block text-left">
@@ -31,7 +33,10 @@ const CommonDropdown = (props: DropdownProps) => {
             return (
               <MenuItem key={index}>
                 <button
-                  onClick={() => setFilterType(item)}
+                  onClick={() => {
+                    setFilterType(item);
+                    setFilter(item);
+                  }}
                   className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
                 >
                   <div className="flex justify-between">

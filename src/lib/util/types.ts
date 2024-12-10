@@ -201,3 +201,19 @@ export interface CustomChangeEvent<T> {
   };
   preventDefault?: () => void;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/////                                                                      /////
+/////                                 OTHER                                /////
+/////                                                                      /////
+////////////////////////////////////////////////////////////////////////////////
+
+export interface ErrorStateAndMessage {
+  error: boolean;
+  message: string;
+}
+
+export const STATUS_OK: ErrorStateAndMessage = {
+  error: false,
+  message: "",
+};

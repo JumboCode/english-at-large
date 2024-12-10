@@ -15,6 +15,8 @@ import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [filter, setFilter] = useState<string>("");
   const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
   const { hidePopup, popupStatus } = usePopup();
 
@@ -34,7 +36,11 @@ export default function Manage() {
       </h1>
       <SearchBar
         button={
-          <CommonDropdown items={["All", "Tutors", "Admins", "Pending"]} />
+          <CommonDropdown
+            items={["All", "Tutors", "Admins", "Pending"]}
+            buttonText="All"
+            setFilter={setFilter}
+          />
         }
         button2={
           <CommonButton
@@ -52,9 +58,9 @@ export default function Manage() {
       />
       <div className="px-16">
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
-          <thead>
+          <thead className="">
             <tr className="bg-gray-100">
-              <th className="w-1/2 text-left text-text-default-secondary">
+              <th className="w-1/2 text-left px-2 py-1 text-text-default-secondary">
                 Name
               </th>
               <th className="w-[4.166666%] text-left text-text-default-secondary">
