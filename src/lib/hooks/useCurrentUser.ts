@@ -30,7 +30,6 @@ const useCurrentUser = () => {
       setCurrentUser(null); // Optionally reset if no user is logged in
     }
   }, [user]);
-
   return currentUser; // Return the current user data
 };
 

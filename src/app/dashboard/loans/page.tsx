@@ -76,7 +76,7 @@ const Loans = () => {
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
           <thead>
             <tr className="bg-gray-100">
-              <th className="w-1/6 text-left text-text-default-secondary">
+              <th className="w-1/6 px-2 py-1 text-left text-text-default-secondary">
                 Name
               </th>
               <th className="w-1/6  text-left text-text-default-secondary">

@@ -10,10 +10,12 @@ import BookForm from "@/components/common/forms/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 
 const BooksPage = () => {
+  const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
   const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -51,7 +53,6 @@ const BooksPage = () => {
           a.author.localeCompare(b.author) || a.title.localeCompare(b.title)
         );
       } else if (bookSortBy === "By Release Date") {
-        // Sort by release date, treating undefined dates as less recent
         return (a.releaseDate || 0) < (b.releaseDate || 0) ? -1 : 1;
       }
       return 0;
@@ -91,21 +92,21 @@ const BooksPage = () => {
         setSearchData={setSearchData}
         button={
           <CommonButton
-            label={"Filter"}
+            label="Filter"
             leftIcon={<FilterIcon />}
             onClick={toggleFilterPopup}
           />
         }
         button2={
-          <CommonButton
-            label="Create Book"
-            leftIcon={<AddIcon />}
-            onClick={() => {
-              setBookFormShown(true);
-            }}
-            altTextStyle="text-white"
-            altStyle="bg-dark-blue"
-          />
+          user?.role === "Admin" ? (
+            <CommonButton
+              label="Create Book"
+              leftIcon={<AddIcon />}
+              onClick={() => setBookFormShown(true)}
+              altTextStyle="text-white"
+              altStyle="bg-dark-blue"
+            />
+          ) : null
         }
         placeholderText="Search for books"
       />
@@ -132,7 +133,7 @@ const BooksPage = () => {
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />
-      <div className="p-4 px-16 bg-white border">
+      <div className="p-4 px-16 bg-white border-t">
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500 mb-6">

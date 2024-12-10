@@ -47,16 +47,21 @@ export const getOneUser = async (id: string): Promise<User | undefined> => {
  *
  * @remarks
  */
-export const getOneUserByClerkid = async (
-  clerkId: string
-): Promise<User | undefined> => {
+export async function getOneUserByClerkid(clerkId: string): Promise<User | null> {
   try {
-    const response = await axios.get("/api/users/?clerkId=" + clerkId);
+    const response = await axios.get<User>(`/api/users?clerkId=${clerkId}`);
     return response.data;
   } catch (error) {
-    console.error("Failed to get user: ", error);
+    if (axios.isAxiosError(error)) {
+      // Handle specific error cases
+      if (error.response?.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to fetch user: ${error.message}`);
+    }
+    throw error;
   }
-};
+}
 
 /**
  *
