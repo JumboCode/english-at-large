@@ -133,7 +133,7 @@ const BooksPage = () => {
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />
-      <div className="p-4 px-16 bg-white border">
+      <div className="p-4 px-16 bg-white border-t">
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500 mb-6">
