@@ -15,6 +15,7 @@ import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 export default function Manage() {
   const [users, setUsers] = useState<User[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filter, setFilter] = useState<string>("");
   const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
   const { hidePopup, popupStatus } = usePopup();

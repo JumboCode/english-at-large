@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { deleteBook } from "@/lib/api/books"; // Adjust the path as necessary
 
-// import { Book } from "@prisma/client";
-
 const DeleteBookButton = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

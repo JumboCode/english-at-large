@@ -1,26 +1,28 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import SendInvite from "../../../components/manage/sendInvite";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { BookRequest, BookStatus } from "@prisma/client";
-// import { getAllUsers, getOneUser } from "@/lib/api/users";
+import { Book, BookRequest, BookStatus, User } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
-// import PendingChip from "@/assets/icons/pending_chip";
-// import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { getRequests, updateRequest } from "@/lib/api/requests";
 import LoanDropdown from "@/components/common/forms/LoanDropdown";
+import { updateBook } from "@/lib/api/books";
+import { emptyRequest } from "@/lib/util/types";
 
 const Loans = () => {
-  const [requests, setRequests] = useState<BookRequest[]>([]);
-  const [oneRequest, setOneRequest] = useState<BookRequest>();
+  const [requests, setRequests] = useState<
+    (BookRequest & { user: User; book: Book })[]
+  >([]);
+  const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
   const [selectedValue, setSelectedValue] = useState<string>("");
 
   const updateReq = async (req: BookRequest) => {
     await updateRequest(req);
-    setOneRequest(req);
+    if (req) {
+      setOneRequest(req);
+    }
   };
 
   const requestFilter = (request: BookRequest) => {
@@ -41,7 +43,7 @@ const Loans = () => {
       case "Return Date":
         return a.returnedBy > b.returnedBy ? 1 : -1;
       default:
-        return null;
+        return a.requestedOn > b.requestedOn ? 1 : -1;
     }
   };
 
@@ -68,6 +70,7 @@ const Loans = () => {
           />
         }
         placeholderText="Search by name or email"
+        setSearchData={null}
       />
       <div className="px-16">
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
@@ -118,7 +121,6 @@ const Loans = () => {
                       </div>
                     </Link>
                   </td>
-                  {/* <td>{re ? <PendingChip /> : null}</td> */}
 
                   <td className="text-black">
                     {dateToTimeString(request.requestedOn)}
@@ -132,7 +134,7 @@ const Loans = () => {
                     <LoanDropdown
                       report={request}
                       selectedValue={selectedValue}
-                      oneRequest={oneRequest}
+                      // oneRequest={oneRequest}
                       updateReq={updateReq}
                     ></LoanDropdown>
                   </td>
@@ -141,8 +143,12 @@ const Loans = () => {
                     <div className="flex justify-start items-center">
                       <CommonButton
                         label="Mark as Returned"
-                        onClick={() => {
-                          updateReq({
+                        onClick={async () => {
+                          await updateBook({
+                            ...request.book,
+                            status: BookStatus.Available,
+                          });
+                          await updateReq({
                             ...request,
                             status: BookStatus.Returned,
                           });

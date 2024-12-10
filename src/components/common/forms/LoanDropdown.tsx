@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from "react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
-import SmallCheckIcon from "@/assets/icons/SmallCheck";
-import { updateRequest } from "@/lib/api/requests";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { BookRequest, BookStatus } from "@prisma/client";
 
 interface DropdownProps {
   report: BookRequest;
   selectedValue: string;
-  oneRequest: BookRequest;
   updateReq: (arg0: BookRequest) => void;
 }
 
 const LoanDropdown = (props: DropdownProps) => {
-  const { report, selectedValue, oneRequest, updateReq} = props;
+  const { report, selectedValue, updateReq } = props;
   const [filterType, setFilterType] = useState<BookStatus>(report.status);
 
   useEffect(() => {
-    setFilterType(report.status)
-  }, [selectedValue])
+    setFilterType(report.status);
+  }, [report.status, selectedValue]);
 
   return (
     <Menu as="div" className="relative inline-block text-left">

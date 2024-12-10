@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { BookRequest } from "@prisma/client";
+import { Book, BookRequest, User } from "@prisma/client";
 import { validateRequestData } from "@/lib/util/types";
 
 /**
@@ -10,7 +10,9 @@ import { validateRequestData } from "@/lib/util/types";
  * @remarks
  *  - This controller can later be modified to call other backend functions as needed.
  */
-export const getAllRequestsController = async (): Promise<BookRequest[]> => {
+export const getAllRequestsController = async (): Promise<
+  (BookRequest & { user: User; book: Book })[]
+> => {
   try {
     const requests = await prisma.bookRequest.findMany({
       include: {
@@ -93,7 +95,7 @@ export const postRequestController = async (
  * @returns requestData if request is valid, error otherwise
  */
 export const putRequestController = async (
-  requestData: BookRequest
+  requestData: BookRequest & { user: User; book: Book }
 ): Promise<BookRequest> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   // handle id validation as well since validateBookData doesn't validate ID
@@ -102,7 +104,9 @@ export const putRequestController = async (
       throw new Error("Missing required request properties");
     }
 
-    const { book, user, ...newRequest } = requestData;
+    // ugly but necessary for destructing...
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { user, book, ...newRequest } = requestData;
 
     const updatedRequest = await prisma.bookRequest.update({
       // where: { id: requestData.id },

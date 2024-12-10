@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { Book } from "@prisma/client";
-// import { validateBookData } from "@/lib/util/types";
 import {
   deleteBookController,
   getAllBooksController,
