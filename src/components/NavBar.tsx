@@ -98,10 +98,10 @@ const NavBar = () => {
         </div>
         <div className="relative group mt-2">
           <Link
-            href="staff"
+            href="users"
             className="font-[family-name:var(--font-rubik)] font-semibold"
           >
-            Staff
+            Users
           </Link>
         </div>
       </div>

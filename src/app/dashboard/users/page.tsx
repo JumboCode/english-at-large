@@ -58,9 +58,9 @@ export default function Manage() {
       />
       <div className="px-16">
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
-          <thead>
+          <thead className="">
             <tr className="bg-gray-100">
-              <th className="w-1/2 text-left text-text-default-secondary">
+              <th className="w-1/2 text-left px-2 py-1 text-text-default-secondary">
                 Name
               </th>
               <th className="w-[4.166666%] text-left text-text-default-secondary">
