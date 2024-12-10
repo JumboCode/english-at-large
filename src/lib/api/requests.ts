@@ -37,7 +37,9 @@ export const getOneRequest = async (
  * @remarks
  * - TODO: add filtering if needed
  */
-export const getRequests = async (): Promise<BookRequest[] | undefined> => {
+export const getRequests = async (): Promise<
+  (BookRequest & { user: User; book: Book })[] | undefined
+> => {
   try {
     const response = await axios.get("/api/requests");
 
