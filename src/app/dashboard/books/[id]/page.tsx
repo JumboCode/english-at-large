@@ -189,6 +189,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     releaseDate={book.releaseDate}
                     copies={10}
                     numPages={book.numPages}
+                    lineSpacing="space-y-6"
                   />
                 </div>
               </div>

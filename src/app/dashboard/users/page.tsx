@@ -25,6 +25,8 @@ export default function Manage() {
   }, [user]);
 
   const [users, setUsers] = useState<User[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [filter, setFilter] = useState<string>("");
   const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
   const { hidePopup, popupStatus } = usePopup();
 
@@ -46,7 +48,11 @@ export default function Manage() {
           </h1>
           <SearchBar
             button={
-              <CommonDropdown items={["All", "Tutors", "Admins", "Pending"]} />
+              <CommonDropdown
+                items={["All", "Tutors", "Admins", "Pending"]}
+                buttonText={""}
+                setFilter={setFilter}
+              />
             }
             button2={
               <CommonButton

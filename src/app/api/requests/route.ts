@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { BookRequest } from "@prisma/client";
+import { Book, BookRequest, User } from "@prisma/client";
 import {
   getOneRequestController,
   postRequestController,
@@ -50,12 +50,14 @@ export async function POST(req: Request) {
 // PUT - Update a request
 export async function PUT(req: Request) {
   try {
-    const requestData: BookRequest = await req.json();
+    const requestData: BookRequest & { user: User; book: Book } =
+      await req.json();
     // controller defined in controllers.ts
     const updated = await putRequestController(requestData);
 
     return NextResponse.json(updated);
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: `Failed to update request: ${error}` },
       { status: 500 }
