@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import CommonButton from "@/components/common/button/CommonButton";
+import { ErrorStateAndMessage, STATUS_OK } from "@/lib/util/types";
 
 const ResetPasswordForm = () => {
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [error, setError] = useState<ErrorStateAndMessage>(STATUS_OK);
   const [success, setSuccess] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
@@ -28,18 +28,15 @@ const ResetPasswordForm = () => {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(false);
-    setErrorMessage("");
+    setError(STATUS_OK);
 
     if (!resetCode || !newPassword || !confirmPassword) {
-      setError(true);
-      setErrorMessage("Please fill in all fields.");
+      setError({ error: true, message: "Please fill in all fields" });
       return;
     }
 
     if (!passwordsMatch) {
-      setError(true);
-      setErrorMessage("Passwords do not match.");
+      setError({ error: true, message: "Passwords do not match." });
       return;
     }
 
@@ -56,17 +53,20 @@ const ResetPasswordForm = () => {
         await setActive({ session: result.createdSessionId });
         router.push("/login");
       } else {
-        setError(true);
-        setErrorMessage("An error occurred. Please try again.");
+        setError({
+          error: true,
+          message: "An error occurred. Please try again.",
+        });
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
-      setError(true);
-
-      setErrorMessage(
-        err.errors?.[0]?.longMessage || "Invalid code or password reset failed."
-      );
+      setError({
+        error: true,
+        message:
+          err.errors?.[0]?.longMessage ||
+          "Invalid code or password reset failed.",
+      });
     }
   };
 
@@ -111,7 +111,7 @@ const ResetPasswordForm = () => {
             : "border-medium-grey-border"
         } rounded-lg bg-white cursor-text text-black`}
       />
-      {error && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+      {error && <p className="text-red-500 text-sm mt-2">{error.message}</p>}
       {success && (
         <p className="text-green-500 text-sm mt-2">
           Password reset successful!

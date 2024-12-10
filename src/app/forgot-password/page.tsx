@@ -8,11 +8,11 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useSignIn } from "@clerk/nextjs";
 import { getAllUsers } from "@/lib/api/users";
+import { ErrorStateAndMessage, STATUS_OK } from "@/lib/util/types";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState<string>("");
-  const [error, setError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [error, setError] = useState<ErrorStateAndMessage>(STATUS_OK);
   const { isLoaded, signIn } = useSignIn();
 
   const router = useRouter();
@@ -27,28 +27,26 @@ const ForgotPassword = () => {
 
   async function handleReset(e: React.FormEvent) {
     e.preventDefault();
-    setErrorMessage("");
-    setError(false);
+    setError(STATUS_OK);
 
     if (!email) {
-      setError(true);
-      setErrorMessage("Please enter an email.");
+      setError({ error: true, message: "Please enter an email." });
       return;
     }
 
     const invalidEmail = await checkUserEmail(email);
 
     if (invalidEmail) {
-      setError(true);
-      setErrorMessage("Email not found. Please try again.");
+      setError({ error: true, message: "Email not found. Please try again." });
       return;
     }
 
     if (!signIn) {
-      setError(true);
-      setErrorMessage(
-        "Sign-in functionality is not initialized. Please try again later."
-      );
+      setError({
+        error: true,
+        message:
+          "Sign-in functionality is not initialized. Please try again later.",
+      });
       return;
     }
 
@@ -61,10 +59,11 @@ const ForgotPassword = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err);
-      setError(true);
-      setErrorMessage(
-        err.errors?.[0]?.longMessage || "Failed to send reset email."
-      );
+
+      setError({
+        error: true,
+        message: err.errors?.[0]?.longMessage || "Failed to send reset email.",
+      });
     }
   }
 
@@ -92,9 +91,9 @@ const ForgotPassword = () => {
             link to reset your password.{" "}
           </p>
         </div>
-        <ForgotPasswordForm setEmail={setEmail} error={error} />
-        {errorMessage && (
-          <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+        <ForgotPasswordForm setEmail={setEmail} error={error.error} />
+        {error.message && (
+          <p className="text-red-500 text-sm mt-2">{error.message}</p>
         )}
 
         <div>
