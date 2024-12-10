@@ -50,7 +50,8 @@ export default function Manage() {
             button={
               <CommonDropdown
                 items={["All", "Tutors", "Admins", "Pending"]}
-                buttonText={""}
+                altButtonStyle="min-w-28"
+                buttonText={"Sort by"}
                 setFilter={setFilter}
               />
             }

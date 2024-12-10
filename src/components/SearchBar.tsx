@@ -5,7 +5,7 @@ import SearchIcon from "../assets/icons/Search";
 interface searchBarProps {
   setSearchData: ((searchData: string) => void) | null;
   button: React.ReactNode;
-  button2 ?: React.ReactNode;
+  button2?: React.ReactNode;
   placeholderText: string;
 }
 

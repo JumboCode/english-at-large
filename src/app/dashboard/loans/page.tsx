@@ -65,6 +65,7 @@ const Loans = () => {
         button={
           <CommonDropdown
             items={["Request Date", "Return Date", "Pick-up", "Borrowed"]}
+            altButtonStyle="min-w-40"
             buttonText={"Sort by"}
             setFilter={setSelectedValue}
           />
