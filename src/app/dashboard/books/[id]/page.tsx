@@ -18,6 +18,7 @@ import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
 
 type Params = Promise<{ id: string }>;
 
@@ -34,7 +35,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-
+  const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
 
   useEffect(() => {
@@ -103,37 +104,41 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         />
                       }
 
-                      <CommonButton
-                        label="Edit"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setShowBookForm(true);
-                        }}
-                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
-                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                        leftIcon={
-                          <Image
-                            src={pencil}
-                            alt="Pencil Icon"
-                            className="w-4 h-4 mr-3"
+                      {user?.role === "Admin" ? (
+                        <>
+                          <CommonButton
+                            label="Edit"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setShowBookForm(true);
+                            }}
+                            altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
+                            altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                            leftIcon={
+                              <Image
+                                src={pencil}
+                                alt="Pencil Icon"
+                                className="w-4 h-4 mr-3"
+                              />
+                            }
                           />
-                        }
-                      />
-                      <CommonButton
-                        label="Remove"
-                        onClick={() => {
-                          setShowRemoveModal(true);
-                        }}
-                        altStyle="w-40 h-10 bg-[#EC221F] border-none mr-3"
-                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                        leftIcon={
-                          <Image
-                            src={trash}
-                            alt="Book Icon"
-                            className="w-4 h-4 mr-3"
+                          <CommonButton
+                            label="Remove"
+                            onClick={() => {
+                              setShowRemoveModal(true);
+                            }}
+                            altStyle="w-40 h-10 bg-[#EC221F] border-none mr-3"
+                            altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                            leftIcon={
+                              <Image
+                                src={trash}
+                                alt="Book Icon"
+                                className="w-4 h-4 mr-3"
+                              />
+                            }
                           />
-                        }
-                      />
+                        </>
+                      ) : null}
                       {showRemoveModal ? (
                         <RemoveModal
                           book={book}
