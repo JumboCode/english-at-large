@@ -7,6 +7,8 @@ import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
 import BookForm from "@/components/common/forms/BookForm";
+import IsbnPopup from "@/components/common/forms/IsbnPopup";
+
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
@@ -17,6 +19,7 @@ import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 const BooksPage = () => {
   const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
+  const [isbnFormShown, setIsbnFormShown] = useState(false);
   const [bookFormShown, setBookFormShown] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
@@ -88,6 +91,7 @@ const BooksPage = () => {
     <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
   ) : (
     <div>
+      {/* (isbnFormShown ? <IsbnPopup />  */}
       <SearchBar
         setSearchData={setSearchData}
         button={
@@ -102,7 +106,7 @@ const BooksPage = () => {
             <CommonButton
               label="Create Book"
               leftIcon={<AddIcon />}
-              onClick={() => setBookFormShown(true)}
+              onClick={() => setIsbnFormShown(true)}
               altTextStyle="text-white"
               altStyle="bg-dark-blue"
             />
