@@ -19,13 +19,14 @@ import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 const BooksPage = () => {
   const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
-  const [isbnFormShown, setIsbnFormShown] = useState(false);
-  const [bookFormShown, setBookFormShown] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isbnFormShown, setIsbnFormShown] = useState<boolean>(false);
+  const [bookFormShown, setBookFormShown] = useState<boolean>(false);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
+  const [isbn_on_submit, setISBN] = useState<string>("");
 
   const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
@@ -88,10 +89,20 @@ const BooksPage = () => {
   }, []);
 
   return bookFormShown ? (
-    <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
+    <BookForm setShowBookForm={setBookFormShown} existingBook={null} isbn={isbn_on_submit} />
   ) : (
     <div>
-      {/* (isbnFormShown ? <IsbnPopup />  */}
+      <IsbnPopup 
+        isOpen={isbnFormShown} 
+        exit={() => setIsbnFormShown(false)} 
+        submit={(isbn: string) => 
+          {
+            setBookFormShown(true);
+            setISBN(isbn);
+            setIsbnFormShown(false);
+          }
+        } 
+      />
       <SearchBar
         setSearchData={setSearchData}
         button={

@@ -1,7 +1,7 @@
 "use client";
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
@@ -17,10 +17,11 @@ interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
+  isbn: string;
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { setShowBookForm, existingBook, onSave } = props;
+  const { setShowBookForm, existingBook, onSave, isbn } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -32,6 +33,11 @@ const BookForm = (props: BookFormProps) => {
   );
 
   const { setConfirmPopup } = usePopup();
+
+  useEffect(()=> {
+    pullISBN();
+  }, [isbn])
+
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -86,7 +92,7 @@ const BookForm = (props: BookFormProps) => {
     setShowBookForm(true);
     try {
       const response = await axios.get(
-        `https://openlibrary.org/isbn/${newBook.isbn}.json`
+        `https://openlibrary.org/isbn/${isbn ?? newBook.isbn}.json`
       );
       const data = response.data;
 
@@ -122,6 +128,9 @@ const BookForm = (props: BookFormProps) => {
       throw new Error("Book not found for this ISBN");
     }
   };
+
+
+
 
   const handleSave = async () => {
     try {
@@ -242,7 +251,7 @@ const BookForm = (props: BookFormProps) => {
             name="isbn"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
-            defaultValue={editBook ? editBook.isbn : ""}
+            defaultValue={editBook ? editBook.isbn : isbn}
             required
           />
         </div>
