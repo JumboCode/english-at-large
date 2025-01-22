@@ -89,19 +89,21 @@ const BooksPage = () => {
   }, []);
 
   return bookFormShown ? (
-    <BookForm setShowBookForm={setBookFormShown} existingBook={null} isbn={isbn_on_submit} />
+    <BookForm
+      setShowBookForm={setBookFormShown}
+      existingBook={null}
+      isbn={isbn_on_submit}
+    />
   ) : (
     <div>
-      <IsbnPopup 
-        isOpen={isbnFormShown} 
-        exit={() => setIsbnFormShown(false)} 
-        submit={(isbn: string) => 
-          {
-            setBookFormShown(true);
-            setISBN(isbn);
-            setIsbnFormShown(false);
-          }
-        } 
+      <IsbnPopup
+        isOpen={isbnFormShown}
+        exit={() => setIsbnFormShown(false)}
+        submit={(isbn: string) => {
+          setBookFormShown(true);
+          setISBN(isbn);
+          setIsbnFormShown(false);
+        }}
       />
       <SearchBar
         setSearchData={setSearchData}

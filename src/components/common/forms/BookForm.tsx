@@ -34,10 +34,9 @@ const BookForm = (props: BookFormProps) => {
 
   const { setConfirmPopup } = usePopup();
 
-  useEffect(()=> {
+  useEffect(() => {
     pullISBN();
-  }, [isbn])
-
+  }, [isbn]);
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -128,9 +127,6 @@ const BookForm = (props: BookFormProps) => {
       throw new Error("Book not found for this ISBN");
     }
   };
-
-
-
 
   const handleSave = async () => {
     try {

@@ -19,7 +19,10 @@ const IsbnPopup = (props: IsbnPopupProps) => {
       {isOpen ? (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white pb-12 pt-6 px-12 min-w-[512px] min-h-96 w-2/5 h-2/5 rounded-lg shadow-lg  flex flex-col gap-6">
-            <button className="text-black flex flex-row justify-end" onClick={exit}>
+            <button
+              className="text-black flex flex-row justify-end"
+              onClick={exit}
+            >
               <XIcon />
             </button>
             <div className="flex flex-col gap-2">
@@ -52,7 +55,13 @@ const IsbnPopup = (props: IsbnPopupProps) => {
                   altStyle="bg-dark-blue"
                 ></CommonButton>{" "}
               </div>
-              <Link className="text-dark-blue " href="/dashboard/books" onClick={exit}>Add book manually</Link>
+              <Link
+                className="text-dark-blue "
+                href="/dashboard/books"
+                onClick={exit}
+              >
+                Add book manually
+              </Link>
             </div>
           </div>
         </div>
