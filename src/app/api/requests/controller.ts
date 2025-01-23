@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { BookRequest } from "@prisma/client";
-import { validateRequestData, emptyRequest } from "@/lib/util/types";
+import { validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 
