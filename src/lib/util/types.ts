@@ -88,6 +88,8 @@ export const emptyRequest: BookRequest = {
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",
+  requestedOn: new Date(),
+  returnedBy: new Date(),
 };
 
 export const newEmptyRequest: Omit<BookRequest, "id"> = {
@@ -97,6 +99,8 @@ export const newEmptyRequest: Omit<BookRequest, "id"> = {
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",
+  requestedOn: new Date(),
+  returnedBy: new Date(),
 };
 
 /**
@@ -197,3 +201,19 @@ export interface CustomChangeEvent<T> {
   };
   preventDefault?: () => void;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/////                                                                      /////
+/////                                 OTHER                                /////
+/////                                                                      /////
+////////////////////////////////////////////////////////////////////////////////
+
+export interface ErrorStateAndMessage {
+  error: boolean;
+  message: string;
+}
+
+export const STATUS_OK: ErrorStateAndMessage = {
+  error: false,
+  message: "",
+};

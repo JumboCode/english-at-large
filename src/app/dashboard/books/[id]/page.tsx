@@ -16,6 +16,10 @@ import BookForm from "@/components/common/forms/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
+
 type Params = Promise<{ id: string }>;
 
 /**
@@ -31,6 +35,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const user = useCurrentUser();
+  const { hidePopup, popupStatus } = usePopup();
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -57,7 +63,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           }}
         />
       ) : (
-        <div>
+        <div className="pb-12">
           {book ? (
             <div>
               <div className="grid grid-rows-1 grid-flow-col xs:grid-rows-2">
@@ -98,43 +104,47 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         />
                       }
 
-                      <CommonButton
-                        label="Edit"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setShowBookForm(true);
-                        }}
-                        altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
-                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                        leftIcon={
-                          <Image
-                            src={pencil}
-                            alt="Pencil Icon"
-                            className="w-4 h-4 mr-3"
+                      {user?.role === "Admin" ? (
+                        <>
+                          <CommonButton
+                            label="Edit"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setShowBookForm(true);
+                            }}
+                            altStyle="w-40 h-10 bg-[#202D74] border-none mr-3"
+                            altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                            leftIcon={
+                              <Image
+                                src={pencil}
+                                alt="Pencil Icon"
+                                className="w-4 h-4 mr-3"
+                              />
+                            }
                           />
-                        }
-                      />
-                      <CommonButton
-                        label="Remove"
-                        onClick={() => {
-                          setShowRemoveModal(true);
-                        }}
-                        altStyle="w-40 h-10 bg-[#EC221F] border-none mr-3"
-                        altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                        leftIcon={
-                          <Image
-                            src={trash}
-                            alt="Book Icon"
-                            className="w-4 h-4 mr-3"
+                          <CommonButton
+                            label="Remove"
+                            onClick={() => {
+                              setShowRemoveModal(true);
+                            }}
+                            altStyle="w-40 h-10 bg-[#EC221F] border-none mr-3"
+                            altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                            leftIcon={
+                              <Image
+                                src={trash}
+                                alt="Book Icon"
+                                className="w-4 h-4 mr-3"
+                              />
+                            }
                           />
-                        }
-                      />
-                      {showRemoveModal && (
+                        </>
+                      ) : null}
+                      {showRemoveModal ? (
                         <RemoveModal
-                          setShowRemoveModal={setShowRemoveModal}
                           book={book}
+                          setShowRemoveModal={setShowRemoveModal}
                         />
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -184,6 +194,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     releaseDate={book.releaseDate}
                     copies={10}
                     numPages={book.numPages}
+                    lineSpacing="space-y-6"
                   />
                 </div>
               </div>
@@ -195,6 +206,15 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           ) : null}
         </div>
       )}
+      {popupStatus.shown ? (
+        <ConfirmationPopup
+          type={popupStatus.type}
+          action={popupStatus.action}
+          success={popupStatus.success}
+          onDisappear={() => hidePopup()}
+          custom={popupStatus.custom}
+        />
+      ) : null}
     </div>
   );
 };

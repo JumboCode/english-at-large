@@ -9,6 +9,12 @@ import SmallCheckIcon from "@/assets/icons/SmallCheck";
 import XIcon from "@/assets/icons/X";
 import { emptyUser } from "@/lib/util/types";
 import { createUser } from "@/lib/api/users";
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+  usePopup,
+} from "@/lib/context/ConfirmPopupContext";
+
 interface SendInviteProps {
   isOpen: boolean;
   exit: () => void;
@@ -20,6 +26,8 @@ const SendInvite = (props: SendInviteProps) => {
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole | null>(null);
   const [status, setStatus] = useState<boolean | null>(null);
+
+  const { setConfirmPopup } = usePopup();
 
   const checkUserEmail = async (email: string) => {
     const users = await getAllUsers();
@@ -58,6 +66,11 @@ const SendInvite = (props: SendInviteProps) => {
             await updateUser(user);
           }
           setStatus(true);
+          setConfirmPopup({
+            type: ConfirmPopupTypes.USER,
+            action: ConfirmPopupActions.INVITE,
+            success: true,
+          });
         } else {
           throw "Email already in use!";
         }
@@ -65,8 +78,12 @@ const SendInvite = (props: SendInviteProps) => {
         throw "Not all fields completed!";
       }
     } catch (error) {
-      console.error("Error creating invite: ", error);
       setStatus(false);
+      setConfirmPopup({
+        type: ConfirmPopupTypes.USER,
+        action: ConfirmPopupActions.INVITE,
+        success: false,
+      });
     }
   };
 
@@ -194,7 +211,6 @@ const SendInvite = (props: SendInviteProps) => {
       ) : (
         <div />
       )}
-      {/* This is a placeholder for the invite toast */}
       <p>{String(status)}</p>
     </div>
   );

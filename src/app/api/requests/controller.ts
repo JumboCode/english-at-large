@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
+<<<<<<< HEAD
 import { BookRequest } from "@prisma/client";
+=======
+import { Book, BookRequest, User } from "@prisma/client";
+>>>>>>> main
 import { validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
@@ -12,9 +16,16 @@ import { UserRole } from "@prisma/client";
  * @remarks
  *  - This controller can later be modified to call other backend functions as needed.
  */
-export const getAllRequestsController = async (): Promise<BookRequest[]> => {
+export const getAllRequestsController = async (): Promise<
+  (BookRequest & { user: User; book: Book })[]
+> => {
   try {
-    const requests = await prisma.bookRequest.findMany();
+    const requests = await prisma.bookRequest.findMany({
+      include: {
+        user: true, // Fetch the related User
+        book: true, // Fetch the related Book
+      },
+    });
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
@@ -36,6 +47,10 @@ export const getOneRequestController = async (
   try {
     const request = await prisma.bookRequest.findUnique({
       where: { id: id },
+      include: {
+        user: true, // Fetch the related User
+        book: true, // Fetch the related Book
+      },
     });
 
     if (!request) {
@@ -50,7 +65,7 @@ export const getOneRequestController = async (
 };
 
 /**
- * Utility controller that validates requests fields, then creates a BookRequest in backend.
+ * Utility controller that validates requests fields, then creates a BookRequest in backend. Also emails all administators.
  *
  * @returns requestData (with id) if request is valid, error otherwise
  * @params requestData without an "id" field
@@ -76,6 +91,7 @@ export const postRequestController = async (
     sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
 
     if (users) {
+<<<<<<< HEAD
       const admins = users.filter((user) => {
         return user.role === UserRole.Admin;
       }).map(async (user) => {
@@ -111,6 +127,47 @@ export const postRequestController = async (
         }})
 
       await Promise.all(admins)
+=======
+      const admins = users
+        .filter((user) => {
+          return user.role === UserRole.Admin;
+        })
+        .map(async (user) => {
+          const email = user.email;
+          if (email) {
+            const borrower = await prisma.user.findUnique({
+              where: { id: requestData.userId },
+            });
+            const msg = {
+              to: email,
+              from: "englishatlarge427@gmail.com",
+              subject: `${borrower?.name ?? "[No Username]"} Borrowed a Book`,
+
+              text: `Borrower Name: ${borrower?.name ?? "[No Username]"} \n
+              Borrower ID: ${requestData.userId} \n
+              Book Borrowed: ${requestData.bookTitle} \n
+              Book ID: ${requestData.bookId} \n
+              Borrowed on: ${requestData.requestedOn}`,
+
+              html: `<p>
+              <strong>Borrower Name:</strong> ${
+                borrower?.name ?? "[No Username]"
+              } <br>
+              <strong> Borrower ID:</strong> ${requestData.userId} <br>
+              <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br>
+              <strong>Book ID: </strong>${requestData.bookId} <br>
+              <strong>Borrowed on:</strong> ${requestData.requestedOn}
+              </p>`,
+            };
+
+            await sgMail.send(msg).catch((error: unknown) => {
+              console.error(error);
+            });
+          }
+        });
+
+      await Promise.all(admins);
+>>>>>>> main
     }
 
     return request;
@@ -129,7 +186,7 @@ export const postRequestController = async (
  * @returns requestData if request is valid, error otherwise
  */
 export const putRequestController = async (
-  requestData: BookRequest
+  requestData: BookRequest & { user: User; book: Book }
 ): Promise<BookRequest> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   // handle id validation as well since validateBookData doesn't validate ID
@@ -138,9 +195,15 @@ export const putRequestController = async (
       throw new Error("Missing required request properties");
     }
 
+    // ugly but necessary for destructing...
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { user, book, ...newRequest } = requestData;
+
     const updatedRequest = await prisma.bookRequest.update({
-      where: { id: requestData.id },
-      data: requestData,
+      // where: { id: requestData.id },
+      // data: requestData,
+      where: { id: newRequest.id },
+      data: newRequest,
     });
     return updatedRequest;
   } catch (error) {
