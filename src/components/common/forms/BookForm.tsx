@@ -1,7 +1,7 @@
 "use client";
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
@@ -34,9 +34,50 @@ const BookForm = (props: BookFormProps) => {
 
   const { setConfirmPopup } = usePopup();
 
+  const pullISBN = useCallback(async () => {
+    setShowBookForm(true);
+    try {
+      const response = await axios.get(
+        `https://openlibrary.org/isbn/${isbn ?? newBook.isbn}.json`
+      );
+      const data = response.data;
+
+      // Create an object to map OpenLibrary keys to book keys
+      const bookFields = {
+        title: data.title,
+        description: data.description?.value,
+        publisher: data.publishers?.[0],
+        numPages: data.number_of_pages,
+      };
+
+      // Update newBook with retrieved data
+      setNewBook((prevBook) => {
+        const updatedBook = { ...prevBook };
+
+        // update all fields at once
+        if (bookFields.title) updatedBook.title = bookFields.title;
+        if (bookFields.description)
+          updatedBook.description = bookFields.description;
+        if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
+        if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
+
+        return updatedBook;
+      });
+
+      // Book cover retrieval
+      const coverUrl = await getBookCover(newBook.isbn);
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        coverURL: coverUrl ?? imageToAdd.src,
+      }));
+    } catch {
+      throw new Error("Book not found for this ISBN");
+    }
+  }, [isbn, newBook.isbn, setShowBookForm]);
+
   useEffect(() => {
     pullISBN();
-  }, [isbn]);
+  }, [isbn, pullISBN]);
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -84,47 +125,6 @@ const BookForm = (props: BookFormProps) => {
             [name]: value,
           } as Omit<Book, "id">)
       );
-    }
-  };
-
-  const pullISBN = async () => {
-    setShowBookForm(true);
-    try {
-      const response = await axios.get(
-        `https://openlibrary.org/isbn/${isbn ?? newBook.isbn}.json`
-      );
-      const data = response.data;
-
-      // Create an object to map OpenLibrary keys to book keys
-      const bookFields = {
-        title: data.title,
-        description: data.description?.value,
-        publisher: data.publishers?.[0],
-        numPages: data.number_of_pages,
-      };
-
-      // Update newBook with retrieved data
-      setNewBook((prevBook) => {
-        const updatedBook = { ...prevBook };
-
-        // update all fields at once
-        if (bookFields.title) updatedBook.title = bookFields.title;
-        if (bookFields.description)
-          updatedBook.description = bookFields.description;
-        if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
-        if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
-
-        return updatedBook;
-      });
-
-      // Book cover retrieval
-      const coverUrl = await getBookCover(newBook.isbn);
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        coverURL: coverUrl ?? imageToAdd.src,
-      }));
-    } catch {
-      throw new Error("Book not found for this ISBN");
     }
   };
 
