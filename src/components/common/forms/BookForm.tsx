@@ -14,14 +14,15 @@ import axios from "axios";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
-  setShowBookForm: (arg0: boolean) => void;
+  // setShowBookForm: (arg0: boolean) => void;
+  exit: () => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
   isbn?: string;
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { setShowBookForm, existingBook, onSave, isbn } = props;
+  const { exit, existingBook, onSave, isbn } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -35,7 +36,7 @@ const BookForm = (props: BookFormProps) => {
   const { setConfirmPopup } = usePopup();
 
   const pullISBN = useCallback(async () => {
-    setShowBookForm(true);
+    // setShowBookForm(true);
     try {
       const response = await axios.get(
         `https://openlibrary.org/isbn/${isbn ?? newBook.isbn}.json`
@@ -60,6 +61,7 @@ const BookForm = (props: BookFormProps) => {
           updatedBook.description = bookFields.description;
         if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
         if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
+        if (isbn) updatedBook.isbn = isbn;
 
         return updatedBook;
       });
@@ -73,7 +75,7 @@ const BookForm = (props: BookFormProps) => {
     } catch {
       throw new Error("Book not found for this ISBN");
     }
-  }, [isbn, newBook.isbn, setShowBookForm]);
+  }, [isbn, newBook.isbn]);
 
   useEffect(() => {
     pullISBN();
@@ -132,7 +134,6 @@ const BookForm = (props: BookFormProps) => {
     try {
       if (editBook) {
         const editedBook = await updateBook(editBook);
-        setShowBookForm(false);
 
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
@@ -145,7 +146,6 @@ const BookForm = (props: BookFormProps) => {
         }
       } else if (newBook) {
         const createdBook = await createBook(newBook);
-        setShowBookForm(false);
 
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
@@ -157,6 +157,7 @@ const BookForm = (props: BookFormProps) => {
           onSave(createdBook);
         }
       }
+      exit();
     } catch (error) {
       console.error(error);
     }
@@ -180,7 +181,7 @@ const BookForm = (props: BookFormProps) => {
               <CommonButton
                 label="Cancel"
                 onClick={() => {
-                  setShowBookForm(false);
+                  exit();
                 }}
               />
               <CommonButton

@@ -16,17 +16,23 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 
+enum formState {
+  FORM_CLOSED,
+  ISBN_FORM_OPEN,
+  BOOK_FORM_OPEN,
+}
+
 const BooksPage = () => {
   const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
-  const [isbnFormShown, setIsbnFormShown] = useState<boolean>(false);
-  const [bookFormShown, setBookFormShown] = useState<boolean>(false);
+  const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
+  // const [bookFormShown, setBookFormShown] = useState<boolean>(false);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
-  const [isbn_on_submit, setISBN] = useState<string>("");
+  const [isbnOnSubmit, setISBN] = useState<string>("");
 
   const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
@@ -88,21 +94,21 @@ const BooksPage = () => {
     fetchData();
   }, []);
 
-  return bookFormShown ? (
+  return formShown == formState.BOOK_FORM_OPEN ? (
     <BookForm
-      setShowBookForm={setBookFormShown}
+      // setShowBookForm={setFormShown}
+      exit={() => setFormShown(formState.FORM_CLOSED)}
       existingBook={null}
-      isbn={isbn_on_submit}
+      isbn={isbnOnSubmit}
     />
   ) : (
     <div>
       <IsbnPopup
-        isOpen={isbnFormShown}
-        exit={() => setIsbnFormShown(false)}
+        isOpen={formShown == formState.ISBN_FORM_OPEN}
+        exit={() => setFormShown(formState.FORM_CLOSED)}
         submit={(isbn: string) => {
-          setBookFormShown(true);
+          setFormShown(formState.BOOK_FORM_OPEN);
           setISBN(isbn);
-          setIsbnFormShown(false);
         }}
       />
       <SearchBar
@@ -119,7 +125,7 @@ const BooksPage = () => {
             <CommonButton
               label="Create Book"
               leftIcon={<AddIcon />}
-              onClick={() => setIsbnFormShown(true)}
+              onClick={() => setFormShown(formState.ISBN_FORM_OPEN)}
               altTextStyle="text-white"
               altStyle="bg-dark-blue"
             />
