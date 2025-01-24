@@ -17,7 +17,7 @@ interface BookFormProps {
   setShowBookForm: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
-  isbn: string;
+  isbn?: string;
 }
 
 const BookForm = (props: BookFormProps) => {

@@ -61,6 +61,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           onSave={(b: Book | null) => {
             setBook(b);
           }}
+          isbn={book.isbn}
         />
       ) : (
         <div className="pb-12">
@@ -94,8 +95,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                             <Image
                               src={
                                 // book.status === BookStatus.Available
-                                  // ? bookIcon
-                                  bookIconGreyed
+                                // ? bookIcon
+                                bookIconGreyed
                               }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
