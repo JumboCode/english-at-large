@@ -96,7 +96,6 @@ const BooksPage = () => {
 
   return formShown == formState.BOOK_FORM_OPEN ? (
     <BookForm
-      // setShowBookForm={setFormShown}
       exit={() => setFormShown(formState.FORM_CLOSED)}
       existingBook={null}
       isbn={isbnOnSubmit}

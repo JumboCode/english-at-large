@@ -56,7 +56,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     <div>
       {showBookForm ? (
         <BookForm
-          setShowBookForm={setShowBookForm}
+          exit={() => setShowBookForm(false)}
           existingBook={book}
           onSave={(b: Book | null) => {
             setBook(b);

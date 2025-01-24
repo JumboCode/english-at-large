@@ -14,7 +14,6 @@ import axios from "axios";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
-  // setShowBookForm: (arg0: boolean) => void;
   exit: () => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
@@ -36,7 +35,6 @@ const BookForm = (props: BookFormProps) => {
   const { setConfirmPopup } = usePopup();
 
   const pullISBN = useCallback(async () => {
-    // setShowBookForm(true);
     try {
       const response = await axios.get(
         `https://openlibrary.org/isbn/${isbn ?? newBook.isbn}.json`
