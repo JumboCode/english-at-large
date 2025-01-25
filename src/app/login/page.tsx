@@ -18,7 +18,7 @@ const Login = () => {
       </div>
 
       <div className="container mx-auto px-20 object-fill col-span-7 md:col-span-3 mt-5">
-        <div className="text-2xl font-bold">
+        <div className="text-2xl font-bold"> 
           <h1> Welcome back! </h1>
         </div>
 

@@ -55,22 +55,32 @@ const Shelf = (props: { params: Promise<Params> }) => {
   const subsetRequests = structuredClone(requests).filter((requests) =>
     requests.userId.includes(user.id)
   );
-  // .filter((user) => filterRequest(user));
 
   return (
     <div className="m-10">
-      <div className="text-3xl font-[family-name:var(--font-rubik)] font-semibold">
+      <div className="text-3xl font-[family-name:var(--font-rubik)] font-semibold mb-8">
         {" "}
-        <p> Hi, {user.name} </p>
+        <p> Hi, {user.name?.split(" ")[0]} </p>
       </div>
 
-      <div className="flex grid grid-cols-4 gap-4">
-        <div>box 1 loans</div>
-        <div>box 2 holds</div>
+      <div className="grid grid-cols-4 gap-4 font-[family-name:var(--font-rubik)]">
+        <div className="bg-[#F6FAFD] pt-32 p-4 "> 
+          <div className="text-gray-500"> Loans </div>
+          <div className="text-xl font-semibold text-black">
+            {subsetRequests.length} out of 10
+          </div>
+        </div>
+        <div className="bg-[#F6FAFD] pt-32 p-4 text-gray-500"> 
+          <div className="text-gray-500"> Holds </div>
+          {/* TODO: update holds number */}
+          <div className="text-xl font-semibold text-black">
+            0 out of 10
+          </div>
+        </div>
       </div>
 
       <div>
-        <div className="font-[family-name:var(--font-rubik)] mb-5"> Your loans </div>
+        <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10"> Your loans </div>
         <ul>
           {subsetRequests.map((request) => (
             <li key={request.id}>

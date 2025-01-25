@@ -1,11 +1,15 @@
 import checkmark from "../../assets/icons/checkmark.svg";
 import Image from "next/image";
+import Link from "next/link";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
+
 interface ConfirmBookRequestProps {
   toggle: () => void;
 }
 
 const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
   const { toggle } = props;
+  const shelfLink = '/dashboard/shelf/' + useCurrentUser()?.id;
   const exit = () => {
     toggle();
   };
@@ -60,12 +64,11 @@ const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
             >
               Keep Browsing
             </a>
-            <a
-              href="/dashboard"
+            <Link
+              href={shelfLink}
               className="flex flex-row items-center w-56 h-10 text-white justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue font-[family-name:var(--font-rubik)] font-semibold bg-[#202D74] text-sm"
-            >
+            />
               Go to Shelf
-            </a>
           </div>
         </div>
       </div>
