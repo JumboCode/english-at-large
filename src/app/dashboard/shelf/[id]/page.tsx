@@ -2,10 +2,12 @@
 import React, { useEffect, useState, use } from "react";
 import { getOneUser } from "@/lib/api/users";
 import { User, BookRequest, Book } from "@prisma/client";
+import Image from "next/image";
+import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 // import BookInfo from "@/components/common/BookInfo";
 // import Loans from "../../loans/page";
 import { getRequests } from "@/lib/api/requests";
-
+import Tag from "@/components/tag";
 type Params = Promise<{ id: string }>;
 
 const Shelf = (props: { params: Promise<Params> }) => {
@@ -24,15 +26,18 @@ const Shelf = (props: { params: Promise<Params> }) => {
       setUser(user || null);
     };
     fetchUser();
+  }, [params]);
+
+  useEffect(() => {
+    if (!user) return;
 
     const fetchLoans = async () => {
-      if (!user) return;
       const allRequests = await getRequests();
       setRequests(allRequests ?? []);
     };
 
     fetchLoans();
-  }, [params, user]);
+  }, [user]);
 
   if (user == null) return null;
 
@@ -47,13 +52,14 @@ const Shelf = (props: { params: Promise<Params> }) => {
   //   [levels, skills]
   // );
 
-  const subsetRequests = structuredClone(requests)
-    .filter((requests) => requests.userId.includes(user.id));
-    // .filter((user) => filterRequest(user));
+  const subsetRequests = structuredClone(requests).filter((requests) =>
+    requests.userId.includes(user.id)
+  );
+  // .filter((user) => filterRequest(user));
 
   return (
-    <div>
-      <div>
+    <div className="m-10">
+      <div className="text-3xl font-[family-name:var(--font-rubik)] font-semibold">
         {" "}
         <p> Hi, {user.name} </p>
       </div>
@@ -64,11 +70,32 @@ const Shelf = (props: { params: Promise<Params> }) => {
       </div>
 
       <div>
-        <div> Your loans </div>
+        <div className="font-[family-name:var(--font-rubik)] mb-5"> Your loans </div>
         <ul>
           {subsetRequests.map((request) => (
             <li key={request.id}>
-              {request.user.name} borrowed {request.book.title}
+              <div className="w-1/2 grid grid-cols-3 rounded-md border-2 border-[#D9D9D9]">
+                <div className="m-5">
+                  <Image
+                    src={request.book.coverURL || imageToAdd.src}
+                    alt="Book Cover"
+                    width={200}
+                    height={300}
+                    className="object-fill"
+                  />
+                </div>
+                <div className="col-span-2 font-[family-name:var(--font-rubik)] mt-10">
+                <div className="text-xl font-[family-name:var(--font-rubik)] font-semibold">
+                      {request.book.title}
+                    </div>
+                    <div className="font-[family-name:var(--font-rubik)]">
+                      by {request.book.author}
+                    </div>
+                    {request.book.skills.map((skill, index) => (
+                      <Tag key={index} label={skill} />
+                    ))}
+                </div>
+              </div>
             </li>
           ))}
         </ul>
