@@ -17,7 +17,7 @@ import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 export default function Manage() {
   const user = useCurrentUser();
-  
+
   const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
@@ -32,12 +32,13 @@ export default function Manage() {
   const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
   const { hidePopup, popupStatus } = usePopup();
 
-  const subsetUsers = structuredClone(users)
-    .filter(
-      (user) =>
-        user.name?.toLowerCase().includes(searchData) ||
-        user.email?.toLowerCase().includes(searchData)
-      )
+  // use of structured clone creates new subset of search target users
+  // allows filter to act on subset of searched users
+  const subsetUsers = structuredClone<User[]>(users).filter(
+    (user) =>
+      user.name?.toLowerCase().includes(searchData) ||
+      user.email?.toLowerCase().includes(searchData)
+  );
 
   useEffect(() => {
     const getUsers = async () => {

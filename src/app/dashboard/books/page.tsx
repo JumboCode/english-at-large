@@ -60,7 +60,10 @@ const BooksPage = () => {
     [bookSortBy]
   );
 
-  const subsetBooks = structuredClone(books)
+  // use of structured clone creates new subset of search target books
+  // allows filter to act on subset of searched books
+
+  const subsetBooks = structuredClone<Book[]>(books)
     .filter(
       (book) =>
         book.title.toLowerCase().includes(searchData) ||
