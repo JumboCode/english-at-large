@@ -6,14 +6,14 @@ import CommonButton from "../button/CommonButton";
 
 interface IsbnPopupProps {
   isOpen: boolean;
-  exit: () => void;
-  submit: (isbn: string) => void;
+  exit: () => void; // exit does not change isbn, only exits the popup
+  submit: (isbn: string) => void; // submit saves the isbn
 }
 
 const IsbnPopup = (props: IsbnPopupProps) => {
-  const { isOpen, exit, submit } = props;
+  const { isOpen, exit, submit } = props; 
   const [isbnData, setIsbnData] = useState<string>("");
-
+  
   return (
     <div>
       {isOpen ? (
@@ -58,7 +58,7 @@ const IsbnPopup = (props: IsbnPopupProps) => {
               <Link
                 className="text-dark-blue "
                 href="/dashboard/books"
-                onClick={exit}
+                onClick={() => submit(isbnData)}
               >
                 Add book manually
               </Link>

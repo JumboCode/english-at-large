@@ -6,11 +6,10 @@ interface ManualFormProps {
     exit: () => void;
     existingBook?: Book | null;
     onSave?: (arg0: Book | null) => void;
-    isbn: undefined;
 }
 
 const ManualForm = (props: ManualFormProps) => {
-    const { exit, existingBook, onSave, isbn } = props;
+    const { exit, existingBook, onSave } = props;
 
     return (
         <div>
@@ -18,7 +17,6 @@ const ManualForm = (props: ManualFormProps) => {
                 exit={exit}
                 existingBook={existingBook}
                 onSave={onSave}
-                isbn={isbn}
             />
         </div>
     );

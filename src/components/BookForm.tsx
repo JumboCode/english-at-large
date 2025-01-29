@@ -192,7 +192,7 @@ const BookForm = (props: BookFormProps) => {
           </div>
           <div className="mx-[50px] h-[0.3px] bg-black"></div>
         </div>
-        {isbn != undefined ? 
+        {isbn ? 
           <div>
             <label htmlFor="isbn" className="block text-lg ml-[5%]">
               ISBN Number
@@ -234,7 +234,7 @@ const BookForm = (props: BookFormProps) => {
               name="author"
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-9 font-normal"
               onChange={bookChangeHandler}
-              value={editBook ? editBook.publisher : newBook.publisher}
+              value={editBook ? editBook.author : newBook.author}
               required
             />
           </div>

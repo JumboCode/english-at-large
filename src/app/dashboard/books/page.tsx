@@ -98,7 +98,7 @@ const BooksPage = () => {
 
   return formShown == formState.BOOK_FORM_OPEN ? (
     (
-      isbnOnSubmit != undefined ?
+      isbnOnSubmit ?
         <IsbnForm
           exit={() => setFormShown(formState.FORM_CLOSED)}
           existingBook={null}
@@ -108,7 +108,6 @@ const BooksPage = () => {
       <ManualForm 
         exit={() => setFormShown(formState.FORM_CLOSED)}
         existingBook={null}
-        isbn={undefined}
       />
     )
   ) : (
