@@ -20,7 +20,7 @@ const BookInfo = (props: BookProps) => {
 
   return (
     <div>
-      <Link href={`books/${book.id}`} className="flex items-start space-x-4">
+      <Link href={`/dashboard/books/${book.id}`} className="flex items-start space-x-4">
         <div className="w-[250px] h-[300px] flex justify-center items-center">
           <Image
             src={book.coverURL || imageToAdd.src}
