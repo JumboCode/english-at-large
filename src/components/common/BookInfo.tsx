@@ -22,7 +22,7 @@ const BookInfo = (props: BookProps) => {
     <div>
       <Link
         href={`books/${book.id}`}
-        className="flex grid grid-cols-[40%_60%] items-start"
+        className="grid grid-cols-[40%_60%] items-start"
       >
         <div className="w-[210px] h-[300px] object-fill">
           <Image
