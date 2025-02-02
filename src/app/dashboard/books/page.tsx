@@ -46,10 +46,11 @@ const BooksPage = () => {
       return (
         (skills.length === 0 ||
           skills.some((skill) => book.skills.includes(skill))) &&
-        (levels.length === 0 || levels.includes(book.level))
+        (levels.length === 0 || levels.includes(book.level)) &&
+        (status.length == 0 || status.includes(book.status))
       );
     },
-    [levels, skills]
+    [levels, skills, status]
   );
 
   const sortBooks = useCallback(
