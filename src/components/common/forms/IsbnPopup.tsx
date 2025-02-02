@@ -11,9 +11,9 @@ interface IsbnPopupProps {
 }
 
 const IsbnPopup = (props: IsbnPopupProps) => {
-  const { isOpen, exit, submit } = props; 
+  const { isOpen, exit, submit } = props;
   const [isbnData, setIsbnData] = useState<string>("");
-  
+
   return (
     <div>
       {isOpen ? (
