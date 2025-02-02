@@ -8,15 +8,11 @@ import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { createQuickRequest } from "@/lib/api/requests";
-<<<<<<< HEAD
-
-=======
 import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
->>>>>>> main
 interface BorrowPopupProps {
   book: Book;
   toggleOpen: () => void;
