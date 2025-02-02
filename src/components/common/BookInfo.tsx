@@ -20,26 +20,29 @@ const BookInfo = (props: BookProps) => {
 
   return (
     <div>
-      <Link href={`/dashboard/books/${book.id}`} className="flex items-start space-x-4">
-        <div className="w-[250px] h-[300px] flex justify-center items-center">
+      <Link
+        href={`books/${book.id}`}
+        className="flex grid grid-cols-[40%_60%] items-start"
+      >
+        <div className="w-[210px] h-[300px] object-fill">
           <Image
             src={book.coverURL || imageToAdd.src}
             alt="Book Cover"
-            width={250}
+            width={210}
             height={300}
-            className="w-full h-full object-fill"
+            className="w-[210px] h-[300px]"
           />
         </div>
 
-        <div>
-          <div className="text-left mt-4 mb-4 ml-4 mr-4">
+        <div className="align-middle">
+          <div className="text-left mt-4 mb-4">
             <h3 className="text-lg text-black font-semibold">{book.title}</h3>
-            <p className="text-sm text-black">
+            <p className="text-sm text-black mt-2">
               {"by"} {book.author}{" "}
             </p>
           </div>
 
-          <div className="flex flex-wrap items-start space-x-4 ml-2">
+          <div className="flex flex-wrap items-start">
             <div className="flex flex-wrap gap-2 mt-2">
               <div className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
                 <p>{book.bookType.replace("_", " ")}</p>

@@ -17,6 +17,19 @@ const Loans = () => {
   >([]);
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
   const [selectedValue, setSelectedValue] = useState<string>("");
+  const [searchData, setSearchData] = useState("");
+
+  // use of structured clone creates new subset of search target requests
+  // allows filter to act on subset of searched requests
+
+  const subsetRequest = structuredClone<
+    (BookRequest & { user: User; book: Book })[]
+  >(requests).filter(
+    (request) =>
+      request.bookTitle.toLowerCase().includes(searchData) ||
+      request.user?.name?.toLowerCase().includes(searchData) ||
+      request.user?.email?.toLowerCase().includes(searchData)
+  );
 
   const updateReq = async (req: BookRequest) => {
     await updateRequest(req);
@@ -71,7 +84,7 @@ const Loans = () => {
           />
         }
         placeholderText="Search by name or email"
-        setSearchData={null}
+        setSearchData={setSearchData}
       />
       <div className="px-16">
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
@@ -96,7 +109,7 @@ const Loans = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-solid">
-            {requests
+            {subsetRequest
               .filter(requestFilter)
               .sort(sortByDate)
               .map((request, index) => (

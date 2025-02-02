@@ -18,6 +18,8 @@ import { usePopup } from "@/lib/context/ConfirmPopupContext";
 export default function Manage() {
   const user = useCurrentUser();
 
+  const [searchData, setSearchData] = useState("");
+
   useEffect(() => {
     if (user?.role !== "Admin" && user?.role != undefined) {
       redirect("/dashboard");
@@ -30,12 +32,19 @@ export default function Manage() {
   const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
   const { hidePopup, popupStatus } = usePopup();
 
+  // use of structured clone creates new subset of search target users
+  // allows filter to act on subset of searched users
+  const subsetUsers = structuredClone<User[]>(users).filter(
+    (user) =>
+      user.name?.toLowerCase().includes(searchData) ||
+      user.email?.toLowerCase().includes(searchData)
+  );
+
   useEffect(() => {
     const getUsers = async () => {
       const allUsers = await getAllUsers();
       setUsers(allUsers ?? []);
     };
-
     getUsers();
   }, []);
 
@@ -66,7 +75,7 @@ export default function Manage() {
               />
             }
             placeholderText="Search by name or email"
-            setSearchData={null}
+            setSearchData={setSearchData}
           />
           <div className="px-16">
             <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
@@ -86,7 +95,7 @@ export default function Manage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-solid">
-                {users.map((user, index) => (
+                {subsetUsers.map((user, index) => (
                   <tr key={index} className="bg-white h-16">
                     <td className="flex flex-col">
                       <p className="text-black font-semibold">{user.name}</p>
