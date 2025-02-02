@@ -21,7 +21,7 @@ const BookInfo = (props: BookProps) => {
   return (
     <div>
       <Link
-        href={`books/${book.id}`}
+        href={`/dashboard/books/${book.id}`}
         className="grid grid-cols-[40%_60%] items-start"
       >
         <div className="w-[210px] h-[300px] object-fill">

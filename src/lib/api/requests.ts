@@ -49,30 +49,24 @@ export const getRequests = async (): Promise<
   }
 };
 
-// /**
-//  * Utility function for fetching user's requests
-//  *
-//  * @param user
-//  * @returns array of user's requests (of type Requests)
-//  *
-//  * @remarks
-//  */
-// export const getUserRequests = async (user: User): Promise<
-//   (BookRequest & { user: User; book: Book })[] | undefined
-// > => {
-//   try {
-//     const response = await axios.get<(BookRequest & { user: User; book: Book })[]>(
-//       `/api/requests`,
-//       {
-//         params: { id: user.id }, // Query parameters are added here
-//       }
-//     );
-    
-//     return response.data;
-//   } catch (error) {
-//     throw new Error("Failed to fetch requests");
-//   }
-// };
+/**
+ * Utility function for fetching user's requests
+ *
+ * @param user
+ * @returns array of user's requests (of type Requests)
+ *
+ * @remarks
+ */
+export const getUserRequests = async (userId: string): Promise<
+  (BookRequest & { user: User; book: Book })[] | undefined
+> => {
+  try {
+    const response = await axios.get(`/api/requests?userId=${userId}`)
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch user's requests");
+  }
+};
 
 /**
  * Utility function for creating a request. Use if you want to include custom messages or have more functionality

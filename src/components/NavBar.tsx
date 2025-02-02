@@ -89,7 +89,6 @@ const NavBar = () => {
   const { signOut } = useClerk();
   const router = useRouter();
   const user = useCurrentUser();
-  const shelfLink = '/dashboard/shelf/' + user?.id;
 
   const handleSignOut = async () => {
     try {
@@ -150,7 +149,7 @@ const NavBar = () => {
         ) : (
           <div className="relative group mt-2">
             <Link
-              href={shelfLink}
+              href={'/dashboard/shelf/' + user?.id}
               className="font-[family-name:var(--font-rubik)] font-semibold"
             >
               Shelf

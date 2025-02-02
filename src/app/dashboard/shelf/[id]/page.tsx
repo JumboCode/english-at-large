@@ -3,7 +3,8 @@ import React, { useEffect, useState, use } from "react";
 import { getOneUser } from "@/lib/api/users";
 import { User, BookRequest, Book } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
-import { getRequests } from "@/lib/api/requests";
+import { getUserRequests } from "@/lib/api/requests";
+import { MAX_REQUESTS } from "@/lib/util/types";
 type Params = Promise<{ id: string }>;
 
 const Shelf = (props: { params: Promise<Params> }) => {
@@ -26,18 +27,14 @@ const Shelf = (props: { params: Promise<Params> }) => {
     if (!user) return;
 
     const fetchLoans = async () => {
-      const allRequests = await getRequests();
-      setRequests(allRequests ?? []);
+      const userRequests = await getUserRequests(user.id);
+      setRequests(userRequests ?? []);
     };
 
     fetchLoans();
   }, [user]);
 
   if (user == null) return null;
-
-  const subsetRequests = structuredClone(requests).filter((requests) =>
-    requests.userId.includes(user.id)
-  );
 
   return (
     <div className="m-10">
@@ -50,14 +47,14 @@ const Shelf = (props: { params: Promise<Params> }) => {
         <div className="bg-[#F6FAFD] pt-32 p-4 "> 
           <div className="text-gray-500"> Loans </div>
           <div className="text-xl font-semibold text-black">
-            {subsetRequests.length} out of 10
+            {requests.length} out of {MAX_REQUESTS}
           </div>
         </div>
         <div className="bg-[#F6FAFD] pt-32 p-4 text-gray-500"> 
           <div className="text-gray-500"> Holds </div>
           {/* TODO: update holds number */}
           <div className="text-xl font-semibold text-black">
-            0 out of 10
+            0 out of {MAX_REQUESTS}
           </div>
         </div>
       </div>
@@ -65,7 +62,7 @@ const Shelf = (props: { params: Promise<Params> }) => {
       <div>
         <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10"> Your loans </div>
         <ul>
-          {subsetRequests.map((request) => (
+          {requests.map((request) => (
             <li key={request.id}>
               <div className="w-1/2 p-4 rounded-md border-2 border-[#D9D9D9] m-2">
                 <BookInfo book={request.book} />
