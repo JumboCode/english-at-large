@@ -48,10 +48,11 @@ const BooksPage = () => {
       return (
         (skills.length === 0 ||
           skills.some((skill) => book.skills.includes(skill))) &&
-        (levels.length === 0 || levels.includes(book.level))
+        (levels.length === 0 || levels.includes(book.level)) &&
+        (status.length == 0 || status.includes(book.status))
       );
     },
-    [levels, skills]
+    [levels, skills, status]
   );
 
   const sortBooks = useCallback(
@@ -72,7 +73,10 @@ const BooksPage = () => {
     [bookSortBy]
   );
 
-  const subsetBooks = structuredClone(books)
+  // use of structured clone creates new subset of search target books
+  // allows filter to act on subset of searched books
+
+  const subsetBooks = structuredClone<Book[]>(books)
     .filter(
       (book) =>
         book.title.toLowerCase().includes(searchData) ||
