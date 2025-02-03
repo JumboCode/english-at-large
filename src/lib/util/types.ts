@@ -1,6 +1,6 @@
 import { Book, BookLevel, BookStatus, BookType } from "@prisma/client";
 import { BookRequest } from "@prisma/client";
-import { User } from "@prisma/client";
+import { User, OnlineResource, ResourceTopic, ResourceFormat } from "@prisma/client";
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
@@ -71,6 +71,15 @@ export const newEmptyBook: Omit<Book, "id"> = {
   releaseDate: null,
   numPages: 0,
   coverURL: "",
+};
+
+export const newEmptyResource: Omit<OnlineResource, "id" | "createdAt"> = {     
+  name: "",
+  link: "",
+  level: BookLevel.Beginner,
+  topic: ResourceTopic.Holidays,
+  skills: [], 
+  format: ResourceFormat
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////

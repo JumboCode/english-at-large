@@ -119,9 +119,7 @@ enum ResourceTopic {
 }
 
 enum ResourceFormat {
-  PDF
+  Worksheet
+  Reading
   Video
-  Article
-  Image
-  Website
 }
