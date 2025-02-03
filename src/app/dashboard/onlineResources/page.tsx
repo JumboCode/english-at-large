@@ -12,11 +12,18 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 
+enum formState {
+  FORM_CLOSED,
+  ISBN_FORM_OPEN,
+  BOOK_FORM_OPEN,
+}
+
 const OnlineResourcesPage = () => {
   const user = useCurrentUser();
 
   // TODO: turn this into resource form
   const [bookFormShown, setBookFormShown] = useState(false);
+  const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
@@ -28,6 +35,40 @@ const OnlineResourcesPage = () => {
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
   };
+  
+  
+  // export const dummyBooks: Book[] = [
+  //   {
+  //     id: 1,
+  //     title: "The Pragmatic Programmer",
+  //     author: "Andrew Hunt, David Thomas",
+  //     publishedYear: 1999,
+  //     genre: "Software Development",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Clean Code",
+  //     author: "Robert C. Martin",
+  //     publishedYear: 2008,
+  //     genre: "Software Engineering",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Design Patterns",
+  //     author: "Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides",
+  //     publishedYear: 1994,
+  //     genre: "Software Design",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "You Don’t Know JS",
+  //     author: "Kyle Simpson",
+  //     publishedYear: 2014,
+  //     genre: "JavaScript",
+  //   },
+  // ];
+  
+  
 
   //   const filterBooks = useCallback(
   //     (book: Book) => {
@@ -79,57 +120,93 @@ const OnlineResourcesPage = () => {
     fetchData();
   }, []);
 
-  return bookFormShown ? (
-    <BookForm exit={() => setBookFormShown(false)} existingBook={null} />
-  ) : (
-    <div>
-      <SearchBar
-        setSearchData={() => {}} // TODO: fill this in
-        button={
-          <CommonButton
-            label="Filter"
-            leftIcon={<FilterIcon />}
-            onClick={toggleFilterPopup}
-          />
-        }
-        button2={
-          user?.role === "Admin" ? (
-            <CommonButton
-              label="Add Resource"
-              leftIcon={<AddIcon />}
-              onClick={() => setBookFormShown(true)}
-              altTextStyle="text-white"
-              altStyle="bg-dark-blue"
-            />
-          ) : null
-        }
-        placeholderText="Search for resources"
-      />
-      <div className="text-center">Coming soon!</div>
-      {popupStatus.shown ? (
-        <ConfirmationPopup
-          type={popupStatus.type}
-          action={popupStatus.action}
-          success={popupStatus.success}
-          onDisappear={() => hidePopup()}
-          custom={popupStatus.custom}
-        />
-      ) : null}
+  return <div></div>
 
-      <FilterPopup
-        isOpen={isFilterOpen}
-        toggle={toggleFilterPopup}
-        skills={skills}
-        setSkills={setSkills}
-        levels={levels}
-        setLevels={setLevels}
-        status={status}
-        setStatus={setStatus}
-        sortBook={bookSortBy}
-        setSortBook={setBookSortBy}
-      />
-    </div>
-  );
+  // return formShown == formState.BOOK_FORM_OPEN ? (
+  //   // change to resource form
+  //   <BookForm
+  //     exit={() => setFormShown(formState.FORM_CLOSED)}
+  //     existingBook={null}
+  //     isbn={isbnOnSubmit}
+  //   />
+  // ) : (
+  //   <div>
+  //     <IsbnPopup
+  //       isOpen={formShown == formState.ISBN_FORM_OPEN}
+  //       exit={() => setFormShown(formState.FORM_CLOSED)}
+  //       submit={(isbn: string) => {
+  //         setFormShown(formState.BOOK_FORM_OPEN);
+  //         setISBN(isbn);
+  //       }}
+  //     />
+  //     <SearchBar
+  //       setSearchData={setSearchData}
+  //       button={
+  //         <CommonButton
+  //           label="Filter"
+  //           leftIcon={<FilterIcon />}
+  //           onClick={toggleFilterPopup}
+  //         />
+  //       }
+  //       button2={
+  //         user?.role === "Admin" ? (
+  //           <CommonButton
+  //             label="Create Book"
+  //             leftIcon={<AddIcon />}
+  //             onClick={() => setFormShown(formState.ISBN_FORM_OPEN)}
+  //             altTextStyle="text-white"
+  //             altStyle="bg-dark-blue"
+  //           />
+  //         ) : null
+  //       }
+  //       placeholderText="Search for books"
+  //     />
+
+  //     {popupStatus.shown ? (
+  //       <ConfirmationPopup
+  //         type={popupStatus.type}
+  //         action={popupStatus.action}
+  //         success={popupStatus.success}
+  //         onDisappear={() => hidePopup()}
+  //         custom={popupStatus.custom}
+  //       />
+  //     ) : null}
+
+  //     <FilterPopup
+  //       isOpen={isFilterOpen}
+  //       toggle={toggleFilterPopup}
+  //       skills={skills}
+  //       setSkills={setSkills}
+  //       levels={levels}
+  //       setLevels={setLevels}
+  //       status={status}
+  //       setStatus={setStatus}
+  //       sortBook={bookSortBy}
+  //       setSortBook={setBookSortBy}
+  //     />
+  //     <div className="p-4 px-16 bg-white border-t">
+  //       <div className="text-left">
+  //         <div className="whitespace-normal">
+  //           <p className="text-sm text-slate-500 mb-6">
+  //             {subsetBooks.length} {"titles"}
+  //           </p>
+  //         </div>
+  //       </div>
+  //       <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  //         {subsetBooks.map((book, index) => (
+  //           <li key={index}>
+  //             <div>
+  //               {/* TODO: add grey border to this */}
+  //               <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md  hover:bg-blue-100 transition duration-200">
+  //                 <BookInfo book={book} />
+  //               </div>
+  //             </div>
+  //           </li>
+  //         ))}
+  //       </ul>
+  //     </div>
+  //   </div>
+  // );
 };
 
 export default OnlineResourcesPage;
