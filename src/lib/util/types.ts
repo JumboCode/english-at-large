@@ -79,7 +79,7 @@ export const newEmptyResource: Omit<OnlineResource, "id" | "createdAt"> = {
   level: BookLevel.Beginner,
   topic: ResourceTopic.Holidays,
   skills: [], 
-  format: ResourceFormat
+  format: ResourceFormat.Worksheet
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////

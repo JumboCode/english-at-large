@@ -87,7 +87,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "PDF"
+        format: "Worksheet"
       },
       {
         id: "2",
@@ -97,7 +97,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "PDF"
+        format: "Worksheet"
       },
       {
         id: "3",
@@ -107,7 +107,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "PDF"
+        format: "Reading"
       },
       {
         id: "4",
@@ -117,7 +117,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "PDF"
+        format: "Video"
       },
       {
         id: "5",
@@ -127,7 +127,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "PDF"
+        format: "Video"
       },
     ];
     const fetchData = async () => {
