@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Book, BookRequest, User } from "@prisma/client";
 import { validateRequestData } from "@/lib/util/types";
-import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 
 /**

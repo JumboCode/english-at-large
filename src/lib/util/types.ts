@@ -1,4 +1,12 @@
-import { Book, BookLevel, BookStatus, BookType } from "@prisma/client";
+import {
+  Book,
+  BookLevel,
+  BookStatus,
+  BookType,
+  OnlineResource,
+  ResourceFormat,
+  ResourceTopic,
+} from "@prisma/client";
 import { BookRequest } from "@prisma/client";
 import { User } from "@prisma/client";
 
@@ -201,6 +209,22 @@ export interface CustomChangeEvent<T> {
   };
   preventDefault?: () => void;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/////                                                                      /////
+/////                              RESOURCE                                /////
+/////                                                                      /////
+////////////////////////////////////////////////////////////////////////////////
+
+export const newEmptyResource: Omit<OnlineResource, "id"> = {
+  createdAt: new Date(),
+  name: "Jet",
+  link: "",
+  level: BookLevel.Beginner,
+  topic: ResourceTopic.Culture,
+  skills: [],
+  format: ResourceFormat.Video,
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
