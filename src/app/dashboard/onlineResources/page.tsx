@@ -29,7 +29,6 @@ const OnlineResourcesPage = () => {
 
   const [resources, setResources] = useState<OnlineResource[]>([]);
   const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
-  // const [bookFormShown, setBookFormShown] = useState<boolean>(false);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
@@ -154,7 +153,6 @@ const OnlineResourcesPage = () => {
   }, []);
 
   return formShown == formState.RESOURCE_FORM_OPEN ? (
-    // change to resource form
     <OnlineResourceForm
       exit={() => setFormShown(formState.FORM_CLOSED)}
       existingResource={null}
@@ -238,18 +236,6 @@ const OnlineResourcesPage = () => {
             </select>
           </div>
         </div>
-
-        {/* <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {subsetResources.map((resource, index) => (
-            <li key={index}>
-              <div>
-                <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md  hover:bg-blue-100 transition duration-200">
-                  <ResourceInfo resource={resource} />
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul> */}
         <ResourceDashboard resources={subsetResources}></ResourceDashboard>
       </div>
     </div>
