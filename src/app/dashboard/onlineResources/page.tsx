@@ -2,7 +2,13 @@
 import React from "react";
 import OnlineResourceForm from "@/components/common/forms/OnlineResourceForm";
 import { useState, useEffect, useCallback } from "react";
-import { OnlineResource, BookSkills, BookLevel, ResourceFormat, ResourceTopic } from "@prisma/client";
+import {
+  OnlineResource,
+  BookSkills,
+  BookLevel,
+  ResourceFormat,
+  ResourceTopic,
+} from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
 import CommonButton from "@/components/common/button/CommonButton";
@@ -12,7 +18,6 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import ResourceDashboard from "@/components/common/ResourceDashboard";
-
 
 enum formState {
   FORM_CLOSED,
@@ -37,44 +42,40 @@ const OnlineResourcesPage = () => {
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
   };
-  
 
-    const filterResources = useCallback(
-      (resource: OnlineResource) => {
-        return (
-          (skills.length === 0 ||
-            skills.some((skill) => resource.skills.includes(skill))) &&
-          (levels.length === 0 || levels.includes(resource.level))
-        );
-      },
-      [levels, skills]
-    );
+  const filterResources = useCallback(
+    (resource: OnlineResource) => {
+      return (
+        (skills.length === 0 ||
+          skills.some((skill) => resource.skills.includes(skill))) &&
+        (levels.length === 0 || levels.includes(resource.level))
+      );
+    },
+    [levels, skills]
+  );
 
-    // const sortBooks = useCallback(
-    //   (a: OnlineResource, b: OnlineResource) => {
-    //     if (bookSortBy === "By Title") {
-    //       return (
-    //         a.title.localeCompare(b.title) || a.author.localeCompare(b.author)
-    //       );
-    //     } else if (bookSortBy === "By Author") {
-    //       return (
-    //         a.author.localeCompare(b.author) || a.title.localeCompare(b.title)
-    //       );
-    //     } else if (bookSortBy === "By Release Date") {
-    //       return (a.releaseDate || 0) < (b.releaseDate || 0) ? -1 : 1;
-    //     }
-    //     return 0;
-    //   },
-    //   [bookSortBy]
-    // );
+  // const sortBooks = useCallback(
+  //   (a: OnlineResource, b: OnlineResource) => {
+  //     if (bookSortBy === "By Title") {
+  //       return (
+  //         a.title.localeCompare(b.title) || a.author.localeCompare(b.author)
+  //       );
+  //     } else if (bookSortBy === "By Author") {
+  //       return (
+  //         a.author.localeCompare(b.author) || a.title.localeCompare(b.title)
+  //       );
+  //     } else if (bookSortBy === "By Release Date") {
+  //       return (a.releaseDate || 0) < (b.releaseDate || 0) ? -1 : 1;
+  //     }
+  //     return 0;
+  //   },
+  //   [bookSortBy]
+  // );
 
-    const subsetResources = structuredClone<OnlineResource[]>(resources)
-      .filter(
-        (resource) =>
-          resource.name.toLowerCase().includes(searchData)
-      )
-      // .sort((a, b) => sortBooks(a, b))
-      .filter((resource) => filterResources(resource));
+  const subsetResources = structuredClone<OnlineResource[]>(resources)
+    .filter((resource) => resource.name.toLowerCase().includes(searchData))
+    // .sort((a, b) => sortBooks(a, b))
+    .filter((resource) => filterResources(resource));
 
   useEffect(() => {
     const dummyResources: OnlineResource[] = [
@@ -86,7 +87,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "Worksheet"
+        format: "Worksheet",
       },
       {
         id: "2",
@@ -96,7 +97,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "Worksheet"
+        format: "Worksheet",
       },
       {
         id: "3",
@@ -106,7 +107,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "Reading"
+        format: "Reading",
       },
       {
         id: "4",
@@ -116,7 +117,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "Video"
+        format: "Video",
       },
       {
         id: "5",
@@ -126,7 +127,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "Video"
+        format: "Video",
       },
       {
         id: "6",
@@ -136,7 +137,7 @@ const OnlineResourcesPage = () => {
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
-        format: "Worksheet"
+        format: "Worksheet",
       },
     ];
     const fetchData = async () => {
@@ -151,7 +152,6 @@ const OnlineResourcesPage = () => {
     };
     fetchData();
   }, []);
-
 
   return formShown == formState.RESOURCE_FORM_OPEN ? (
     // change to resource form
@@ -208,14 +208,14 @@ const OnlineResourcesPage = () => {
       /> */}
       <div className="p-4 px-16 bg-white border-t">
         <div className="flex flex-row">
-        <div className="text-left">
-          <div className="whitespace-normal">
-            <p className="text-sm text-slate-500 mb-6">
-              {subsetResources.length} {"resources"}
-            </p>
+          <div className="text-left">
+            <div className="whitespace-normal">
+              <p className="text-sm text-slate-500 mb-6">
+                {subsetResources.length} {"resources"}
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center flex-row space-x-3 align-middle ml-auto">
+          <div className="flex items-center flex-row space-x-3 align-middle ml-auto">
             <label htmlFor="level" className="text-md semi-bold">
               Level
             </label>
@@ -236,7 +236,7 @@ const OnlineResourcesPage = () => {
                 );
               })}
             </select>
-            </div>
+          </div>
         </div>
 
         {/* <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">

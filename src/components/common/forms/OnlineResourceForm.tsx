@@ -1,5 +1,11 @@
 "use client";
-import { OnlineResource, BookLevel, ResourceTopic, ResourceFormat, BookSkills } from "@prisma/client";
+import {
+  OnlineResource,
+  BookLevel,
+  ResourceTopic,
+  ResourceFormat,
+  BookSkills,
+} from "@prisma/client";
 import CommonButton from "../button/CommonButton";
 import { useState } from "react";
 import { CustomChangeEvent, newEmptyResource } from "@/lib/util/types";
@@ -26,10 +32,11 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
   const format = Object.values(ResourceFormat);
   const skills = Object.values(BookSkills);
 
-  const [newResource, setNewResource] = useState<Omit<OnlineResource, "id" | "createdAt">>(newEmptyResource);
-  const [editResource, setEditResource] = useState<OnlineResource | null | undefined>(
-    existingResource
-  );
+  const [newResource, setNewResource] =
+    useState<Omit<OnlineResource, "id" | "createdAt">>(newEmptyResource);
+  const [editResource, setEditResource] = useState<
+    OnlineResource | null | undefined
+  >(existingResource);
 
   const { setConfirmPopup } = usePopup();
 
@@ -87,7 +94,7 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
     try {
       if (editResource) {
         // const editedResource = await updateResource(editResource);
-        const editedResource = newEmptyResource
+        const editedResource = newEmptyResource;
 
         setConfirmPopup({
           type: ConfirmPopupTypes.RESOURCE,
@@ -100,7 +107,7 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
         }
       } else if (newResource) {
         // const createdResource = await createResource(newResource);
-        const createdResource = newEmptyResource
+        const createdResource = newEmptyResource;
 
         setConfirmPopup({
           type: ConfirmPopupTypes.RESOURCE,
@@ -129,7 +136,9 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
           <div className="flex justify-between px-[50px] py-5">
             <div>
               <h1 className="semi-bold text-3xl inline">
-                {existingResource ? "Edit Resource" : "Add a new online resource"}
+                {existingResource
+                  ? "Edit Resource"
+                  : "Add a new online resource"}
               </h1>
             </div>
             <div className="flex space-x-5">
@@ -150,7 +159,10 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
           <div className="mx-[50px] h-[0.3px] bg-black"></div>
         </div>
         <div className="mt-4">
-          <label htmlFor="name" className="block text-lg ml-[5%] semi-bold mb-2">
+          <label
+            htmlFor="name"
+            className="block text-lg ml-[5%] semi-bold mb-2"
+          >
             Resource name
           </label>
           <input
@@ -164,7 +176,10 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
           />
         </div>
         <div>
-          <label htmlFor="link" className="block text-lg ml-[5%] semi-bold mb-2">
+          <label
+            htmlFor="link"
+            className="block text-lg ml-[5%] semi-bold mb-2"
+          >
             Link to resource
           </label>
           <input
@@ -252,7 +267,6 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
           </div>
         </div>
 
-
         <div>
           <p className="block text-lg ml-[5%] semi-bold mb-2">Skills</p>
           <div className="flex space-x-4 mx-[5%] font-normal">
@@ -262,7 +276,11 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
                   key={index}
                   label={bookSkill}
                   value={
-                    editResource ? editResource.skills : newResource ? newResource.skills : []
+                    editResource
+                      ? editResource.skills
+                      : newResource
+                      ? newResource.skills
+                      : []
                   }
                   onSelect={resourceSkillsChangeHandler}
                   name={"skills"}
