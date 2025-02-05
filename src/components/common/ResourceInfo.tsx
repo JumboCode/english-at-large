@@ -34,9 +34,9 @@ const ResourceInfo = (props: ResourceProps) => {
             alt="Book Cover"
             width={210}
             height={300}
-            className="w-[121px] h-[160px]"
+            className="w-[121px] h-[170px]"
           />
-          <div className="text-left mt-6 mb-4">
+          <div className="text-left mt-5 mb-4">
             <h3 className="text-lg text-black font-semibold">
               {resource.name}
             </h3>

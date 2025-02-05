@@ -82,6 +82,7 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
     }
   };
 
+  // dummy function - needs backend work
   const handleSave = async () => {
     try {
       if (editResource) {

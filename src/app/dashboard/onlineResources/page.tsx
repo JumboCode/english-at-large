@@ -5,19 +5,18 @@ import { useState, useEffect, useCallback } from "react";
 import { OnlineResource, BookSkills, BookLevel, ResourceFormat, ResourceTopic } from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import BookForm from "@/components/common/forms/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-import ResourceInfo from "@/components/common/ResourceInfo";
+import ResourceDashboard from "@/components/common/ResourceDashboard";
+
 
 enum formState {
   FORM_CLOSED,
-  ISBN_FORM_OPEN,
-  BOOK_FORM_OPEN,
+  RESOURCE_FORM_OPEN,
 }
 
 const OnlineResourcesPage = () => {
@@ -82,7 +81,7 @@ const OnlineResourcesPage = () => {
       {
         id: "1",
         createdAt: new Date(),
-        name: "The Pragmatic Programmer",
+        name: "worksheet 1",
         link: "Andrew Hunt, David Thomas",
         level: "Beginner",
         topic: "Holidays",
@@ -92,7 +91,7 @@ const OnlineResourcesPage = () => {
       {
         id: "2",
         createdAt: new Date(),
-        name: "The Pragmatic Programmer",
+        name: "Worksheet 2",
         link: "Andrew Hunt, David Thomas",
         level: "Beginner",
         topic: "Holidays",
@@ -102,7 +101,7 @@ const OnlineResourcesPage = () => {
       {
         id: "3",
         createdAt: new Date(),
-        name: "The Pragmatic Programmer",
+        name: "reading 1",
         link: "Andrew Hunt, David Thomas",
         level: "Beginner",
         topic: "Holidays",
@@ -112,7 +111,7 @@ const OnlineResourcesPage = () => {
       {
         id: "4",
         createdAt: new Date(),
-        name: "The Pragmatic Programmer",
+        name: "video 1",
         link: "Andrew Hunt, David Thomas",
         level: "Beginner",
         topic: "Holidays",
@@ -122,12 +121,22 @@ const OnlineResourcesPage = () => {
       {
         id: "5",
         createdAt: new Date(),
-        name: "The Pragmatic Programmer",
+        name: "video 2",
         link: "Andrew Hunt, David Thomas",
         level: "Beginner",
         topic: "Holidays",
         skills: ["Reading", "Writing"],
         format: "Video"
+      },
+      {
+        id: "6",
+        createdAt: new Date(),
+        name: "worksheet 3",
+        link: "Andrew Hunt, David Thomas",
+        level: "Beginner",
+        topic: "Holidays",
+        skills: ["Reading", "Writing"],
+        format: "Worksheet"
       },
     ];
     const fetchData = async () => {
@@ -144,7 +153,7 @@ const OnlineResourcesPage = () => {
   }, []);
 
 
-  return formShown == formState.BOOK_FORM_OPEN ? (
+  return formShown == formState.RESOURCE_FORM_OPEN ? (
     // change to resource form
     <OnlineResourceForm
       exit={() => setFormShown(formState.FORM_CLOSED)}
@@ -164,15 +173,15 @@ const OnlineResourcesPage = () => {
         button2={
           user?.role === "Admin" ? (
             <CommonButton
-              label="Create Book"
+              label="Add new"
               leftIcon={<AddIcon />}
-              onClick={() => setFormShown(formState.ISBN_FORM_OPEN)}
+              onClick={() => setFormShown(formState.RESOURCE_FORM_OPEN)}
               altTextStyle="text-white"
               altStyle="bg-dark-blue"
             />
           ) : null
         }
-        placeholderText="Search for books"
+        placeholderText="Search for resources"
       />
 
       {popupStatus.shown ? (
@@ -198,6 +207,7 @@ const OnlineResourcesPage = () => {
         setSortBook={setBookSortBy}
       /> */}
       <div className="p-4 px-16 bg-white border-t">
+        <div className="flex flex-row">
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500 mb-6">
@@ -205,28 +215,45 @@ const OnlineResourcesPage = () => {
             </p>
           </div>
         </div>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center flex-row space-x-3 align-middle ml-auto">
+            <label htmlFor="level" className="text-md semi-bold">
+              Level
+            </label>
+            <select
+              id="level"
+              name="level"
+              className="border-[1px] border-medium-grey-border border-solid rounded-lg block h-9 text-sm w-48 indent-2"
+              onChange={undefined}
+              defaultValue={"All"}
+              required
+            >
+              <option value="">Select Level</option>
+              {levels.map((ResourceLevel, index) => {
+                return (
+                  <option key={index} value={ResourceLevel}>
+                    {ResourceLevel.replace("_", " ")}
+                  </option>
+                );
+              })}
+            </select>
+            </div>
+        </div>
+
+        {/* <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {subsetResources.map((resource, index) => (
             <li key={index}>
               <div>
-                {/* TODO: add grey border to this */}
                 <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md  hover:bg-blue-100 transition duration-200">
                   <ResourceInfo resource={resource} />
                 </div>
               </div>
             </li>
           ))}
-        </ul>
+        </ul> */}
+        <ResourceDashboard resources={subsetResources}></ResourceDashboard>
       </div>
     </div>
   );
 };
-
-// const OnlineResourcesPage = () => {
-//   const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
-
-//   return <OnlineResourceForm exit={() => setFormShown(formState.FORM_CLOSED)}
-//   existingResource={null}></OnlineResourceForm>
-// }
 
 export default OnlineResourcesPage;
