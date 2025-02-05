@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
-// TODO: Implement validateResourceData
-// import { validateresourceData } from "@/lib/util/types";
+import { validateResourceData } from "@/lib/util/types";
 import { OnlineResource } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
@@ -15,9 +14,9 @@ export const postResourceController = async (
 ): Promise<OnlineResource> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   try {
-    // if (!validateresourceData(resourceData)) {
-    //   throw new Error("Missing required book properties");
-    // }
+    if (!validateResourceData(resourceData)) {
+      throw new Error("Missing required book properties");
+    }
 
     const newResource = await prisma.onlineResource.create({
       data: resourceData,
@@ -68,9 +67,9 @@ export const getOneResourceController = async (resourceId: string): Promise<Onli
  */
 export const putResourceController = async (resourceData: OnlineResource): Promise<OnlineResource> => {
   try {
-    // if (!resourceData.id || !validateResourcesData(resourceData)) {
-    //   throw new Error("Missing id, and name or owner");
-    // }
+    if (!resourceData.id || !validateResourceData(resourceData)) {
+      throw new Error("Missing id, and name or owner");
+    }
 
     const updatedResource = await prisma.onlineResource.update({
       where: { id: resourceData.id },

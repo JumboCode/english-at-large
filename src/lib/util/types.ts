@@ -1,6 +1,7 @@
 import {
   Book,
   BookLevel,
+  BookSkills,
   BookStatus,
   BookType,
   OnlineResource,
@@ -219,12 +220,26 @@ export interface CustomChangeEvent<T> {
 export const newEmptyResource: Omit<OnlineResource, "id"> = {
   createdAt: new Date(),
   name: "Jet",
-  link: "",
+  link: "Hello",
   level: BookLevel.Beginner,
   topic: ResourceTopic.Culture,
-  skills: [],
+  skills: [BookSkills.Grammar],
   format: ResourceFormat.Video,
 };
+
+export function validateResourceData(resourceData: Partial<OnlineResource>): boolean {
+  // Don't validate ID since sometimes you'll need to have
+  // TODO: add bookGroup back in
+  const requiredFields = ["createdAt", "name", "link", "level", "topic", "skills", "format"] as const;
+
+  for (const field of requiredFields) {
+    if (!resourceData[field]) {
+      return false;
+    }
+  }
+
+  return true; // No errors
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
