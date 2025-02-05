@@ -1,9 +1,10 @@
 "use client";
 import { OnlineResource } from "@prisma/client";
 import Image from "next/image";
-import imageToAdd from "../../assets/images/harry_potter.jpg";
 import Link from "next/link";
-
+import imageToAdd from "../../assets/images/harry_potter.jpg";
+import ExportIcn from "../../assets/icons/ExportOnlineResource.svg";
+import SaveIcn from "@/assets/icons/SaveOnlineResource.svg";
 
 interface ResourceProps {
   resource: OnlineResource;
@@ -21,11 +22,13 @@ const ResourceInfo = (props: ResourceProps) => {
 
   return (
     <div>
-      <Link
-        href={`books/${resource.id}`}
-        className="flex items-start"
-      >
-        <div className="w-[568px] h-[326px] ml-3 mt-3">
+      <Link href={`books/${resource.id}`} className="flex items-start">
+        <div className=" relative w-full h-[326px] ml-3 mt-3">
+          <div className="absolute right-2 flex space-x-1 ">
+            <Image src={SaveIcn} alt="save icon" width={25} height={25} />
+            <Image src={ExportIcn} alt="save icon" width={25} height={25} />
+          </div>
+
           <Image
             src={imageToAdd.src}
             alt="Book Cover"
@@ -33,9 +36,15 @@ const ResourceInfo = (props: ResourceProps) => {
             height={300}
             className="w-[121px] h-[160px]"
           />
-            <div className="text-left mt-6 mb-4">
-            <h3 className="text-lg text-black font-semibold">{resource.name}</h3>
-                <p className="text-black mt-1">{resource.level.replace("_", " ")}<span className="mx-1">•</span>{resource.topic}</p>
+          <div className="text-left mt-6 mb-4">
+            <h3 className="text-lg text-black font-semibold">
+              {resource.name}
+            </h3>
+            <p className="text-black mt-1">
+              {resource.level.replace("_", " ")}
+              <span className="mx-1">•</span>
+              {resource.topic}
+            </p>
           </div>
 
           <div className="flex flex-wrap items-start">
@@ -52,10 +61,6 @@ const ResourceInfo = (props: ResourceProps) => {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="align-middle">
-          
         </div>
       </Link>
     </div>
