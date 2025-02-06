@@ -149,7 +149,7 @@ const NavBar = () => {
         ) : (
           <div className="relative group mt-2">
             <Link
-              href="/shelf"
+              href={'/dashboard/shelf/' + user?.id}
               className="font-[family-name:var(--font-rubik)] font-semibold"
             >
               Shelf

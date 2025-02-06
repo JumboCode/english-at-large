@@ -60,6 +60,36 @@ export const getOneRequestController = async (
   }
 };
 
+
+/**
+ * Utility controller that gets a user's Request in the backend.
+ *
+ * @returns One of the requests in the requests Database
+ * @params a number, the user's clerk id
+ * @remarks
+ *  - This controller can later be modified to call other backend functions as needed.
+ */
+export const getUserRequestController = async (
+  userId: string,
+): Promise<
+(BookRequest & { book: Book })[]> => {
+  try {
+    const requests = await prisma.bookRequest.findMany({
+      where: { userId: userId },
+      include: {
+        book: true, // Fetch the related Book
+      },
+    });
+
+    return requests;
+  } catch (error) {
+    console.error("Error fetching request: ", error);
+    throw error;
+  }
+};
+
+
+
 /**
  * Utility controller that validates requests fields, then creates a BookRequest in backend. Also emails all administators.
  *
