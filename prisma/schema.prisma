@@ -59,6 +59,17 @@ model BookRequest {
   @@map("BookRequests")
 }
 
+model OnlineResources {
+  id         String         @id
+  created_at DateTime       @default(now())
+  name       String
+  link       String
+  level      BookLevel
+  topic      ResourceTopic
+  skills     BookSkills[]
+  format     ResourceFormat
+}
+
 enum UserRole {
   Admin
   Volunteer
@@ -98,4 +109,15 @@ enum BookLevel {
   Intermediate
   High_Intermediate
   Advanced
+}
+
+enum ResourceFormat {
+  Worksheet
+  Reading
+  Video
+}
+
+enum ResourceTopic {
+  Holidays
+  Culture
 }

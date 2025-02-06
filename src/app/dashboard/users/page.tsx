@@ -45,6 +45,28 @@ export default function Manage() {
     getUsers();
   }, []);
 
+  const removeUser = async (user: User | null) => {
+    if (!user) return; // Ensure user is not null
+  
+    try {
+      await deleteUser(user.id); // Delete the user
+  
+      setRemovePopupOpen(false); // Close the confirmation modal
+  
+      setConfirmPopup({
+        type: ConfirmPopupTypes.USER, 
+        action: ConfirmPopupActions.REMOVE, 
+        success: true,
+      });
+    } catch (error) {
+      setConfirmPopup({
+        type: ConfirmPopupTypes.USER,
+        action: ConfirmPopupActions.REMOVE,
+        success: false,
+      });
+    }
+  };
+
   return (
     <div>
       {user?.role === "Admin" ? (
@@ -118,11 +140,8 @@ export default function Manage() {
                         <CommonButton
                           label="Remove User"
                           onClick={() => {
-                            // setRemovePopupOpen(true);
                             setSelectedUser(user);
                             setRemovePopupOpen(true);
-                            // deleteUser(user.id);
-                            // location.reload(); // next js router.refresh() was not working
                           }}
                           altTextStyle="text-dark-blue"
                           altStyle="bg-white"
@@ -161,27 +180,9 @@ export default function Manage() {
                 />
                 <CommonButton
                   label="Remove"
-                  onClick={async () => {
-                    try {
-                      await deleteUser(selectedUser.id);
-                
-                      setRemovePopupOpen(false);
-                
-                      setConfirmPopup({
-                        type: ConfirmPopupTypes.USER, 
-                        action: ConfirmPopupActions.REMOVE, 
-                        success: true,
-                      });
-                    } catch (error) {
-                      setConfirmPopup({
-                        type: ConfirmPopupTypes.USER,
-                        action: ConfirmPopupActions.REMOVE,
-                        success: false,
-                      });
-                    }
-                  }}
+                  onClick={async () => {removeUser(selectedUser)}}                
                   altTextStyle="text-white"
-                  altStyle="bg-red-600 w-1/2"
+                  altStyle="bg-red-600 w-1/2 border-0"
                 />
               </div>
             </div>
