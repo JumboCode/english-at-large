@@ -1,6 +1,6 @@
 "use client";
-import React, { useCallback } from "react";
-import { useState, useEffect } from "react";
+import React, { Suspense, useCallback, useMemo } from "react";
+import { useState, useEffect, use } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
@@ -15,6 +15,7 @@ import AddIcon from "@/assets/icons/Add";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import Loading from "./loading";
 
 enum formState {
   FORM_CLOSED,
@@ -22,10 +23,17 @@ enum formState {
   BOOK_FORM_OPEN,
 }
 
-const BooksPage = () => {const user = useCurrentUser();
-  const [books, setBooks] = useState<Book[]>([]);
+// const fetchBooks = async () => {
+//   const books = await getAllBooks();
+//   return books;
+// };
+const booksPromise = getAllBooks();
+
+const BooksPage = () => {
+  const books = use(booksPromise);
+  const user = useCurrentUser();
+
   const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
-  // const [bookFormShown, setBookFormShown] = useState<boolean>(false);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
@@ -83,21 +91,21 @@ const BooksPage = () => {const user = useCurrentUser();
     .sort((a, b) => sortBooks(a, b))
     .filter((book) => filterBooks(book));
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // ADD DELAY TO SHOW LOADING - REMOVE WHEN DONE TESTING
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-        const allBooks = await getAllBooks();
-        if (allBooks) {
-          setBooks(allBooks);
-        }
-      } catch (err) {
-        console.error("Failed to get all books");
-      }
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       // ADD DELAY TO SHOW LOADING - REMOVE WHEN DONE TESTING
+  //       await new Promise((resolve) => setTimeout(resolve, 3000));
+  //       const allBooks = await getAllBooks();
+  //       if (allBooks) {
+  //         setBooks(allBooks);
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to get all books");
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   return formShown == formState.BOOK_FORM_OPEN ? (
     <BookForm
@@ -160,6 +168,7 @@ const BooksPage = () => {const user = useCurrentUser();
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />
+
       <div className="p-4 px-16 bg-white border-t">
         <div className="text-left">
           <div className="whitespace-normal">
@@ -168,18 +177,20 @@ const BooksPage = () => {const user = useCurrentUser();
             </p>
           </div>
         </div>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {subsetBooks.map((book, index) => (
-            <li key={index}>
-              <div>
-                {/* TODO: add grey border to this */}
-                <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md  hover:bg-blue-100 transition duration-200">
-                  <BookInfo book={book} />
+        <Suspense fallback={<Loading />}>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {subsetBooks.map((book, index) => (
+              <li key={index}>
+                <div>
+                  {/* TODO: add grey border to this */}
+                  <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md  hover:bg-blue-100 transition duration-200">
+                    <BookInfo book={book} />
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        </Suspense>
       </div>
     </div>
   );
