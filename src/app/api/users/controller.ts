@@ -103,6 +103,8 @@ export const deleteUserController = async (id: string): Promise<User> => {
         await clerkClient.invitations.revokeInvitation(user.inviteID);
       }
 
+      console.log(user);
+
       return await prisma.user.delete({
         where: { id: id },
       });

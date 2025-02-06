@@ -7,6 +7,8 @@ import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
 import BookForm from "@/components/common/forms/BookForm";
+import IsbnPopup from "@/components/common/forms/IsbnPopup";
+
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
@@ -14,15 +16,23 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 
+enum formState {
+  FORM_CLOSED,
+  ISBN_FORM_OPEN,
+  BOOK_FORM_OPEN,
+}
+
 const BooksPage = () => {
   const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
-  const [bookFormShown, setBookFormShown] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
+  // const [bookFormShown, setBookFormShown] = useState<boolean>(false);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
+  const [isbnOnSubmit, setISBN] = useState<string>("");
 
   const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
@@ -36,10 +46,11 @@ const BooksPage = () => {
       return (
         (skills.length === 0 ||
           skills.some((skill) => book.skills.includes(skill))) &&
-        (levels.length === 0 || levels.includes(book.level))
+        (levels.length === 0 || levels.includes(book.level)) &&
+        (status.length == 0 || status.includes(book.status))
       );
     },
-    [levels, skills]
+    [levels, skills, status]
   );
 
   const sortBooks = useCallback(
@@ -60,7 +71,10 @@ const BooksPage = () => {
     [bookSortBy]
   );
 
-  const subsetBooks = structuredClone(books)
+  // use of structured clone creates new subset of search target books
+  // allows filter to act on subset of searched books
+
+  const subsetBooks = structuredClone<Book[]>(books)
     .filter(
       (book) =>
         book.title.toLowerCase().includes(searchData) ||
@@ -84,10 +98,22 @@ const BooksPage = () => {
     fetchData();
   }, []);
 
-  return bookFormShown ? (
-    <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
+  return formShown == formState.BOOK_FORM_OPEN ? (
+    <BookForm
+      exit={() => setFormShown(formState.FORM_CLOSED)}
+      existingBook={null}
+      isbn={isbnOnSubmit}
+    />
   ) : (
     <div>
+      <IsbnPopup
+        isOpen={formShown == formState.ISBN_FORM_OPEN}
+        exit={() => setFormShown(formState.FORM_CLOSED)}
+        submit={(isbn: string) => {
+          setFormShown(formState.BOOK_FORM_OPEN);
+          setISBN(isbn);
+        }}
+      />
       <SearchBar
         setSearchData={setSearchData}
         button={
@@ -102,7 +128,7 @@ const BooksPage = () => {
             <CommonButton
               label="Create Book"
               leftIcon={<AddIcon />}
-              onClick={() => setBookFormShown(true)}
+              onClick={() => setFormShown(formState.ISBN_FORM_OPEN)}
               altTextStyle="text-white"
               altStyle="bg-dark-blue"
             />

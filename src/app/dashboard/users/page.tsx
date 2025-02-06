@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import SendInvite from "../../../components/manage/sendInvite";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { User } from "@prisma/client";
+import { User, UserRole } from "@prisma/client";
 import { getAllUsers } from "@/lib/api/users";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import PendingChip from "@/assets/icons/pending_chip";
@@ -15,11 +15,15 @@ import { redirect } from "next/navigation";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import XIcon from "@/assets/icons/X";
-import { ConfirmPopupActions, ConfirmPopupTypes } from "@/lib/context/ConfirmPopupContext";
-
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+} from "@/lib/context/ConfirmPopupContext";
 
 export default function Manage() {
   const user = useCurrentUser();
+
+  const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
     if (user?.role !== "Admin" && user?.role != undefined) {
@@ -36,26 +40,44 @@ export default function Manage() {
 
   const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
 
+  // use of structured clone creates new subset of search target users
+  // allows filter to act on subset of searched users
+  const subsetUsers = structuredClone<User[]>(users).filter(
+    (user) =>
+      user.name?.toLowerCase().includes(searchData) ||
+      user.email?.toLowerCase().includes(searchData)
+  );
+
   useEffect(() => {
     const getUsers = async () => {
       const allUsers = await getAllUsers();
       setUsers(allUsers ?? []);
     };
-
     getUsers();
-  }, []);
+    console.log(filter);
+  }, [filter]);
+
+  const roleFilter = (user: User) => {
+    switch (filter) {
+      case "Admins":
+        return user.role === UserRole.Admin;
+      case "Tutors":
+        return user.role === UserRole.Tutor;
+      case "Pending":
+        return user.pending === true;
+      default:
+        return true;
+    }
+  };
 
   const removeUser = async (user: User | null) => {
     if (!user) return; // Ensure user is not null
-  
-    try {
+     try {
       await deleteUser(user.id); // Delete the user
-  
-      setRemovePopupOpen(false); // Close the confirmation modal
-  
-      setConfirmPopup({
-        type: ConfirmPopupTypes.USER, 
-        action: ConfirmPopupActions.REMOVE, 
+       setRemovePopupOpen(false); // Close the confirmation modal
+       setConfirmPopup({
+        type: ConfirmPopupTypes.USER,
+        action: ConfirmPopupActions.REMOVE,
         success: true,
       });
     } catch (error) {
@@ -65,7 +87,7 @@ export default function Manage() {
         success: false,
       });
     }
-  };
+  }; 
 
   return (
     <div>
@@ -94,7 +116,7 @@ export default function Manage() {
               />
             }
             placeholderText="Search by name or email"
-            setSearchData={null}
+            setSearchData={setSearchData}
           />
           <div className="px-16">
             <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
@@ -114,7 +136,7 @@ export default function Manage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-solid">
-                {users.map((user, index) => (
+                {subsetUsers.filter(roleFilter).map((user, index) => (
                   <tr key={index} className="bg-white h-16">
                     <td className="flex flex-col">
                       <p className="text-black font-semibold">{user.name}</p>
@@ -158,38 +180,38 @@ export default function Manage() {
             exit={() => setInvitePopupOpen(false)}
           />
           {removePopupOpen && selectedUser && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-            <div className="bg-white py-6 px-12 rounded-lg shadow-lg min-w-max max-w-large flex flex-col gap-6">
-              <div className="flex flex-row justify-between">
-                <p className="text-black font-semibold text-2xl font-[family-name:var(--font-rubik)]">
-                  Remove User
-                </p>
-                <button className="text-black" onClick={() => setRemovePopupOpen(false)}>
-                  <XIcon />
-                </button>
-              </div>
-              <hr />
-              <p className="text-black text-lg font-medium">
-                Are you sure you want to remove {selectedUser.name}?
-              </p>
-              <div className="flex flex-row gap-4">
-                <CommonButton
-                  label="Cancel"
-                  onClick={() => setRemovePopupOpen(false)}
-                  altStyle="w-1/2"
-                />
-                <CommonButton
-                  label="Remove"
-                  onClick={async () => {removeUser(selectedUser)}}                
-                  altTextStyle="text-white"
-                  altStyle="bg-red-600 w-1/2 border-0"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        </div>
-      ) : null}
+         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+           <div className="bg-white py-6 px-12 rounded-lg shadow-lg min-w-max max-w-large flex flex-col gap-6">
+             <div className="flex flex-row justify-between">
+               <p className="text-black font-semibold text-2xl font-[family-name:var(--font-rubik)]">
+                 Remove User
+               </p>
+               <button className="text-black" onClick={() => setRemovePopupOpen(false)}>
+                 <XIcon />
+               </button>
+             </div>
+             <hr />
+             <p className="text-black text-lg font-medium">
+               Are you sure you want to remove {selectedUser.name}?
+             </p>
+             <div className="flex flex-row gap-4">
+               <CommonButton
+                 label="Cancel"
+                 onClick={() => setRemovePopupOpen(false)}
+                 altStyle="w-1/2"
+               />
+               <CommonButton
+                 label="Remove"
+                 onClick={async () => {removeUser(selectedUser)}}               
+                 altTextStyle="text-white"
+                 altStyle="bg-red-600 w-1/2 border-0"
+               />
+             </div>
+           </div>
+         </div>
+       )}
+       </div>
+     ) : null}
 
       {popupStatus.shown ? (
         <ConfirmationPopup

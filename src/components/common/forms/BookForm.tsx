@@ -1,7 +1,7 @@
 "use client";
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "../button/CommonButton";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
 import MultiSelectTagButton from "./MultiSelectTagButton";
@@ -14,13 +14,14 @@ import axios from "axios";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
-  setShowBookForm: (arg0: boolean) => void;
+  exit: () => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
+  isbn?: string;
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { setShowBookForm, existingBook, onSave } = props;
+  const { exit, existingBook, onSave, isbn } = props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -32,6 +33,51 @@ const BookForm = (props: BookFormProps) => {
   );
 
   const { setConfirmPopup } = usePopup();
+
+  const pullISBN = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `https://openlibrary.org/isbn/${isbn ?? newBook.isbn}.json`
+      );
+      const data = response.data;
+
+      // Create an object to map OpenLibrary keys to book keys
+      const bookFields = {
+        title: data.title,
+        description: data.description?.value,
+        publisher: data.publishers?.[0],
+        numPages: data.number_of_pages,
+      };
+
+      // Update newBook with retrieved data
+      setNewBook((prevBook) => {
+        const updatedBook = { ...prevBook };
+
+        // update all fields at once
+        if (bookFields.title) updatedBook.title = bookFields.title;
+        if (bookFields.description)
+          updatedBook.description = bookFields.description;
+        if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
+        if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
+        if (isbn) updatedBook.isbn = isbn;
+
+        return updatedBook;
+      });
+
+      // Book cover retrieval
+      const coverUrl = await getBookCover(newBook.isbn);
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        coverURL: coverUrl ?? imageToAdd.src,
+      }));
+    } catch {
+      throw new Error("Book not found for this ISBN");
+    }
+  }, [isbn, newBook.isbn]);
+
+  useEffect(() => {
+    pullISBN();
+  }, [isbn, pullISBN]);
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -82,52 +128,10 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
-  const pullISBN = async () => {
-    setShowBookForm(true);
-    try {
-      const response = await axios.get(
-        `https://openlibrary.org/isbn/${newBook.isbn}.json`
-      );
-      const data = response.data;
-
-      // Create an object to map OpenLibrary keys to book keys
-      const bookFields = {
-        title: data.title,
-        description: data.description?.value,
-        publisher: data.publishers?.[0],
-        numPages: data.number_of_pages,
-      };
-
-      // Update newBook with retrieved data
-      setNewBook((prevBook) => {
-        const updatedBook = { ...prevBook };
-
-        // update all fields at once
-        if (bookFields.title) updatedBook.title = bookFields.title;
-        if (bookFields.description)
-          updatedBook.description = bookFields.description;
-        if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
-        if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
-
-        return updatedBook;
-      });
-
-      // Book cover retrieval
-      const coverUrl = await getBookCover(newBook.isbn);
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        coverURL: coverUrl ?? imageToAdd.src,
-      }));
-    } catch {
-      throw new Error("Book not found for this ISBN");
-    }
-  };
-
   const handleSave = async () => {
     try {
       if (editBook) {
         const editedBook = await updateBook(editBook);
-        setShowBookForm(false);
 
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
@@ -140,7 +144,6 @@ const BookForm = (props: BookFormProps) => {
         }
       } else if (newBook) {
         const createdBook = await createBook(newBook);
-        setShowBookForm(false);
 
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
@@ -152,6 +155,7 @@ const BookForm = (props: BookFormProps) => {
           onSave(createdBook);
         }
       }
+      exit();
     } catch (error) {
       console.error(error);
     }
@@ -175,7 +179,7 @@ const BookForm = (props: BookFormProps) => {
               <CommonButton
                 label="Cancel"
                 onClick={() => {
-                  setShowBookForm(false);
+                  exit();
                 }}
               />
               <CommonButton
@@ -242,7 +246,7 @@ const BookForm = (props: BookFormProps) => {
             name="isbn"
             className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
             onChange={bookChangeHandler}
-            defaultValue={editBook ? editBook.isbn : ""}
+            defaultValue={editBook ? editBook.isbn : isbn}
             required
           />
         </div>

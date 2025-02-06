@@ -80,7 +80,7 @@ const OnlineResourcesPage = () => {
   }, []);
 
   return bookFormShown ? (
-    <BookForm setShowBookForm={setBookFormShown} existingBook={null} />
+    <BookForm exit={() => setBookFormShown(false)} existingBook={null} />
   ) : (
     <div>
       <SearchBar

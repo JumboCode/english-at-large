@@ -59,15 +59,17 @@ model BookRequest {
   @@map("BookRequests")
 }
 
-model OnlineResources {
-  id         String         @id
-  created_at DateTime       @default(now())
-  name       String
-  link       String
-  level      BookLevel
-  topic      ResourceTopic
-  skills     BookSkills[]
-  format     ResourceFormat
+model OnlineResource {
+  id        String         @id @default(cuid())
+  createdAt DateTime       @default(now()) @map("created_at")
+  name      String
+  link      String
+  level     BookLevel
+  topic     ResourceTopic
+  skills    BookSkills[]
+  format    ResourceFormat
+
+  @@map("OnlineResources")
 }
 
 enum UserRole {
@@ -111,13 +113,15 @@ enum BookLevel {
   Advanced
 }
 
-enum ResourceFormat {
-  Worksheet
-  Reading
-  Video
-}
-
 enum ResourceTopic {
   Holidays
   Culture
+}
+
+enum ResourceFormat {
+  PDF
+  Video
+  Article
+  Image
+  Website
 }
