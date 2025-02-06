@@ -9,7 +9,9 @@ import axios from "axios";
  *
  * @remarks
  */
-export const getAllResources = async (): Promise<OnlineResource[] | undefined> => {
+export const getAllResources = async (): Promise<
+  OnlineResource[] | undefined
+> => {
   try {
     const response = await axios.get("/api/resources");
     return response.data; //JSOn
@@ -19,14 +21,16 @@ export const getAllResources = async (): Promise<OnlineResource[] | undefined> =
 };
 
 /**
- * Utility function for fetching one books
+ * Utility function for fetching one resource
  *
  * @param resourceId
- * @returns one book (of type Books)
+ * @returns one book (of type OnlineResource)
  *
  * @remarks
  */
-export const getOneResource = async (resourceId: string): Promise<OnlineResource | undefined> => {
+export const getOneResource = async (
+  resourceId: string
+): Promise<OnlineResource | undefined> => {
   try {
     const response = await axios.get(`/api/resources/?id=${resourceId}`); // Using template literals for cleaner URL construction
     return response.data;
@@ -56,14 +60,16 @@ export const createResource = async (
 };
 
 /**
- * Utility function for updating a book
+ * Utility function for updating a resource
  *
  * @param resource
- * @returns the updated book
+ * @returns the updated resource
  *
  * @remarks
  */
-export const updateResource = async (resource: OnlineResource): Promise<OnlineResource | undefined> => {
+export const updateResource = async (
+  resource: OnlineResource
+): Promise<OnlineResource | undefined> => {
   try {
     const response = await axios.put("/api/resources", resource);
     return response.data;
@@ -73,14 +79,16 @@ export const updateResource = async (resource: OnlineResource): Promise<OnlineRe
 };
 
 /**
- * Utility function for deleting a book
+ * Utility function for deleting a resource
  *
  * @param resourceId
  * @returns nothing
  *
  * @remarks
  */
-export const deleteResource = async (resourceId: string): Promise<OnlineResource | undefined> => {
+export const deleteResource = async (
+  resourceId: string
+): Promise<OnlineResource | undefined> => {
   try {
     const response = await axios.delete("/api/resources?id=" + resourceId);
     return response.data;

@@ -12,12 +12,12 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 
-//Testing
-import CreateResourceButton from "@/components/testing/CreateResourceButton";
-import GetOneResourceButton from "@/components/testing/GetOneResourceButton";
-import DeleteResourceButton from "@/components/testing/DeleteResourceButton";
-import GetAllResourceButton from "@/components/testing/GetAllResourcesButton";
-import UpdateResourceButton from "@/components/testing/UpdateResourceButton";
+//Testing, delete after frontnend is implement
+// import CreateResourceButton from "@/components/testing/CreateResourceButton";
+// import GetOneResourceButton from "@/components/testing/GetOneResourceButton";
+// import DeleteResourceButton from "@/components/testing/DeleteResourceButton";
+// import GetAllResourceButton from "@/components/testing/GetAllResourcesButton";
+// import UpdateResourceButton from "@/components/testing/UpdateResourceButton";
 
 const OnlineResourcesPage = () => {
   const user = useCurrentUser();
@@ -113,11 +113,11 @@ const OnlineResourcesPage = () => {
         placeholderText="Search for resources"
       />
       <div className="text-center">Coming soon!</div>
-      <CreateResourceButton />
+      {/* <CreateResourceButton />
       <GetOneResourceButton />
       <DeleteResourceButton />
       <UpdateResourceButton />
-      <GetAllResourceButton />
+      <GetAllResourceButton /> */}
       {popupStatus.shown ? (
         <ConfirmationPopup
           type={popupStatus.type}

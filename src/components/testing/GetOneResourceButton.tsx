@@ -11,9 +11,11 @@ const GetOneResourceButton = () => {
     setError(null);
 
     try {
-      const resource = await getOneResource("cm6sg3o7s0000mi4nfxvk38qz");
-      if (resource) alert("Resource getOne successfully!");
-      else throw error;
+      const resource = await getOneResource("cm6sgda850002mi4n2nezx3dt");
+      if (resource) {
+        alert("Resource getOne successfully!");
+        console.log(resource);
+      } else throw error;
     } catch (err) {
       setError("Failed to fetch resource");
       console.error(err);

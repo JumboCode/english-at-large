@@ -227,10 +227,19 @@ export const newEmptyResource: Omit<OnlineResource, "id"> = {
   format: ResourceFormat.Video,
 };
 
-export function validateResourceData(resourceData: Partial<OnlineResource>): boolean {
+export function validateResourceData(
+  resourceData: Partial<OnlineResource>
+): boolean {
   // Don't validate ID since sometimes you'll need to have
-  // TODO: add bookGroup back in
-  const requiredFields = ["createdAt", "name", "link", "level", "topic", "skills", "format"] as const;
+  const requiredFields = [
+    "createdAt",
+    "name",
+    "link",
+    "level",
+    "topic",
+    "skills",
+    "format",
+  ] as const;
 
   for (const field of requiredFields) {
     if (!resourceData[field]) {

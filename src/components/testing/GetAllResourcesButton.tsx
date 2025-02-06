@@ -11,8 +11,9 @@ const GetAllResourceButton = () => {
     setError(null);
 
     try {
-      await getAllResources();
+      const resources = await getAllResources();
       alert("Resource getAll successfully!");
+      console.log(resources);
     } catch (err) {
       setError("Failed to fetch Resources");
       console.error(err);
