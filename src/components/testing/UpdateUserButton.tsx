@@ -3,7 +3,6 @@
 "use client";
 import { useState } from "react";
 import { updateUser } from "@/lib/api/users";
-import { getOneUser } from "@/lib/api/users";
 import { User } from "@prisma/client";
 
 const UpdateUserButton = () => {
