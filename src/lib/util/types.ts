@@ -8,6 +8,8 @@ import { User, OnlineResource, ResourceTopic, ResourceFormat } from "@prisma/cli
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
 
+export const MAX_REQUESTS = 10;
+
 /**
  * Utility function for checking if a book is valid (no fields are empty, etc.)
  *

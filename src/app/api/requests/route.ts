@@ -6,17 +6,24 @@ import {
   getAllRequestsController,
   putRequestController,
   deleteRequestController,
+  getUserRequestController,
 } from "./controller";
 
 // GET - Fetch all requests
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
+  const userId = searchParams.get("userId");
   try {
     if (id) {
       // if id, fetch the specific user
       const request = await getOneRequestController(+id);
       return NextResponse.json(request);
+    } else if (userId) {
+      // if id, fetch the specific user
+      const request = await getUserRequestController(userId);
+      return NextResponse.json(request);
+
     } else {
       // if no id, fetch all users
       const requests: BookRequest[] = await getAllRequestsController();
