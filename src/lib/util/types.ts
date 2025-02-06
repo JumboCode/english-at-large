@@ -1,4 +1,13 @@
-import { Book, BookLevel, BookStatus, BookType } from "@prisma/client";
+import {
+  Book,
+  BookLevel,
+  BookSkills,
+  BookStatus,
+  BookType,
+  OnlineResource,
+  ResourceFormat,
+  ResourceTopic,
+} from "@prisma/client";
 import { BookRequest } from "@prisma/client";
 import { User, OnlineResource, ResourceTopic, ResourceFormat } from "@prisma/client";
 
@@ -211,6 +220,45 @@ export interface CustomChangeEvent<T> {
     value: T; // Use T for the value
   };
   preventDefault?: () => void;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/////                                                                      /////
+/////                              RESOURCE                                /////
+/////                                                                      /////
+////////////////////////////////////////////////////////////////////////////////
+
+export const newEmptyResource: Omit<OnlineResource, "id"> = {
+  createdAt: new Date(),
+  name: "Jet",
+  link: "Hello",
+  level: BookLevel.Beginner,
+  topic: ResourceTopic.Culture,
+  skills: [BookSkills.Grammar],
+  format: ResourceFormat.Video,
+};
+
+export function validateResourceData(
+  resourceData: Partial<OnlineResource>
+): boolean {
+  // Don't validate ID since sometimes you'll need to have
+  const requiredFields = [
+    "createdAt",
+    "name",
+    "link",
+    "level",
+    "topic",
+    "skills",
+    "format",
+  ] as const;
+
+  for (const field of requiredFields) {
+    if (!resourceData[field]) {
+      return false;
+    }
+  }
+
+  return true; // No errors
 }
 
 ////////////////////////////////////////////////////////////////////////////////

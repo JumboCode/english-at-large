@@ -3,7 +3,6 @@
 "use client";
 import { useState } from "react";
 import { updateUser } from "@/lib/api/users";
-import { getOneUser } from "@/lib/api/users";
 import { User } from "@prisma/client";
 
 const UpdateUserButton = () => {
@@ -16,7 +15,6 @@ const UpdateUserButton = () => {
 
     try {
       await updateUser(new_update);
-      console.log(await getOneUser("cm2f3d47n0001sl8z4mv0xh8x"));
     } catch (err) {
       setError("Failed to update user by id");
       console.error(err);

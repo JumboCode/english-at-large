@@ -24,6 +24,13 @@ enum formState {
   RESOURCE_FORM_OPEN,
 }
 
+//Testing, delete after frontnend is implement
+// import CreateResourceButton from "@/components/testing/CreateResourceButton";
+// import GetOneResourceButton from "@/components/testing/GetOneResourceButton";
+// import DeleteResourceButton from "@/components/testing/DeleteResourceButton";
+// import GetAllResourceButton from "@/components/testing/GetAllResourcesButton";
+// import UpdateResourceButton from "@/components/testing/UpdateResourceButton";
+
 const OnlineResourcesPage = () => {
   const user = useCurrentUser();
 
@@ -181,7 +188,6 @@ const OnlineResourcesPage = () => {
         }
         placeholderText="Search for resources"
       />
-
       {popupStatus.shown ? (
         <ConfirmationPopup
           type={popupStatus.type}
