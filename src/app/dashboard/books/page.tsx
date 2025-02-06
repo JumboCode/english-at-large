@@ -22,8 +22,7 @@ enum formState {
   BOOK_FORM_OPEN,
 }
 
-const BooksPage = () => {
-  const user = useCurrentUser();
+const BooksPage = () => {const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
   const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
   // const [bookFormShown, setBookFormShown] = useState<boolean>(false);
@@ -87,6 +86,8 @@ const BooksPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // ADD DELAY TO SHOW LOADING - REMOVE WHEN DONE TESTING
+        await new Promise((resolve) => setTimeout(resolve, 3000));
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);

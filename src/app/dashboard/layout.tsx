@@ -1,5 +1,5 @@
 import NavBar from "@/components/NavBar";
-import Loading from "./loading"
+import Loading from "./books/loading";
 import { Suspense } from "react";
 
 export default function DashboardLayout({
@@ -10,7 +10,7 @@ export default function DashboardLayout({
   return (
     <div>
       <NavBar />
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback = {<Loading/>}>
         {children}
       </Suspense>
     </div>
