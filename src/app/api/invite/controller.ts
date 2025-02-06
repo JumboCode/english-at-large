@@ -12,7 +12,7 @@ export const postInviteController = async (
       throw new Error("Missing required user properties");
     }
 
-    const invite = clerkClient.invitations.createInvitation({
+    const invite = await clerkClient.invitations.createInvitation({
       emailAddress: email,
       redirectUrl: "https://english-at-large-liard.vercel.app/signup",
       publicMetadata: {
