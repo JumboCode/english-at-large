@@ -96,7 +96,7 @@ const BooksPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // Simulate delay
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // simulate delay
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
@@ -180,35 +180,30 @@ const BooksPage = () => {
             </p>
           </div>
         </div>
-        
+
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {loadingBooks ? 
-          // placeholders while books are loading
-          Array.from({ length: 4 }).map((_, index) => (
-            <li key={index}>
-              <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md h-[40vh]">
-                <LoadingSkeleton />
-              </div>
-            </li>
-          ))
-        
-        :
-        subsetBooks.map((book, index) => (
-          <li key={index}>
-            <div>
-              <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">
-                  <BookInfo book={book} />
-              </div>
-            </div>
-          </li>
-        ))
-        }
+          {loadingBooks
+            ? // placeholders while books are loading
+              Array.from({ length: 4 }).map((_, index) => (
+                <li key={index}>
+                  <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md h-[40vh]">
+                    <LoadingSkeleton />
+                  </div>
+                </li>
+              ))
+            : subsetBooks.map((book, index) => (
+                <li key={index}>
+                  <div>
+                    <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">
+                      <BookInfo book={book} />
+                    </div>
+                  </div>
+                </li>
+              ))}
         </ul>
       </div>
     </div>
   );
 };
-
-
 
 export default BooksPage;
