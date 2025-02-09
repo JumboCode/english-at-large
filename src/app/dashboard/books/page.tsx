@@ -96,7 +96,6 @@ const BooksPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // simulate delay
         const allBooks = await getAllBooks();
         if (allBooks) {
           setBooks(allBooks);
