@@ -190,7 +190,7 @@ const BookForm = (props: BookFormProps) => {
               />
             </div>
           </div>
-          <div className="mx-[50px] h-[0.3px] bg-black"></div>
+          <div className="h-[0.3px] bg-black"></div>
         </div>
         {isbn ? 
           <div>
@@ -270,7 +270,7 @@ const BookForm = (props: BookFormProps) => {
             />
           </div>
           <div className="flex flex-col w-[50%]">
-          <label htmlFor="pages" className="text-lg font-bold">
+          <label htmlFor="pages" className="text-lg">
               No. of pages
             </label>
             <input
@@ -291,7 +291,7 @@ const BookForm = (props: BookFormProps) => {
         <div>
           <label
             htmlFor="description"
-            className="block text-lg ml-[5%] font-bold"
+            className="block text-lg ml-[5%]"
           >
             Description
           </label>
@@ -306,7 +306,7 @@ const BookForm = (props: BookFormProps) => {
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="level" className="text-lg font-bold">
+            <label htmlFor="level" className="text-lg">
               Level
             </label>
             <select
@@ -328,7 +328,7 @@ const BookForm = (props: BookFormProps) => {
             </select>
           </div>
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="bookType" className="text-lg font-bold">
+            <label htmlFor="bookType" className="text-lg">
               Type
             </label>
             <select
@@ -352,7 +352,7 @@ const BookForm = (props: BookFormProps) => {
         </div>
 
         <div>
-          <p className="block text-lg ml-[5%] font-bold">Skills</p>
+          <p className="block text-lg ml-[5%]">Skills</p>
           <div className="flex space-x-4 mx-[5%]">
             {skills.map((bookSkill, index) => {
               return (
