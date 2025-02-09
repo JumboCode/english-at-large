@@ -6,7 +6,7 @@ import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import BookForm from "@/components/common/forms/BookForm";
+// import BookForm from "@/components/BookForm";
 import IsbnPopup from "@/components/common/forms/IsbnPopup";
 
 import CommonButton from "@/components/common/button/CommonButton";
@@ -15,6 +15,8 @@ import AddIcon from "@/assets/icons/Add";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import IsbnForm from "@/components/common/forms/IsbnForm";
+import ManualForm from "@/components/common/forms/ManualForm";
 
 enum formState {
   FORM_CLOSED,
@@ -99,16 +101,24 @@ const BooksPage = () => {
   }, []);
 
   return formShown == formState.BOOK_FORM_OPEN ? (
-    <BookForm
-      exit={() => setFormShown(formState.FORM_CLOSED)}
-      existingBook={null}
-      isbn={isbnOnSubmit}
-    />
+    (
+      isbnOnSubmit ?
+        <IsbnForm
+          exit={() => setFormShown(formState.FORM_CLOSED)}
+          existingBook={null}
+          isbn={isbnOnSubmit}
+        />
+      :
+      <ManualForm 
+        exit={() => setFormShown(formState.FORM_CLOSED)}
+        existingBook={null}
+      />
+    )
   ) : (
     <div>
       <IsbnPopup
         isOpen={formShown == formState.ISBN_FORM_OPEN}
-        exit={() => setFormShown(formState.FORM_CLOSED)}
+        exit={() => setFormShown(formState.BOOK_FORM_OPEN)}
         submit={(isbn: string) => {
           setFormShown(formState.BOOK_FORM_OPEN);
           setISBN(isbn);
