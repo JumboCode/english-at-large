@@ -189,6 +189,12 @@ const BooksPage = () => {
             </li>
           ))}
         </ul>
+        { subsetBooks.length == 0 ? 
+          <div className="text-center h-full py-20"> 
+            <p className="font-bold text-black text-xl">No books found</p>
+            <p className="text-md text-gray-400 py-4">Try again with different keywords or remove search filters.</p>
+          </div>
+        : null}
       </div>
     </div>
   );

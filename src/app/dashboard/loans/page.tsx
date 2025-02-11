@@ -87,7 +87,13 @@ const Loans = () => {
         setSearchData={setSearchData}
       />
       <div className="px-16">
-        <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
+        { subsetRequest.length == 0 ?
+          <div className="text-center h-full py-20"> 
+            <p className="font-bold text-black text-xl">No loans yet</p>
+            <p className="text-md text-gray-400 py-4">No loans have been made with these filters. Check back later!</p>
+          </div>
+        : null }
+        <table className={"table-auto bg-white w-full font-family-name:var(--font-geist-sans)] " + (subsetRequest.length == 0 ? "hidden" : null)}>
           <thead>
             <tr className="bg-gray-100">
               <th className="w-1/6 px-2 py-1 text-left text-text-default-secondary">
