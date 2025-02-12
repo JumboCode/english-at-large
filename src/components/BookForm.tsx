@@ -352,8 +352,8 @@ const BookForm = (props: BookFormProps) => {
         </div>
 
         <div>
-          <p className="block text-lg ml-[5%]">Skills</p>
-          <div className="flex space-x-4 mx-[5%] mb-2">
+          <p className="block text-lg ml-[5%] mb-2">Skills</p>
+          <div className="flex space-x-4 mx-[5%] ">
             {skills.map((bookSkill, index) => {
               return (
                 <MultiSelectTagButton<BookSkills>
