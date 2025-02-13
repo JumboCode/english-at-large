@@ -188,7 +188,7 @@ const Loans = () => {
                   </td>
 
                   <td>
-                    <div className="flex justify-start items-center">
+                    <div className="flex justify-center items-center">
                       <CommonButton
                         label="Mark as Returned"
                         onClick={async () => {
