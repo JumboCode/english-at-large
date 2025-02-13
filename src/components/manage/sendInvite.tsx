@@ -25,7 +25,6 @@ const SendInvite = (props: SendInviteProps) => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<UserRole | null>(null);
-  const [status, setStatus] = useState<boolean | null>(null);
 
   const { setConfirmPopup } = usePopup();
 
@@ -65,7 +64,6 @@ const SendInvite = (props: SendInviteProps) => {
             user.inviteID = inviteID;
             await updateUser(user);
           }
-          setStatus(true);
           setConfirmPopup({
             type: ConfirmPopupTypes.USER,
             action: ConfirmPopupActions.INVITE,
@@ -78,7 +76,6 @@ const SendInvite = (props: SendInviteProps) => {
         throw "Not all fields completed!";
       }
     } catch (error) {
-      setStatus(false);
       setConfirmPopup({
         type: ConfirmPopupTypes.USER,
         action: ConfirmPopupActions.INVITE,
@@ -211,7 +208,6 @@ const SendInvite = (props: SendInviteProps) => {
       ) : (
         <div />
       )}
-      <p>{String(status)}</p>
     </div>
   );
 };
