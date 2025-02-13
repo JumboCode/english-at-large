@@ -14,6 +14,11 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { redirect } from "next/navigation";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import XIcon from "@/assets/icons/X";
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+} from "@/lib/context/ConfirmPopupContext";
 
 export default function Manage() {
   const user = useCurrentUser();
@@ -30,7 +35,10 @@ export default function Manage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filter, setFilter] = useState<string>("");
   const [invitePopupOpen, setInvitePopupOpen] = useState<boolean>(false);
-  const { hidePopup, popupStatus } = usePopup();
+  const [removePopupOpen, setRemovePopupOpen] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
 
   // use of structured clone creates new subset of search target users
   // allows filter to act on subset of searched users
@@ -61,6 +69,25 @@ export default function Manage() {
         return true;
     }
   };
+
+  const removeUser = async (user: User | null) => {
+    if (!user) return; // Ensure user is not null
+     try {
+      await deleteUser(user.id); // Delete the user
+       setRemovePopupOpen(false); // Close the confirmation modal
+       setConfirmPopup({
+        type: ConfirmPopupTypes.USER,
+        action: ConfirmPopupActions.REMOVE,
+        success: true,
+      });
+    } catch (error) {
+      setConfirmPopup({
+        type: ConfirmPopupTypes.USER,
+        action: ConfirmPopupActions.REMOVE,
+        success: false,
+      });
+    }
+  }; 
 
   return (
     <div>
@@ -135,8 +162,8 @@ export default function Manage() {
                         <CommonButton
                           label="Remove User"
                           onClick={() => {
-                            deleteUser(user.id);
-                            location.reload(); // next js router.refresh() was not working
+                            setSelectedUser(user);
+                            setRemovePopupOpen(true);
                           }}
                           altTextStyle="text-dark-blue"
                           altStyle="bg-white"
@@ -152,8 +179,39 @@ export default function Manage() {
             isOpen={invitePopupOpen}
             exit={() => setInvitePopupOpen(false)}
           />
-        </div>
-      ) : null}
+          {removePopupOpen && selectedUser && (
+         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+           <div className="bg-white py-6 px-12 rounded-lg shadow-lg min-w-max max-w-large flex flex-col gap-6">
+             <div className="flex flex-row justify-between">
+               <p className="text-black font-semibold text-2xl font-[family-name:var(--font-rubik)]">
+                 Remove User
+               </p>
+               <button className="text-black" onClick={() => setRemovePopupOpen(false)}>
+                 <XIcon />
+               </button>
+             </div>
+             <hr />
+             <p className="text-black text-lg font-medium">
+               Are you sure you want to remove {selectedUser.name}?
+             </p>
+             <div className="flex flex-row gap-4">
+               <CommonButton
+                 label="Cancel"
+                 onClick={() => setRemovePopupOpen(false)}
+                 altStyle="w-1/2"
+               />
+               <CommonButton
+                 label="Remove"
+                 onClick={async () => {removeUser(selectedUser)}}               
+                 altTextStyle="text-white"
+                 altStyle="bg-red-600 w-1/2 border-0"
+               />
+             </div>
+           </div>
+         </div>
+       )}
+       </div>
+     ) : null}
 
       {popupStatus.shown ? (
         <ConfirmationPopup

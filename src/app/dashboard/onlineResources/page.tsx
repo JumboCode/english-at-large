@@ -4,13 +4,20 @@ import { useState, useEffect } from "react";
 import { BookLevel, BookSkills, BookStatus } from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import BookForm from "@/components/common/forms/BookForm";
+import BookForm from "@/components/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+
+//Testing, delete after frontnend is implement
+// import CreateResourceButton from "@/components/testing/CreateResourceButton";
+// import GetOneResourceButton from "@/components/testing/GetOneResourceButton";
+// import DeleteResourceButton from "@/components/testing/DeleteResourceButton";
+// import GetAllResourceButton from "@/components/testing/GetAllResourcesButton";
+// import UpdateResourceButton from "@/components/testing/UpdateResourceButton";
 
 const OnlineResourcesPage = () => {
   const user = useCurrentUser();
@@ -106,6 +113,11 @@ const OnlineResourcesPage = () => {
         placeholderText="Search for resources"
       />
       <div className="text-center">Coming soon!</div>
+      {/* <CreateResourceButton />
+      <GetOneResourceButton />
+      <DeleteResourceButton />
+      <UpdateResourceButton />
+      <GetAllResourceButton /> */}
       {popupStatus.shown ? (
         <ConfirmationPopup
           type={popupStatus.type}

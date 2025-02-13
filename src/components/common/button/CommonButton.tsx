@@ -10,6 +10,7 @@ interface ButtonProps {
   altTextStyle?: string;
   disabled?: boolean;
   type?: HTMLButtonElement["type"];
+  noFocusStyle?: boolean;
 }
 
 /**

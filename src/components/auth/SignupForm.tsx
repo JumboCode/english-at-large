@@ -8,8 +8,10 @@ import { useSignUp } from "@clerk/nextjs";
 import { getClerkUser, updateUser } from "@/lib/api/users";
 import { useSearchParams, useRouter } from "next/navigation";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
+import { useClerk } from "@clerk/nextjs";
 import { sleep } from "@/lib/util/utilFunctions";
 import { emptyUser } from "@/lib/util/types";
+import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { UserRole } from "@prisma/client";
 
 interface SignupFormData {
@@ -22,8 +24,10 @@ interface SignupFormData {
 
 const SignupForm = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { signOut } = useClerk();
   const router = useRouter();
   const inviteToken = useSearchParams().get("__clerk_ticket");
+  const user = useCurrentUser();
 
   const [formData, setFormData] = useState<SignupFormData>({
     firstName: "",
@@ -41,12 +45,18 @@ const SignupForm = () => {
   const [isSignUpSuccessful, setIsSignUpSuccessful] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
 
+
   // Initial Clerk signup with invite token
   const clerkSignup = useCallback(async () => {
     if (!inviteToken) {
       router.push("/login");
       return;
     }
+
+    if (user) {
+      await signOut();
+    }
+
 
     if (!isLoaded || attemptedSignup) return;
 
@@ -75,7 +85,7 @@ const SignupForm = () => {
       }
       setAttemptedSignup(true);
     }
-  }, [attemptedSignup, inviteToken, isLoaded, setActive, signUp, router]);
+  }, [attemptedSignup, inviteToken, isLoaded, setActive, signUp, router, signOut, user]);
 
   useEffect(() => {
     if (!attemptedSignup) {
@@ -117,9 +127,6 @@ const SignupForm = () => {
           };
 
           const metadata = await waitForMetadata();
-          // console.log(metadata);
-          // Now create the user database
-          // if (attempt.createdUserId) {
           const newUser = {
             ...emptyUser,
             name: `${formData.firstName} ${formData.lastName}`,

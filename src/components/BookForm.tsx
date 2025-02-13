@@ -1,15 +1,15 @@
 "use client";
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
-import CommonButton from "../button/CommonButton";
+import CommonButton from "./common/button/CommonButton";
 import { useCallback, useEffect, useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
 import { createBook, getBookCover, updateBook } from "@/lib/api/books";
-import MultiSelectTagButton from "./MultiSelectTagButton";
+import MultiSelectTagButton from "./common/forms/MultiSelectTagButton";
 import {
   ConfirmPopupTypes,
   ConfirmPopupActions,
 } from "@/lib/context/ConfirmPopupContext";
-import imageToAdd from "../../../assets/images/harry_potter.jpg";
+import imageToAdd from "../assets/images/harry_potter.jpg";
 import axios from "axios";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
@@ -164,15 +164,15 @@ const BookForm = (props: BookFormProps) => {
   return (
     <div className="bg-white text-black absolute left-0 top-0 w-full h-full overflow-scroll block text-sm font-medium">
       <form
-        className="flex flex-col space-y-2 [&_input]:p-2 [&_textarea]:p-2 [&_select]:p-2"
+        className="flex flex-col space-y-4 [&_input]:p-2 [&_textarea]:p-2 [&_select]:p-2"
         id="create-book-form"
         onSubmit={(e) => e.preventDefault()}
       >
         <div>
-          <div className="flex justify-between p-5">
+          <div className="flex justify-between px-[50px] py-5">
             <div>
-              <h1 className="font-bold text-3xl inline">
-                {existingBook ? "Edit Book" : "Add New Book"}
+              <h1 className="font-semibold text-3xl inline">
+                {existingBook ? "Edit Book" : "Add a new book"}
               </h1>
             </div>
             <div className="flex space-x-5">
@@ -190,106 +190,129 @@ const BookForm = (props: BookFormProps) => {
               />
             </div>
           </div>
-          <div className="mx-3 h-[0.5px] bg-black"></div>
+          <div className="h-[0.3px] bg-black"></div>
         </div>
+        {isbn ? 
+          <div>
+            <label htmlFor="isbn" className="block text-lg ml-[5%]">
+              ISBN Number
+            </label>
+            <input
+              type="text"
+              id="isbn"
+              name="isbn"
+              className="text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-9 font-normal"
+              onChange={bookChangeHandler}
+              defaultValue={editBook ? editBook.isbn : isbn}
+              required
+            />
+          </div>
+          : null
+        }
         <div className="mt-4">
-          <label htmlFor="title" className="block text-lg ml-[5%] font-bold">
+          <label htmlFor="title" className="block text-lg ml-[5%]">
             Title
           </label>
           <input
             type="text"
             id="title"
             name="title"
-            className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
+            className="text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-9 font-normal"
             onChange={bookChangeHandler}
             value={editBook ? editBook.title : newBook.title}
             required
           />
         </div>
-        <div>
-          <label htmlFor="author" className="block text-lg ml-[5%] font-bold">
-            Author(s)
-          </label>
-          <input
-            type="text"
-            id="author"
-            name="author"
-            className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
-            onChange={bookChangeHandler}
-            defaultValue={editBook ? editBook.author : ""}
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-lg ml-[5%] font-bold"
-          >
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-15"
-            onChange={bookChangeHandler}
-            value={editBook ? editBook.description : newBook.description}
-            required
-          ></textarea>
-        </div>
-        <div>
-          <label htmlFor="isbn" className="block text-lg ml-[5%] font-bold">
-            ISBN Number
-          </label>
-          <input
-            type="text"
-            id="isbn"
-            name="isbn"
-            className="border-[1px] border-black border-solid rounded-lg w-[90%] mx-auto block h-8"
-            onChange={bookChangeHandler}
-            defaultValue={editBook ? editBook.isbn : isbn}
-            required
-          />
-        </div>
         <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="publisher" className="text-lg font-bold">
-              Publisher
+            <label htmlFor="author" className="text-lg">
+              Author(s)
+            </label>
+            <input
+              type="text"
+              id="author"
+              name="author"
+              className="text-black border border-medium-grey-border rounded-lg border-solid block h-9 font-normal"
+              onChange={bookChangeHandler}
+              value={editBook ? editBook.author : newBook.author}
+              required
+            />
+          </div>
+          <div className="flex flex-col w-[50%]">
+          <label htmlFor="publisher" className="text-lg">
+              Publisher(s)
             </label>
             <input
               type="text"
               id="publisher"
               name="publisher"
-              className="border-[1px] border-black border-solid rounded-lg h-8"
+              className="text-black border border-medium-grey-border rounded-lg border-solid block h-9 font-normal"
               onChange={bookChangeHandler}
               value={editBook ? editBook.publisher : newBook.publisher}
               required
             />
           </div>
+        </div>
+        <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="releaseDate" className="text-lg font-bold">
+          <label htmlFor="releaseDate" className="text-lg">
               Release Date
             </label>
             <input
               type="date"
               id="releaseDate"
               name="releaseDate"
-              className="border-[1px] border-black border-solid rounded-lg block h-8"
+              className="text-black border border-medium-grey-border rounded-lg border-solid block h-9 font-normal"
               onChange={bookChangeHandler}
               defaultValue={
                 editBook && editBook.releaseDate ? editBook.releaseDate : ""
               }
             />
           </div>
+          <div className="flex flex-col w-[50%]">
+          <label htmlFor="pages" className="text-lg">
+              No. of pages
+            </label>
+            <input
+              type="number"
+              id="numPages"
+              name="numPages"
+              className="text-black border border-medium-grey-border rounded-lg border-solid block h-9 font-normal"
+              onChange={bookChangeHandler}
+              value={
+                editBook && editBook.numPages
+                  ? editBook.numPages
+                  : newBook.numPages ?? 1
+              }
+              required 
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="description"
+            className="block text-lg ml-[5%]"
+          >
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            className="text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-15 font-normal"
+            onChange={bookChangeHandler}
+            value={editBook ? editBook.description : newBook.description}
+            required
+          ></textarea>
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="level" className="text-lg font-bold">
+            <label htmlFor="level" className="text-lg">
               Level
             </label>
             <select
               id="level"
               name="level"
-              className="border-[1px] border-black border-solid rounded-lg block h-8"
+              className="text-black border border-medium-grey-border rounded-lg border-solid block h-9 font-normal"
               onChange={bookChangeHandler}
               defaultValue={editBook ? editBook.level : ""}
               required
@@ -305,13 +328,13 @@ const BookForm = (props: BookFormProps) => {
             </select>
           </div>
           <div className="flex flex-col w-[50%]">
-            <label htmlFor="bookType" className="text-lg font-bold">
+            <label htmlFor="bookType" className="text-lg">
               Type
             </label>
             <select
               id="bookType"
               name="bookType"
-              className="border-[1px] border-black border-solid rounded-lg block h-8"
+              className="text-black border border-medium-grey-border rounded-lg border-solid block h-9 font-normal"
               onChange={bookChangeHandler}
               defaultValue={editBook ? editBook.bookType : ""}
               required
@@ -327,27 +350,9 @@ const BookForm = (props: BookFormProps) => {
             </select>
           </div>
         </div>
-        <div className="flex w-[90%] mx-auto space-x-4">
-          <div className="flex flex-col w-[50%]">
-            <label htmlFor="publisher" className="text-lg font-bold">
-              Page Numbers
-            </label>
-            <input
-              type="number"
-              id="numPages"
-              name="numPages"
-              className="border-[1px] border-black border-solid rounded-lg h-8"
-              value={
-                editBook && editBook.numPages
-                  ? editBook.numPages
-                  : newBook.numPages ?? 1
-              }
-              onChange={bookChangeHandler}
-            />
-          </div>
-        </div>
+
         <div>
-          <p className="block text-lg ml-[5%] font-bold">Skills</p>
+          <p className="block text-lg ml-[5%]">Skills</p>
           <div className="flex space-x-4 mx-[5%]">
             {skills.map((bookSkill, index) => {
               return (
@@ -363,14 +368,14 @@ const BookForm = (props: BookFormProps) => {
               );
             })}
           </div>
-          {!existingBook ? (
+          {/* {!existingBook ? (
             <CommonButton
               label={"ISBN Click"}
               onClick={() => {
                 pullISBN();
               }}
             />
-          ) : null}
+          ) : null} */}
         </div>
       </form>
     </div>

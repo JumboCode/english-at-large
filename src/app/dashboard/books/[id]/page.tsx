@@ -12,7 +12,7 @@ import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
 import BookDetail from "@/components/Details";
-import BookForm from "@/components/common/forms/BookForm";
+import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 
