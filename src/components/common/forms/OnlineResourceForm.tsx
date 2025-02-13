@@ -9,7 +9,7 @@ import {
 import CommonButton from "../button/CommonButton";
 import { useState } from "react";
 import { CustomChangeEvent, newEmptyResource } from "@/lib/util/types";
-// import { createBook, getBookCover, updateBook } from "@/lib/api/books";
+import { createResource, updateResource } from "@/lib/api/resources";
 import MultiSelectTagButton from "./MultiSelectTagButton";
 import {
   ConfirmPopupTypes,
@@ -33,7 +33,7 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
   const skills = Object.values(BookSkills);
 
   const [newResource, setNewResource] =
-    useState<Omit<OnlineResource, "id" | "createdAt">>(newEmptyResource);
+    useState<Omit<OnlineResource, "id">>(newEmptyResource);
   const [editResource, setEditResource] = useState<
     OnlineResource | null | undefined
   >(existingResource);
@@ -93,8 +93,7 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
   const handleSave = async () => {
     try {
       if (editResource) {
-        // const editedResource = await updateResource(editResource);
-        const editedResource = newEmptyResource;
+        const editedResource = await updateResource(editResource);
 
         setConfirmPopup({
           type: ConfirmPopupTypes.RESOURCE,
@@ -106,8 +105,7 @@ const OnlineResourceForm = (props: OnlineResourceFormProps) => {
           onSave(editedResource);
         }
       } else if (newResource) {
-        // const createdResource = await createResource(newResource);
-        const createdResource = newEmptyResource;
+        const createdResource = await createResource(newResource);
 
         setConfirmPopup({
           type: ConfirmPopupTypes.RESOURCE,

@@ -23,7 +23,7 @@ const ResourceInfo = (props: ResourceProps) => {
   return (
     <div>
       <Link href={`books/${resource.id}`} className="flex items-start">
-        <div className=" relative w-full h-[326px] ml-3 mt-3">
+        <div className="relative w-full h-[367px] ml-3 mt-3">
           <div className="absolute right-2 flex space-x-1 ">
             <Image src={SaveIcn} alt="save icon" width={25} height={25} />
             <Image src={ExportIcn} alt="save icon" width={25} height={25} />

@@ -6,12 +6,13 @@ import {
   OnlineResource,
   BookSkills,
   BookLevel,
-  ResourceFormat,
-  ResourceTopic,
+  BookStatus,
+  // ResourceFormat,
+  // ResourceTopic,
 } from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import BookForm from "@/components/BookForm";
+// import BookForm from "@/components/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
@@ -19,13 +20,14 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import ResourceDashboard from "@/components/common/ResourceDashboard";
+import { getAllResources } from "@/lib/api/resources";
 
 enum formState {
   FORM_CLOSED,
   RESOURCE_FORM_OPEN,
 }
 
-//Testing, delete after frontnend is implement
+// Testing, delete after frontnend is implement
 // import CreateResourceButton from "@/components/testing/CreateResourceButton";
 // import GetOneResourceButton from "@/components/testing/GetOneResourceButton";
 // import DeleteResourceButton from "@/components/testing/DeleteResourceButton";
@@ -40,8 +42,13 @@ const OnlineResourcesPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
-  const [format, setFormat] = useState<ResourceFormat>();
-  const [topic, setTopic] = useState<ResourceTopic>();
+
+  // const [format, setFormat] = useState<ResourceFormat>();
+  // const [topic, setTopic] = useState<ResourceTopic>();
+
+  // from books dashboard, delete when filter implemented
+  const [status, setStatus] = useState<BookStatus[]>([]);
+  const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
   const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
@@ -85,71 +92,9 @@ const OnlineResourcesPage = () => {
     .filter((resource) => filterResources(resource));
 
   useEffect(() => {
-    const dummyResources: OnlineResource[] = [
-      {
-        id: "1",
-        createdAt: new Date(),
-        name: "worksheet 1",
-        link: "Andrew Hunt, David Thomas",
-        level: "Beginner",
-        topic: "Holidays",
-        skills: ["Reading", "Writing"],
-        format: "Worksheet",
-      },
-      {
-        id: "2",
-        createdAt: new Date(),
-        name: "Worksheet 2",
-        link: "Andrew Hunt, David Thomas",
-        level: "Beginner",
-        topic: "Holidays",
-        skills: ["Reading", "Writing"],
-        format: "Worksheet",
-      },
-      {
-        id: "3",
-        createdAt: new Date(),
-        name: "reading 1",
-        link: "Andrew Hunt, David Thomas",
-        level: "Beginner",
-        topic: "Holidays",
-        skills: ["Reading", "Writing"],
-        format: "Reading",
-      },
-      {
-        id: "4",
-        createdAt: new Date(),
-        name: "video 1",
-        link: "Andrew Hunt, David Thomas",
-        level: "Beginner",
-        topic: "Holidays",
-        skills: ["Reading", "Writing"],
-        format: "Video",
-      },
-      {
-        id: "5",
-        createdAt: new Date(),
-        name: "video 2",
-        link: "Andrew Hunt, David Thomas",
-        level: "Beginner",
-        topic: "Holidays",
-        skills: ["Reading", "Writing"],
-        format: "Video",
-      },
-      {
-        id: "6",
-        createdAt: new Date(),
-        name: "worksheet 3",
-        link: "Andrew Hunt, David Thomas",
-        level: "Beginner",
-        topic: "Holidays",
-        skills: ["Reading", "Writing"],
-        format: "Worksheet",
-      },
-    ];
     const fetchData = async () => {
       try {
-        const allResources = dummyResources;
+        const allResources = await getAllResources();
         if (allResources) {
           setResources(allResources);
         }
@@ -199,7 +144,7 @@ const OnlineResourcesPage = () => {
         />
       ) : null}
 
-      {/* <FilterPopup
+      <FilterPopup
         isOpen={isFilterOpen}
         toggle={toggleFilterPopup}
         skills={skills}
@@ -210,7 +155,7 @@ const OnlineResourcesPage = () => {
         setStatus={setStatus}
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
-      /> */}
+      />
       <div className="p-4 px-16 bg-white border-t">
         <div className="flex flex-row">
           <div className="text-left">
@@ -228,12 +173,12 @@ const OnlineResourcesPage = () => {
               id="level"
               name="level"
               className="border-[1px] border-medium-grey-border border-solid rounded-lg block h-9 text-sm w-48 indent-2"
-              onChange={undefined}
+              onChange={undefined} // need to implement filtering
               defaultValue={"All"}
               required
             >
               <option value="">Select Level</option>
-              {levels.map((ResourceLevel, index) => {
+              {Object.values(BookLevel).map((ResourceLevel, index) => {
                 return (
                   <option key={index} value={ResourceLevel}>
                     {ResourceLevel.replace("_", " ")}

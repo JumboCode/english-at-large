@@ -1,15 +1,15 @@
 import {
   Book,
   BookLevel,
-  BookSkills,
+  // BookSkills,
   BookStatus,
   BookType,
   OnlineResource,
   ResourceFormat,
   ResourceTopic,
+  User,
 } from "@prisma/client";
 import { BookRequest } from "@prisma/client";
-import { User, OnlineResource, ResourceTopic, ResourceFormat } from "@prisma/client";
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
@@ -84,14 +84,6 @@ export const newEmptyBook: Omit<Book, "id"> = {
   coverURL: "",
 };
 
-export const newEmptyResource: Omit<OnlineResource, "id" | "createdAt"> = {     
-  name: "",
-  link: "",
-  level: BookLevel.Beginner,
-  topic: ResourceTopic.Holidays,
-  skills: [], 
-  format: ResourceFormat.Worksheet
-};
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
 /////                              REQUESTS                                /////
@@ -230,11 +222,11 @@ export interface CustomChangeEvent<T> {
 
 export const newEmptyResource: Omit<OnlineResource, "id"> = {
   createdAt: new Date(),
-  name: "Jet",
+  name: "",
   link: "Hello",
   level: BookLevel.Beginner,
   topic: ResourceTopic.Culture,
-  skills: [BookSkills.Grammar],
+  skills: [],
   format: ResourceFormat.Video,
 };
 
