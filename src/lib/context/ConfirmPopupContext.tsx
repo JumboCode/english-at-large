@@ -29,6 +29,7 @@ export enum ConfirmPopupActions {
   REMOVE = "remove",
   INVITE = "invite",
   BORROW = "borrow",
+  MARK = "mark",
 }
 
 export enum ConfirmPopupTypes {
@@ -36,6 +37,7 @@ export enum ConfirmPopupTypes {
   BOOK = "book",
   USER = "user",
   RESOURCE = "resource",
+  RETURNED = "as returned",
 }
 
 export const EmptyConfirmationState: ConfirmationPopupState = {
