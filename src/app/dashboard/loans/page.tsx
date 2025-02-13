@@ -165,7 +165,7 @@ const Loans = () => {
                       className="flex items-start space-x-4"
                     >
                       <div className="flex justify-between max-w-[99%] ">
-                        <p className="truncate">{request.book?.title}</p>
+                        <p className="line-clamp-2">{request.book?.title}</p>
                       </div>
                     </Link>
                   </td>
