@@ -15,12 +15,8 @@ import AddIcon from "@/assets/icons/Add";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-<<<<<<< HEAD
-import LoadingSkeleton from "./loading";
-=======
 import IsbnForm from "@/components/common/forms/IsbnForm";
 import ManualForm from "@/components/common/forms/ManualForm";
->>>>>>> main
 
 enum formState {
   FORM_CLOSED,
@@ -115,15 +111,14 @@ const BooksPage = () => {
   }, []);
 
   return formShown == formState.BOOK_FORM_OPEN ? (
-    (
-      isbnOnSubmit ?
-        <IsbnForm
-          exit={() => setFormShown(formState.FORM_CLOSED)}
-          existingBook={null}
-          isbn={isbnOnSubmit}
-        />
-      :
-      <ManualForm 
+    isbnOnSubmit ? (
+      <IsbnForm
+        exit={() => setFormShown(formState.FORM_CLOSED)}
+        existingBook={null}
+        isbn={isbnOnSubmit}
+      />
+    ) : (
+      <ManualForm
         exit={() => setFormShown(formState.FORM_CLOSED)}
         existingBook={null}
       />
