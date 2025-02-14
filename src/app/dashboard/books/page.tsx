@@ -17,6 +17,7 @@ import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import IsbnForm from "@/components/common/forms/IsbnForm";
 import ManualForm from "@/components/common/forms/ManualForm";
+import LoadingSkeleton from "./loading";
 
 enum formState {
   FORM_CLOSED,
