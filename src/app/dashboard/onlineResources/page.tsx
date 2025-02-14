@@ -12,7 +12,6 @@ import {
 } from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-// import BookForm from "@/components/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
@@ -27,13 +26,6 @@ enum formState {
   RESOURCE_FORM_OPEN,
 }
 
-// Testing, delete after frontnend is implement
-// import CreateResourceButton from "@/components/testing/CreateResourceButton";
-// import GetOneResourceButton from "@/components/testing/GetOneResourceButton";
-// import DeleteResourceButton from "@/components/testing/DeleteResourceButton";
-// import GetAllResourceButton from "@/components/testing/GetAllResourcesButton";
-// import UpdateResourceButton from "@/components/testing/UpdateResourceButton";
-
 const OnlineResourcesPage = () => {
   const user = useCurrentUser();
 
@@ -43,6 +35,7 @@ const OnlineResourcesPage = () => {
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
 
+  // states needed for filter functionality -- don't delete!!
   // const [format, setFormat] = useState<ResourceFormat>();
   // const [topic, setTopic] = useState<ResourceTopic>();
 
