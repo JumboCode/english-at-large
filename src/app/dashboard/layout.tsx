@@ -8,6 +8,7 @@ export default function DashboardLayout({
   return (
     <div>
       <NavBar />
+
       {children}
     </div>
   );
