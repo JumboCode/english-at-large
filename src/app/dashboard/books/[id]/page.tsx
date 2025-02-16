@@ -7,7 +7,7 @@ import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg
 import BorrowPopup from "@/components/common/BorrowPopup";
 
 import { getOneBook } from "@/lib/api/books";
-import { Book, BookStatus } from "@prisma/client";
+import { Book } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -61,7 +61,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           onSave={(b: Book | null) => {
             setBook(b);
           }}
-          isbn={book.isbn}
+          isbn={book.isbn[0]}
         />
       ) : (
         <div className="pb-12">
@@ -81,12 +81,14 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         <CommonButton
                           label="Borrow"
                           altStyle={`w-40 h-10 ${
-                            book.status === BookStatus.Available // may have to change the case for when someone else reqeuests -- add a hold
+                            //book.status === BookStatus.Available // may have to change the case for when someone else reqeuests -- add a hold
+                            book.availableCopies != 0
                               ? "bg-dark-blue"
                               : "bg-medium-grey-border"
                           } border-none mr-3`}
                           onClick={
-                            book.status === BookStatus.Available
+                            //book.status === BookStatus.Available
+                            book.availableCopies != 0
                               ? toggleBorrowOpen
                               : undefined
                           }
@@ -193,8 +195,9 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     isbn={book.isbn}
                     publisher={book.publisher}
                     releaseDate={book.releaseDate}
-                    copies={10}
+                    copies={book.copies}
                     numPages={book.numPages}
+                    availableCopies={book.availableCopies}
                     lineSpacing="space-y-6"
                   />
                 </div>

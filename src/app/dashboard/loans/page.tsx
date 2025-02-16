@@ -161,6 +161,7 @@ const Loans = () => {
                           await updateBook({
                             ...request.book,
                             status: BookStatus.Available,
+                            availableCopies: request.book.availableCopies + 1,
                           });
                           await updateReq({
                             ...request,

@@ -50,7 +50,7 @@ export const emptyBook: Book = {
   id: 0, // Autoincremented, so can be 0 for dummy purposes
   title: "Untitled Book",
   author: "",
-  isbn: "000-0-00-000000-0",
+  isbn: ["000-0-00-000000-0"],
   publisher: "",
   level: BookLevel.Beginner,
   bookType: BookType.Reference,
@@ -62,6 +62,8 @@ export const emptyBook: Book = {
   releaseDate: null,
   numPages: 0,
   coverURL: "",
+  availableCopies: 0,
+  copies: 0,
 };
 
 /**
@@ -70,7 +72,7 @@ export const emptyBook: Book = {
 export const newEmptyBook: Omit<Book, "id"> = {
   title: "",
   author: "",
-  isbn: "",
+  isbn: [],
   publisher: "",
   level: BookLevel.Beginner,
   bookType: BookType.Reference,
@@ -82,6 +84,8 @@ export const newEmptyBook: Omit<Book, "id"> = {
   releaseDate: null,
   numPages: 0,
   coverURL: "",
+  availableCopies: 0,
+  copies: 0,
 };
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////

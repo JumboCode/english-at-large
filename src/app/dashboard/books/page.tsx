@@ -81,7 +81,7 @@ const BooksPage = () => {
       (book) =>
         book.title.toLowerCase().includes(searchData) ||
         book.author.toLowerCase().includes(searchData) ||
-        book.isbn.includes(searchData)
+        book.isbn.some((isbn) => isbn.includes(searchData))
     )
     .sort((a, b) => sortBooks(a, b))
     .filter((book) => filterBooks(book));
@@ -101,15 +101,14 @@ const BooksPage = () => {
   }, []);
 
   return formShown == formState.BOOK_FORM_OPEN ? (
-    (
-      isbnOnSubmit ?
-        <IsbnForm
-          exit={() => setFormShown(formState.FORM_CLOSED)}
-          existingBook={null}
-          isbn={isbnOnSubmit}
-        />
-      :
-      <ManualForm 
+    isbnOnSubmit ? (
+      <IsbnForm
+        exit={() => setFormShown(formState.FORM_CLOSED)}
+        existingBook={null}
+        isbn={isbnOnSubmit}
+      />
+    ) : (
+      <ManualForm
         exit={() => setFormShown(formState.FORM_CLOSED)}
         existingBook={null}
       />

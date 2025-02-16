@@ -25,6 +25,7 @@ export interface ConfirmationPopupState {
 export enum ConfirmPopupActions {
   NONE = "",
   ADD = "add",
+  ADD_EXISTING = "added new copy",
   EDIT = "edit",
   REMOVE = "remove",
   INVITE = "invite",
@@ -34,6 +35,7 @@ export enum ConfirmPopupActions {
 export enum ConfirmPopupTypes {
   NONE = "",
   BOOK = "book",
+  EXISTING_BOOK = "new copy of book (book already exists)",
   USER = "user",
   RESOURCE = "resource",
 }

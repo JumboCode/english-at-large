@@ -23,22 +23,24 @@ model User {
 }
 
 model Book {
-  id          Int           @id @default(autoincrement())
-  isbn        String
-  notes       String?
-  scanLink    String?
-  title       String
-  author      String
-  description String
-  publisher   String
-  releaseDate String?
-  skills      BookSkills[]
-  bookType    BookType
-  level       BookLevel
-  status      BookStatus    @default(Available)
-  numPages    Int?          @default(0)
-  coverURL    String        @default("placeholder")
-  requests    BookRequest[]
+  id              Int           @id @default(autoincrement())
+  notes           String?
+  scanLink        String?
+  title           String
+  author          String
+  description     String
+  publisher       String
+  releaseDate     String?
+  skills          BookSkills[]
+  bookType        BookType
+  level           BookLevel
+  status          BookStatus    @default(Available)
+  numPages        Int?          @default(0)
+  coverURL        String        @default("placeholder")
+  availableCopies Int           @default(0)
+  copies          Int           @default(0)
+  isbn            String[]
+  requests        BookRequest[]
 
   @@map("Books")
 }
