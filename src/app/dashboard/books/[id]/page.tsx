@@ -2,7 +2,7 @@
 import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-// import bookIcon from "../../../../assets/icons/bookmark_add.svg";
+import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
 import BorrowPopup from "@/components/common/BorrowPopup";
 
@@ -79,7 +79,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     <div className="flex">
                       {
                         <CommonButton
-                          label="Borrow"
+                          label={book.status === BookStatus.Available ? "Borrow" : "You have already borrowed this book"}
                           altStyle={`w-40 h-10 ${
                             book.status === BookStatus.Available // may have to change the case for when someone else reqeuests -- add a hold
                               ? "bg-dark-blue"
@@ -90,12 +90,14 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                               ? toggleBorrowOpen
                               : undefined
                           }
-                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                          altTextStyle={book.status === BookStatus.Available ? 
+                            "text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2" :
+                            "text-gray-500 font-[family-name:var(--font-rubik)] font-semibold -ml-2"}
                           leftIcon={
                             <Image
                               src={
-                                // book.status === BookStatus.Available
-                                // ? bookIcon
+                                book.status === BookStatus.Available
+                                ? bookIcon :
                                 bookIconGreyed
                               }
                               alt="Book Icon"
