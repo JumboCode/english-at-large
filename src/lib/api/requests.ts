@@ -103,7 +103,8 @@ export const createRequest = async (
  */
 export const createQuickRequest = async (
   book: Book,
-  user: User
+  user: User,
+  newStatus: BookStatus,
 ): Promise<BookRequest | undefined> => {
   try {
     if (!validateBookData(book) || !validateUserData(user)) {
@@ -115,7 +116,7 @@ export const createQuickRequest = async (
       userId: user.id,
       bookId: book.id,
       createdAt: new Date(),
-      status: BookStatus.Requested,
+      status: newStatus,
       message: "",
       bookTitle: book.title,
       requestedOn: new Date(),
@@ -123,7 +124,9 @@ export const createQuickRequest = async (
     };
 
     const response = await axios.post("/api/requests", request);
-    await updateBook({ ...book, status: BookStatus.Requested });
+    await updateBook({ ...book, status: newStatus });
+    //
+    
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);

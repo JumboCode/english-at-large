@@ -4,6 +4,7 @@ import { validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 
+
 /**
  * Utility controller that gets all the Request in the backend.
  *
@@ -225,3 +226,71 @@ export const deleteRequestController = async (
     throw error;
   }
 };
+
+/**
+ * Utility controller that emails a user about an updated hold.
+ *
+ * @params the id for the request to email about
+ * @remarks
+ */
+export const sendWaitlistNotificationEmail = async (bookRequestId: number) => {
+  try {
+    const request = await prisma.bookRequest.update({
+      where: { id: bookRequestId },
+      data: { status: "Pickup" },
+      include: {
+        user: true,
+        book: true,
+      },
+    });
+
+    if (!request) {
+      throw new Error("BookRequest not found");
+    }
+
+    // Get the tutor (user who made the request)
+    const tutor = request.user;
+    const book = request.book;
+
+    if (!tutor.email) {
+      throw new Error("Tutor email not found");
+    }
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
+
+    const tutorMsg = {
+      to: tutor.email,
+      from: "englishatlarge427@gmail.com",
+      subject: `Book Request Moved to Pickup: ${book.title}`,
+      text: `The book request for "${book.title}" has been moved from hold to pickup. Please ensure that the tutor comes to pick it up.`,
+      html: `<p>The book request for <strong>${book.title}</strong> has been moved from hold to pickup. Please ensure that the tutor comes to pick it up.</p>`
+    };
+
+    await sgMail.send(tutorMsg);
+
+    // Notify admins
+    const admins = await prisma.user.findMany({
+      where: { role: UserRole.Admin },
+    });
+
+    const adminEmails = admins.map((admin) => admin.email).filter(Boolean);
+
+    if (adminEmails.length > 0) {
+      const adminMsg = {
+        to: adminEmails,
+        from: "englishatlarge427@gmail.com",
+        subject: `Waitlist Update: ${book.title} Moved to Pickup`,
+        text: `A book request for "${book.title}" has been moved from hold to pickup. Please ensure proper handling in the system.`,
+        html: `<p>A book request for <strong>${book.title}</strong> has been moved from hold to pickup. Please ensure proper handling in the system.</p>`
+      };
+
+      await sgMail.send(adminMsg);
+    }
+
+    return { success: true, message: "Emails sent successfully." };
+  } catch (error) {
+    console.error("Error sending waitlist notification email:", error);
+    throw error;
+  }
+};
+

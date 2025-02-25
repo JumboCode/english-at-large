@@ -85,6 +85,12 @@ const Loans = () => {
         action: ConfirmPopupActions.MARK,
         success: true,
       });
+
+      // send users who are on hold an email when book is available
+      // TODO: implement waitlist functionality (CHANGE INPUTTED REQUEST HERE)
+      await sendWaitlistNotificationEmail(request.id); 
+
+
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,

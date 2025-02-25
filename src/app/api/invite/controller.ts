@@ -16,7 +16,7 @@ export const postInviteController = async (
       emailAddress: email,
       redirectUrl: "https://english-at-large-liard.vercel.app/signup",
       publicMetadata: {
-        name: name,
+        name: name, 
         role: role,
         id: id,
       },

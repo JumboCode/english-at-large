@@ -5,10 +5,11 @@ import useCurrentUser from "@/lib/hooks/useCurrentUser";
 
 interface ConfirmBookRequestProps {
   toggle: () => void;
+  action: string;
 }
 
 const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
-  const { toggle } = props;
+  const { toggle, action } = props;
   const exit = () => {
     toggle();
   };
@@ -50,11 +51,12 @@ const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
             />
           </div>
           <div className="flex justify-center font-[family-name:var(--font-rubik)] font-semibold text-2xl m-2">
-            You have borrowed the book!
+            You have {action}!
           </div>
           <div className="flex justify-center text-[#757575] font-[family-name:var(--font-rubik)] text-xs mb-10">
-            Please arrange a time with the EAL office to schedule your book
-            pick-up.
+            {action === "borrowed the book"
+                ? "Please arrange a time with the EAL office to schedule your book pick-up."
+                : "An email will be sent to you when this book becomes available."}
           </div>
           <div className="flex row-span-2 mt-5 gap-3 justify-between">
             <a

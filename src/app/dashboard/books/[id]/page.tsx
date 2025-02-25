@@ -4,8 +4,9 @@ import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 // import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
+import holdBookClock from "../../../../assets/icons/holdBookClock.svg"
 import BorrowPopup from "@/components/common/BorrowPopup";
-
+import HoldPopup from "@/components/common/HoldPopup";
 import { getOneBook } from "@/lib/api/books";
 import { Book, BookStatus } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
@@ -33,6 +34,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [book, setBook] = useState<Book | null>(null);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
+  const [isHoldOpen, setIsHoldOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const user = useCurrentUser();
@@ -48,6 +50,10 @@ const BookDetails = (props: { params: Promise<Params> }) => {
 
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
+  };
+
+  const toggleHoldOpen = () => {
+    setIsHoldOpen(!isHoldOpen);
   };
 
   if (book === null) return null;
@@ -79,24 +85,20 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     <div className="flex">
                       {
                         <CommonButton
-                          label="Borrow"
+                          label= {book.status === BookStatus.Available ? "Borrow" : "Place hold"}
                           altStyle={`w-40 h-10 ${
-                            book.status === BookStatus.Available // may have to change the case for when someone else reqeuests -- add a hold
-                              ? "bg-dark-blue"
-                              : "bg-medium-grey-border"
+                            book.status === BookStatus.Borrowed// may have to change the case for when someone else requests -- add a hold
+                              ? "bg-[#7890CD]"
+                              : "bg-dark-blue"
                           } border-none mr-3`}
                           onClick={
-                            book.status === BookStatus.Available
-                              ? toggleBorrowOpen
-                              : undefined
+                            book.status === BookStatus.Available ? toggleBorrowOpen : toggleHoldOpen
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
                             <Image
                               src={
-                                // book.status === BookStatus.Available
-                                // ? bookIcon
-                                bookIconGreyed
+                                book.status === BookStatus.Available ? bookIconGreyed : holdBookClock
                               }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
@@ -202,6 +204,10 @@ const BookDetails = (props: { params: Promise<Params> }) => {
 
               {isBorrowOpen ? (
                 <BorrowPopup toggleOpen={toggleBorrowOpen} book={book} />
+              ) : null}
+
+              {isHoldOpen ? (
+                <HoldPopup toggleOpen={toggleHoldOpen} book={book} />
               ) : null}
             </div>
           ) : null}

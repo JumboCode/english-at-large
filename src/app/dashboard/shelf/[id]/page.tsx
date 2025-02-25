@@ -11,7 +11,11 @@ const Shelf = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [user, setUser] = useState<User | null>(null);
 
-  const [requests, setRequests] = useState<
+  const [loans, setLoans] = useState<
+    (BookRequest & { user: User; book: Book })[]
+  >([]);
+
+  const [holds, setHolds] = useState<
     (BookRequest & { user: User; book: Book })[]
   >([]);
 
@@ -26,12 +30,17 @@ const Shelf = (props: { params: Promise<Params> }) => {
   useEffect(() => {
     if (!user) return;
 
-    const fetchLoans = async () => {
-      const userRequests = await getUserRequests(user.id);
-      setRequests(userRequests ?? []);
-    };
+    const fetchRequests= async () => {
+      const allUserRequests = await getUserRequests(user.id);
+      const userLoans = allUserRequests?.filter(request => request.status === "Requested");
+      const userHolds = allUserRequests?.filter(request => request.status === "Hold");
 
-    fetchLoans();
+      setLoans(userLoans ?? []);
+      setHolds(userHolds ?? []);
+    };
+    fetchRequests();
+
+
   }, [user]);
 
   if (user == null) return null;
@@ -47,30 +56,45 @@ const Shelf = (props: { params: Promise<Params> }) => {
         <div className="bg-[#F6FAFD] pt-32 p-4 "> 
           <div className="text-gray-500"> Loans </div>
           <div className="text-xl font-semibold text-black">
-            {requests.length} out of {MAX_REQUESTS}
+            {loans.length} out of {MAX_REQUESTS}
           </div>
         </div>
         <div className="bg-[#F6FAFD] pt-32 p-4 text-gray-500"> 
           <div className="text-gray-500"> Holds </div>
           {/* TODO: update holds number */}
           <div className="text-xl font-semibold text-black">
-            0 out of {MAX_REQUESTS}
+            {holds.length} out of {MAX_REQUESTS}
           </div>
         </div>
       </div>
 
       <div>
         <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10"> Your loans </div>
-        <ul>
-          {requests.map((request) => (
-            <li key={request.id}>
-              <div className="w-1/2 p-4 rounded-md border-2 border-[#D9D9D9] m-2">
+        <ul className="flex flex-wrap gap-4"> 
+          {loans.map((request) => (
+            <li key={request.id} className="w-1/2">
+              <div className="p-4 rounded-md border-2 border-[#D9D9D9] m-2">
                 <BookInfo book={request.book} />
               </div>
             </li>
           ))}
         </ul>
       </div>
+
+      <div>
+        <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10"> Your holds </div>
+        <ul className="flex flex-wrap gap-4"> 
+          {holds.map((request) => (
+            <li key={request.id} className="w-1/2">
+              <div className="p-4 rounded-md border-2 border-[#D9D9D9] m-2">
+                <BookInfo book={request.book} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+
     </div>
   );
 };

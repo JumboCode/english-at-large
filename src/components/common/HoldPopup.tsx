@@ -14,44 +14,45 @@ import {
   ConfirmPopupTypes,
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
-interface BorrowPopupProps {
+
+interface HoldPopupProps {
   book: Book;
   toggleOpen: () => void;
 }
 
-const BorrowPopup = (props: BorrowPopupProps) => {
+const HoldPopup = (props: HoldPopupProps) => {
   const { toggleOpen, book } = props;
-  const [isNextBorrowOpen, setIsNextBorrowOpen] = useState(true);
+  const [isNextHoldOpen, setIsNextHoldOpen] = useState(true);
   const user = useCurrentUser(); // currently logged in user
   const { setConfirmPopup } = usePopup();
   const exit = () => {
     toggleOpen();
   };
 
-  // this also needs to be changed to a request
-  const toggleNextBorrow = async () => {
+  
+  const toggleNextHold = async () => {
     if (user) {
-      const request = await createQuickRequest(book, user, BookStatus.Requested);
+      const request = await createQuickRequest(book, user, BookStatus.Hold);
 
       setConfirmPopup({
-        type: ConfirmPopupTypes.BOOK,
-        action: ConfirmPopupActions.BORROW,
+        type: ConfirmPopupTypes.HOLD,
+        action: ConfirmPopupActions.PLACE,
         success: !!request,
       });
-    } // you shouldn't be here if you're not authenticated...
-    setIsNextBorrowOpen(!isNextBorrowOpen);
+    } 
+    setIsNextHoldOpen(!isNextHoldOpen);
   };
 
   return (
     <div>
-      {isNextBorrowOpen ? (
+      {isNextHoldOpen ? (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-white rounded-lg shadow-lg p-8 w-5/12">
             <div className="flex justify-end items-center h-full"></div>
             <h1 className="font-[family-name:var(--font-rubik)] font-semibold text-2xl">
-              Borrow
+              Place Hold
             </h1>
-            <div className="text-[#757575] text-sm"> You are borrowing: </div>
+            <div className="text-[#757575] text-sm"> You are placing a hold for: </div>
             <hr className="h-px bg-[#D4D4D4] border-0 mt-5"></hr>
             <div className="flex grid-cols-2 gap-4 mt-4 ">
               <Image
@@ -88,7 +89,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
               <CommonButton
                 label="Confirm"
                 altStyle="w-36 h-10 bg-[#202D74]"
-                onClick={toggleNextBorrow}
+                onClick={toggleNextHold}
                 altTextStyle="text-white font-[family-name:var(--font-rubik)] font-medium -ml-2"
               />
             </div>
@@ -96,11 +97,11 @@ const BorrowPopup = (props: BorrowPopupProps) => {
         </div>
       ) : (
         <div>
-          <ConfirmBookRequestPopup toggle={toggleOpen} action="borrowed the book" />
+          <ConfirmBookRequestPopup toggle={toggleOpen} action="placed a hold" />
         </div>
       )}
     </div>
   );
 };
 
-export default BorrowPopup;
+export default HoldPopup;

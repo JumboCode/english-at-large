@@ -7,6 +7,7 @@ import {
   putRequestController,
   deleteRequestController,
   getUserRequestController,
+  sendWaitlistNotificationEmail,
 } from "./controller";
 
 // GET - Fetch all requests
@@ -61,6 +62,20 @@ export async function PUT(req: Request) {
       await req.json();
     // controller defined in controllers.ts
     const updated = await putRequestController(requestData);
+
+    // waitlist functionality
+    /*
+    1. on page --> updates to available 
+    2. call this function and email the person at the top of the waitlist
+          a. get the first item in the book's waitlist array (bookRequest)
+                - bookRequest, not userid, because request includes user 
+          b. send waitlist email using retrieved bookRequest 
+     */
+    const existingRequest = await getOneRequestController(requestData.id);
+
+    if (existingRequest.status === "Hold" && updated.status === "Pickup") {
+      await sendWaitlistNotificationEmail(updated.id);
+    }
 
     return NextResponse.json(updated);
   } catch (error) {
