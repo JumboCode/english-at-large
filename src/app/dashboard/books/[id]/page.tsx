@@ -81,13 +81,11 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         <CommonButton
                           label="Borrow"
                           altStyle={`w-40 h-10 ${
-                            //book.status === BookStatus.Available // may have to change the case for when someone else reqeuests -- add a hold
                             book.availableCopies != 0
                               ? "bg-dark-blue"
                               : "bg-medium-grey-border"
                           } border-none mr-3`}
                           onClick={
-                            //book.status === BookStatus.Available
                             book.availableCopies != 0
                               ? toggleBorrowOpen
                               : undefined
@@ -95,11 +93,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
                             <Image
-                              src={
-                                // book.status === BookStatus.Available
-                                // ? bookIcon
-                                bookIconGreyed
-                              }
+                              src={bookIconGreyed}
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
                             />

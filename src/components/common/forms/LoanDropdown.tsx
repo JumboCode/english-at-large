@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { BookRequest, BookStatus } from "@prisma/client";
+import { BookRequest, RequestStatus } from "@prisma/client";
 
 interface DropdownProps {
   report: BookRequest;
@@ -11,7 +11,7 @@ interface DropdownProps {
 
 const LoanDropdown = (props: DropdownProps) => {
   const { report, selectedValue, updateReq } = props;
-  const [filterType, setFilterType] = useState<BookStatus>(report.status);
+  const [filterType, setFilterType] = useState<RequestStatus>(report.status);
 
   useEffect(() => {
     setFilterType(report.status);
@@ -20,7 +20,7 @@ const LoanDropdown = (props: DropdownProps) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        {filterType == BookStatus.Pickup ? (
+        {filterType == RequestStatus.Pickup ? (
           <MenuButton className="inline-flex min-w-20 w-auto justify-center gap-1 rounded-lg bg-[#FFF1C2] p-2 text-black hover:bg-blue-600">
             <p className="text-sm font-medium font-rubik">{filterType}</p>
             <DropArrowIcon />
@@ -39,11 +39,11 @@ const LoanDropdown = (props: DropdownProps) => {
       >
         <div>
           <MenuItem key={0}>
-            {filterType == BookStatus.Pickup ? (
+            {filterType == RequestStatus.Pickup ? (
               <button
                 onClick={() => {
-                  setFilterType(BookStatus.Borrowed);
-                  updateReq({ ...report, status: BookStatus.Borrowed });
+                  setFilterType(RequestStatus.Borrowed);
+                  updateReq({ ...report, status: RequestStatus.Borrowed });
                 }}
                 className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
               >
@@ -54,8 +54,8 @@ const LoanDropdown = (props: DropdownProps) => {
             ) : (
               <button
                 onClick={() => {
-                  setFilterType(BookStatus.Pickup);
-                  updateReq({ ...report, status: BookStatus.Pickup });
+                  setFilterType(RequestStatus.Pickup);
+                  updateReq({ ...report, status: RequestStatus.Pickup });
                 }}
                 className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
               >
