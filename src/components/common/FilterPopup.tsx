@@ -13,8 +13,8 @@ interface FilterPopupProps {
   setSkills: (skill: BookSkills[]) => void;
   levels: BookLevel[];
   setLevels: (level: BookLevel[]) => void;
-  bookAvailable: boolean;
-  setBookAvailable: (status: boolean) => void;
+  bookAvailable?: boolean;
+  setBookAvailable?: (status: boolean) => void;
   sortBook: string;
   setSortBook: (sort: string) => void;
 }
@@ -63,7 +63,7 @@ const FilterPopup = (props: FilterPopupProps) => {
   const exit = () => {
     setSaveSkills(skills);
     setSaveLevels(levels);
-    setSaveAvailable(bookAvailable);
+    if (bookAvailable) setSaveAvailable(bookAvailable);
     setSaveSortBook(sortBook);
     toggle();
   };
@@ -72,7 +72,7 @@ const FilterPopup = (props: FilterPopupProps) => {
     setSkills(saveSkills);
     setLevels(saveLevels);
     setSortBook(saveSortBook);
-    setBookAvailable(saveAvailable);
+    if (saveAvailable && setBookAvailable) setBookAvailable(saveAvailable);
     toggle();
   };
 
