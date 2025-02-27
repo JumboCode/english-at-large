@@ -2,9 +2,9 @@ import {
   Book,
   BookLevel,
   BookSkills,
-  BookStatus,
   BookType,
   OnlineResource,
+  RequestStatus,
   ResourceFormat,
   ResourceTopic,
 } from "@prisma/client";
@@ -57,7 +57,7 @@ export const emptyBook: Book = {
   scanLink: "http://example.com/scan",
   description: "",
   notes: "",
-  status: BookStatus.Available,
+  // status: BookStatus.Available,
   skills: [],
   releaseDate: null,
   numPages: 0,
@@ -79,7 +79,7 @@ export const newEmptyBook: Omit<Book, "id"> = {
   scanLink: "",
   description: "",
   notes: "",
-  status: BookStatus.Available,
+  // status: BookStatus.Available,
   skills: [],
   releaseDate: null,
   numPages: 0,
@@ -99,7 +99,7 @@ export const emptyRequest: BookRequest = {
   id: 0, // Autoincremented, so can be 0 for dummy purposes
   userId: "cm2f3a8ra0000sl8zdb10q3d1 ", // Foreign key to User
   bookId: 0, // Foreign key to Book
-  status: BookStatus.Requested,
+  status: RequestStatus.Requested,
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",
@@ -110,7 +110,7 @@ export const emptyRequest: BookRequest = {
 export const newEmptyRequest: Omit<BookRequest, "id"> = {
   userId: "cm2f3a8ra0000sl8zdb10q3d1", // Foreign key to User
   bookId: 1, // Foreign key to Book
-  status: BookStatus.Requested,
+  status: RequestStatus.Requested,
   createdAt: new Date(),
   message: "empty",
   bookTitle: "updated book",

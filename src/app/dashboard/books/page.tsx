@@ -2,7 +2,7 @@
 import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
-import { Book, BookLevel, BookSkills, BookStatus } from "@prisma/client";
+import { Book, BookLevel, BookSkills, RequestStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
@@ -32,7 +32,7 @@ const BooksPage = () => {
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
-  const [status, setStatus] = useState<BookStatus[]>([]);
+  const [status, setStatus] = useState<RequestStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
   const [isbnOnSubmit, setISBN] = useState<string>("");
 
@@ -48,11 +48,11 @@ const BooksPage = () => {
       return (
         (skills.length === 0 ||
           skills.some((skill) => book.skills.includes(skill))) &&
-        (levels.length === 0 || levels.includes(book.level)) &&
-        (status.length == 0 || status.includes(book.status))
+        (levels.length === 0 || levels.includes(book.level))
+        // (status.length == 0 || status.includes(book.status)) TODO: replace filter logic
       );
     },
-    [levels, skills, status]
+    [levels, skills]
   );
 
   const sortBooks = useCallback(

@@ -34,7 +34,6 @@ model Book {
   skills          BookSkills[]
   bookType        BookType
   level           BookLevel
-  status          BookStatus    @default(Available)
   numPages        Int?          @default(0)
   coverURL        String        @default("placeholder")
   availableCopies Int           @default(0)
@@ -46,17 +45,17 @@ model Book {
 }
 
 model BookRequest {
-  id          Int        @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   userId      String
   bookId      Int
-  status      BookStatus
+  status      RequestStatus
   createdAt   DateTime
   message     String
   bookTitle   String
   requestedOn DateTime
   returnedBy  DateTime
-  book        Book       @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("BookRequests")
 }
@@ -80,9 +79,9 @@ enum UserRole {
   Tutor
 }
 
-enum BookStatus {
-  Available
+enum RequestStatus {
   Requested
+  Hold
   Borrowed
   Lost
   Pickup
