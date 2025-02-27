@@ -1,97 +1,112 @@
 "use client";
 import React from "react";
-import { useState, useEffect } from "react";
-import { BookLevel, BookSkills, BookStatus } from "@prisma/client";
+import OnlineResourceForm from "@/components/common/forms/OnlineResourceForm";
+import { useState, useEffect, useCallback } from "react";
+import {
+  OnlineResource,
+  BookSkills,
+  BookLevel,
+  BookStatus,
+  // ResourceFormat,
+  // ResourceTopic,
+} from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-import BookForm from "@/components/BookForm";
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import ResourceDashboard from "@/components/common/ResourceDashboard";
+import { getAllResources } from "@/lib/api/resources";
 
-//Testing, delete after frontnend is implement
-// import CreateResourceButton from "@/components/testing/CreateResourceButton";
-// import GetOneResourceButton from "@/components/testing/GetOneResourceButton";
-// import DeleteResourceButton from "@/components/testing/DeleteResourceButton";
-// import GetAllResourceButton from "@/components/testing/GetAllResourcesButton";
-// import UpdateResourceButton from "@/components/testing/UpdateResourceButton";
+enum formState {
+  FORM_CLOSED,
+  RESOURCE_FORM_OPEN,
+}
 
 const OnlineResourcesPage = () => {
   const user = useCurrentUser();
 
-  // TODO: turn this into resource form
-  const [bookFormShown, setBookFormShown] = useState(false);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [resources, setResources] = useState<OnlineResource[]>([]);
+  const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
+
+  // states needed for filter functionality -- don't delete!!
+  // const [format, setFormat] = useState<ResourceFormat>();
+  // const [topic, setTopic] = useState<ResourceTopic>();
+
+  // from books dashboard, delete when filter implemented
   const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
   const { hidePopup, popupStatus } = usePopup();
+  const [searchData, setSearchData] = useState("");
 
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  //   const filterBooks = useCallback(
-  //     (book: Book) => {
+  const filterResources = useCallback(
+    (resource: OnlineResource) => {
+      return (
+        (skills.length === 0 ||
+          skills.some((skill) => resource.skills.includes(skill))) &&
+        (levels.length === 0 || levels.includes(resource.level))
+      );
+    },
+    [levels, skills]
+  );
+
+  // const sortBooks = useCallback(
+  //   (a: OnlineResource, b: OnlineResource) => {
+  //     if (bookSortBy === "By Title") {
   //       return (
-  //         (skills.length === 0 ||
-  //           skills.some((skill) => book.skills.includes(skill))) &&
-  //         (levels.length === 0 || levels.includes(book.level))
+  //         a.title.localeCompare(b.title) || a.author.localeCompare(b.author)
   //       );
-  //     },
-  //     [levels, skills]
-  //   );
+  //     } else if (bookSortBy === "By Author") {
+  //       return (
+  //         a.author.localeCompare(b.author) || a.title.localeCompare(b.title)
+  //       );
+  //     } else if (bookSortBy === "By Release Date") {
+  //       return (a.releaseDate || 0) < (b.releaseDate || 0) ? -1 : 1;
+  //     }
+  //     return 0;
+  //   },
+  //   [bookSortBy]
+  // );
 
-  //   const sortBooks = useCallback(
-  //     (a: Book, b: Book) => {
-  //       if (bookSortBy === "By Title") {
-  //         return (
-  //           a.title.localeCompare(b.title) || a.author.localeCompare(b.author)
-  //         );
-  //       } else if (bookSortBy === "By Author") {
-  //         return (
-  //           a.author.localeCompare(b.author) || a.title.localeCompare(b.title)
-  //         );
-  //       } else if (bookSortBy === "By Release Date") {
-  //         return (a.releaseDate || 0) < (b.releaseDate || 0) ? -1 : 1;
-  //       }
-  //       return 0;
-  //     },
-  //     [bookSortBy]
-  //   );
-
-  //   const subsetBooks = structuredClone(books)
-  //     .filter(
-  //       (book) =>
-  //         book.title.toLowerCase().includes(searchData) ||
-  //         book.author.toLowerCase().includes(searchData) ||
-  //         book.isbn.includes(searchData)
-  //     )
-  //     .sort((a, b) => sortBooks(a, b))
-  //     .filter((book) => filterBooks(book));
+  const subsetResources = structuredClone<OnlineResource[]>(resources)
+    .filter((resource) => resource.name.toLowerCase().includes(searchData))
+    // .sort((a, b) => sortBooks(a, b))
+    .filter((resource) => filterResources(resource));
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //TODO: fetch online resources
+        const allResources = await getAllResources();
+        if (allResources) {
+          setResources(allResources);
+        }
       } catch (err) {
-        console.error("Failed to get all online resources");
+        console.error("Failed to get all books");
       }
     };
     fetchData();
   }, []);
 
-  return bookFormShown ? (
-    <BookForm exit={() => setBookFormShown(false)} existingBook={null} />
+  return formShown == formState.RESOURCE_FORM_OPEN ? (
+    <OnlineResourceForm
+      exit={() => setFormShown(formState.FORM_CLOSED)}
+      existingResource={null}
+    />
   ) : (
     <div>
       <SearchBar
-        setSearchData={() => {}} // TODO: fill this in
+        setSearchData={setSearchData}
         button={
           <CommonButton
             label="Filter"
@@ -102,9 +117,9 @@ const OnlineResourcesPage = () => {
         button2={
           user?.role === "Admin" ? (
             <CommonButton
-              label="Add Resource"
+              label="Add new"
               leftIcon={<AddIcon />}
-              onClick={() => setBookFormShown(true)}
+              onClick={() => setFormShown(formState.RESOURCE_FORM_OPEN)}
               altTextStyle="text-white"
               altStyle="bg-dark-blue"
             />
@@ -112,12 +127,6 @@ const OnlineResourcesPage = () => {
         }
         placeholderText="Search for resources"
       />
-      <div className="text-center">Coming soon!</div>
-      {/* <CreateResourceButton />
-      <GetOneResourceButton />
-      <DeleteResourceButton />
-      <UpdateResourceButton />
-      <GetAllResourceButton /> */}
       {popupStatus.shown ? (
         <ConfirmationPopup
           type={popupStatus.type}
@@ -140,6 +149,40 @@ const OnlineResourcesPage = () => {
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />
+      <div className="p-4 px-16 bg-white border-t">
+        <div className="flex flex-row">
+          <div className="text-left">
+            <div className="whitespace-normal">
+              <p className="text-sm text-slate-500 mb-6">
+                {subsetResources.length} {"resources"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center flex-row space-x-3 align-middle ml-auto">
+            <label htmlFor="level" className="text-md semi-bold">
+              Level
+            </label>
+            <select
+              id="level"
+              name="level"
+              className="border-[1px] border-medium-grey-border border-solid rounded-lg block h-9 text-sm w-48 indent-2"
+              onChange={undefined} // need to implement filtering
+              defaultValue={"All"}
+              required
+            >
+              <option value="">Select Level</option>
+              {Object.values(BookLevel).map((ResourceLevel, index) => {
+                return (
+                  <option key={index} value={ResourceLevel}>
+                    {ResourceLevel.replace("_", " ")}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        </div>
+        <ResourceDashboard resources={subsetResources}></ResourceDashboard>
+      </div>
     </div>
   );
 };

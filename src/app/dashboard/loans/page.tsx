@@ -10,6 +10,12 @@ import { getRequests, updateRequest } from "@/lib/api/requests";
 import LoanDropdown from "@/components/common/forms/LoanDropdown";
 import { updateBook } from "@/lib/api/books";
 import { emptyRequest } from "@/lib/util/types";
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
+import {
+  ConfirmPopupActions,
+  ConfirmPopupTypes,
+} from "@/lib/context/ConfirmPopupContext";
 
 const Loans = () => {
   const [requests, setRequests] = useState<
@@ -18,6 +24,8 @@ const Loans = () => {
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
+
+  const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
 
   // use of structured clone creates new subset of search target requests
   // allows filter to act on subset of searched requests
@@ -57,6 +65,30 @@ const Loans = () => {
         return a.returnedBy > b.returnedBy ? 1 : -1;
       default:
         return a.requestedOn > b.requestedOn ? 1 : -1;
+    }
+  };
+
+  const markAsReturned = async (
+    request: BookRequest & { user: User; book: Book }
+  ) => {
+    try {
+      await updateBook({
+        ...request.book,
+      });
+      await updateReq({
+        ...request,
+      });
+      setConfirmPopup({
+        type: ConfirmPopupTypes.RETURNED,
+        action: ConfirmPopupActions.MARK,
+        success: true,
+      });
+    } catch (error) {
+      setConfirmPopup({
+        type: ConfirmPopupTypes.RETURNED,
+        action: ConfirmPopupActions.MARK,
+        success: false,
+      });
     }
   };
 
@@ -130,8 +162,8 @@ const Loans = () => {
                       href={`books/${request.bookId}`}
                       className="flex items-start space-x-4"
                     >
-                      <div className="flex justify-between min-w-max max-w-[50%]">
-                        {request.book?.title}
+                      <div className="flex justify-between max-w-[99%] ">
+                        <p className="line-clamp-2">{request.book?.title}</p>
                       </div>
                     </Link>
                   </td>
@@ -154,19 +186,11 @@ const Loans = () => {
                   </td>
 
                   <td>
-                    <div className="flex justify-start items-center">
+                    <div className="flex justify-center items-center">
                       <CommonButton
                         label="Mark as Returned"
                         onClick={async () => {
-                          await updateBook({
-                            ...request.book,
-                            // status: BookStatus.Available,
-                            availableCopies: request.book.availableCopies + 1,
-                          });
-                          await updateReq({
-                            ...request,
-                            // status: BookStatus.Returned,
-                          });
+                          await markAsReturned(request);
                         }}
                         altTextStyle="text-white"
                         altStyle="bg-dark-blue"
@@ -178,6 +202,15 @@ const Loans = () => {
           </tbody>
         </table>
       </div>
+      {popupStatus.shown ? (
+        <ConfirmationPopup
+          type={popupStatus.type}
+          action={popupStatus.action}
+          success={popupStatus.success}
+          onDisappear={() => hidePopup()}
+          custom={popupStatus.custom}
+        />
+      ) : null}
     </div>
   );
 };

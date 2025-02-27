@@ -17,6 +17,7 @@ import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import IsbnForm from "@/components/common/forms/IsbnForm";
 import ManualForm from "@/components/common/forms/ManualForm";
+import LoadingSkeleton from "./loading";
 
 enum formState {
   FORM_CLOSED,
@@ -24,11 +25,19 @@ enum formState {
   BOOK_FORM_OPEN,
 }
 
+// const fetchBooks = async () => {
+//   const books = await getAllBooks();
+//   return books;
+// };
+// const booksPromise = getAllBooks();
+
 const BooksPage = () => {
+  // const books = use(booksPromise);
   const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
+  const [loadingBooks, setLoadingBooks] = useState(true);
+
   const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
-  // const [bookFormShown, setBookFormShown] = useState<boolean>(false);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
   const [skills, setSkills] = useState<BookSkills[]>([]);
   const [levels, setLevels] = useState<BookLevel[]>([]);
@@ -95,6 +104,8 @@ const BooksPage = () => {
         }
       } catch (err) {
         console.error("Failed to get all books");
+      } finally {
+        setLoadingBooks(false);
       }
     };
     fetchData();
@@ -168,6 +179,7 @@ const BooksPage = () => {
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />
+
       <div className="p-4 px-16 bg-white border-t">
         <div className="text-left">
           <div className="whitespace-normal">
@@ -176,17 +188,26 @@ const BooksPage = () => {
             </p>
           </div>
         </div>
+
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {subsetBooks.map((book, index) => (
-            <li key={index}>
-              <div>
-                {/* TODO: add grey border to this */}
-                <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md  hover:bg-blue-100 transition duration-200">
-                  <BookInfo book={book} />
-                </div>
-              </div>
-            </li>
-          ))}
+          {loadingBooks
+            ? // placeholders while books are loading
+              Array.from({ length: 4 }).map((_, index) => (
+                <li key={index}>
+                  <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md h-[40vh]">
+                    <LoadingSkeleton />
+                  </div>
+                </li>
+              ))
+            : subsetBooks.map((book, index) => (
+                <li key={index}>
+                  <div>
+                    <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">
+                      <BookInfo book={book} />
+                    </div>
+                  </div>
+                </li>
+              ))}
         </ul>
       </div>
     </div>
