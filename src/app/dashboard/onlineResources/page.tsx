@@ -6,7 +6,6 @@ import {
   OnlineResource,
   BookSkills,
   BookLevel,
-  BookStatus,
   // ResourceFormat,
   // ResourceTopic,
 } from "@prisma/client";
@@ -40,7 +39,6 @@ const OnlineResourcesPage = () => {
   // const [topic, setTopic] = useState<ResourceTopic>();
 
   // from books dashboard, delete when filter implemented
-  const [status, setStatus] = useState<BookStatus[]>([]);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
 
   const { hidePopup, popupStatus } = usePopup();
@@ -144,8 +142,6 @@ const OnlineResourcesPage = () => {
         setSkills={setSkills}
         levels={levels}
         setLevels={setLevels}
-        status={status}
-        setStatus={setStatus}
         sortBook={bookSortBy}
         setSortBook={setBookSortBy}
       />

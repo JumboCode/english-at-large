@@ -3,13 +3,17 @@ import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "./common/button/CommonButton";
 import { useCallback, useEffect, useState } from "react";
 import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
-import { createBook, getBookCover, updateBook } from "@/lib/api/books";
+import {
+  createBook,
+  getBookCover,
+  updateBook,
+  getAllBooks,
+} from "@/lib/api/books";
 import MultiSelectTagButton from "./common/forms/MultiSelectTagButton";
 import {
   ConfirmPopupTypes,
   ConfirmPopupActions,
 } from "@/lib/context/ConfirmPopupContext";
-import imageToAdd from "../assets/images/harry_potter.jpg";
 import axios from "axios";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
@@ -31,8 +35,18 @@ const BookForm = (props: BookFormProps) => {
   const [editBook, setEditBook] = useState<Book | null | undefined>(
     existingBook
   );
+  const [foundSimilar, setFoundSimilar] = useState(false);
 
   const { setConfirmPopup } = usePopup();
+
+  const addToISBN = (isbn: string, updateBook: Omit<Book, "id">) => {
+    console.log("THIS IS THE ISBN", isbn);
+    if (updateBook.isbn.length === 0) {
+      updateBook.isbn = [isbn];
+    } else {
+      updateBook.isbn.push(isbn);
+    }
+  };
 
   const pullISBN = useCallback(async () => {
     try {
@@ -59,16 +73,22 @@ const BookForm = (props: BookFormProps) => {
           updatedBook.description = bookFields.description;
         if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
         if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
-        if (isbn) updatedBook.isbn = isbn;
+        updatedBook.copies = 1;
+        updatedBook.availableCopies = 1;
+        //for now set copies and availCopies to 1, need to go back in the future and check
+        if (isbn) addToISBN(isbn, updatedBook);
+        console.log("look here now", updatedBook.isbn);
 
         return updatedBook;
       });
-
       // Book cover retrieval
-      const coverUrl = await getBookCover(newBook.isbn);
+      const coverUrl = await getBookCover(isbn ?? newBook.isbn[0]);
+      console.log(coverUrl);
       setNewBook((prevBook) => ({
         ...prevBook,
-        coverURL: coverUrl ?? imageToAdd.src,
+        coverURL:
+          coverUrl ??
+          "https://covers.openlibrary.org/b/isbn/978-1-933624-43-3-M.jpg",
       }));
     } catch {
       throw new Error("Book not found for this ISBN");
@@ -128,6 +148,14 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
+  const findSimilar = (allBooks: Book[], title: string) => {
+    return allBooks.filter(
+      (book) =>
+        book.title === title ||
+        book.title.toLowerCase().includes(title.toLowerCase()) ||
+        title.toLowerCase().includes(book.title.toLowerCase())
+    );
+  };
   const handleSave = async () => {
     try {
       if (editBook) {
@@ -143,16 +171,41 @@ const BookForm = (props: BookFormProps) => {
           onSave(editedBook);
         }
       } else if (newBook) {
-        const createdBook = await createBook(newBook);
+        const allBooks = await getAllBooks();
+        //checks if any similar books are returned, but should also ask the user
+        const similarBooks = findSimilar(allBooks!, newBook.title);
+        console.log("look here", newBook, similarBooks);
+        if (similarBooks.length != 0) {
+          //for now just pick the first matching title
+          similarBooks[0].isbn.push(newBook.isbn[0]);
+          similarBooks[0].copies += 1;
+          similarBooks[0].availableCopies += 1;
+          setFoundSimilar(true);
+          //we can create a modal from this
+          console.log(foundSimilar);
+          const updatedBook = await updateBook(similarBooks[0]);
 
-        setConfirmPopup({
-          type: ConfirmPopupTypes.BOOK,
-          action: ConfirmPopupActions.ADD,
-          success: !!createdBook,
-        });
+          setConfirmPopup({
+            type: ConfirmPopupTypes.EXISTING_BOOK,
+            action: ConfirmPopupActions.ADD,
+            success: !!updatedBook,
+          });
 
-        if (createdBook && onSave) {
-          onSave(createdBook);
+          if (updatedBook && onSave) {
+            onSave(updatedBook);
+          }
+        } else {
+          const createdBook = await createBook(newBook);
+
+          setConfirmPopup({
+            type: ConfirmPopupTypes.BOOK,
+            action: ConfirmPopupActions.ADD,
+            success: !!createdBook,
+          });
+
+          if (createdBook && onSave) {
+            onSave(createdBook);
+          }
         }
       }
       exit();
@@ -192,7 +245,7 @@ const BookForm = (props: BookFormProps) => {
           </div>
           <div className="h-[0.3px] bg-black"></div>
         </div>
-        {isbn ? 
+        {isbn ? (
           <div>
             <label htmlFor="isbn" className="block text-lg ml-[5%] mb-2">
               ISBN Number
@@ -201,14 +254,16 @@ const BookForm = (props: BookFormProps) => {
               type="text"
               id="isbn"
               name="isbn"
-              className={"text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-10 font-normal " + (newBook.isbn ? "bg-blue-100" : null)}
+              className={
+                "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-10 font-normal " +
+                (newBook.isbn ? "bg-blue-100" : null)
+              }
               onChange={bookChangeHandler}
-              defaultValue={editBook ? editBook.isbn : isbn}
+              defaultValue={editBook ? editBook.isbn[0] : isbn}
               required
             />
           </div>
-          : null
-        }
+        ) : null}
         <div className="mt-4">
           <label htmlFor="title" className="block text-lg ml-[5%] mb-2">
             Title
@@ -217,7 +272,10 @@ const BookForm = (props: BookFormProps) => {
             type="text"
             id="title"
             name="title"
-            className={"text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-9 font-normal " + (newBook.title ? "bg-blue-100" : null)}
+            className={
+              "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-9 font-normal " +
+              (newBook.title ? "bg-blue-100" : null)
+            }
             onChange={bookChangeHandler}
             value={editBook ? editBook.title : newBook.title}
             required
@@ -232,7 +290,10 @@ const BookForm = (props: BookFormProps) => {
               type="text"
               id="author"
               name="author"
-              className={"text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " + (newBook.author ? "bg-blue-100" : null)}
+              className={
+                "text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " +
+                (newBook.author ? "bg-blue-100" : null)
+              }
               onChange={bookChangeHandler}
               value={editBook ? editBook.author : newBook.author}
               required
@@ -246,7 +307,10 @@ const BookForm = (props: BookFormProps) => {
               type="text"
               id="publisher"
               name="publisher"
-              className={"text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " + (newBook.publisher ? "bg-blue-100" : null)}
+              className={
+                "text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " +
+                (newBook.publisher ? "bg-blue-100" : null)
+              }
               onChange={bookChangeHandler}
               value={editBook ? editBook.publisher : newBook.publisher}
               required
@@ -255,7 +319,7 @@ const BookForm = (props: BookFormProps) => {
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%]">
-          <label htmlFor="releaseDate" className="text-lg mb-2">
+            <label htmlFor="releaseDate" className="text-lg mb-2">
               Release Date
             </label>
             <input
@@ -270,35 +334,38 @@ const BookForm = (props: BookFormProps) => {
             />
           </div>
           <div className="flex flex-col w-[50%]">
-          <label htmlFor="pages" className="text-lg mb-2">
+            <label htmlFor="pages" className="text-lg mb-2">
               No. of pages
             </label>
             <input
               type="number"
               id="numPages"
               name="numPages"
-              className={"text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " + (newBook.numPages ? "bg-blue-100" : null)}
+              className={
+                "text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " +
+                (newBook.numPages ? "bg-blue-100" : null)
+              }
               onChange={bookChangeHandler}
               value={
                 editBook && editBook.numPages
                   ? editBook.numPages
                   : newBook.numPages ?? 1
               }
-              required 
+              required
             />
           </div>
         </div>
         <div>
-          <label
-            htmlFor="description"
-            className="block text-lg ml-[5%] mb-2"
-          >
+          <label htmlFor="description" className="block text-lg ml-[5%] mb-2">
             Description
           </label>
           <textarea
             id="description"
             name="description"
-            className={"text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-15 font-normal " + (newBook.description ? "bg-blue-100" : null)}
+            className={
+              "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-15 font-normal " +
+              (newBook.description ? "bg-blue-100" : null)
+            }
             onChange={bookChangeHandler}
             value={editBook ? editBook.description : newBook.description}
             required
@@ -368,6 +435,7 @@ const BookForm = (props: BookFormProps) => {
               );
             })}
           </div>
+
           {/* {!existingBook ? (
             <CommonButton
               label={"ISBN Click"}
