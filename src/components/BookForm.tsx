@@ -18,14 +18,17 @@ import axios from "axios";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
-  exit: () => void;
+  exit: (arg0: boolean) => void;
   existingBook?: Book | null;
   onSave?: (arg0: Book | null) => void;
   isbn?: string;
+  setOriginalBook?: (origBook: Omit<Book, "id">) => void;
+  setBookList?: (bookList: Book[]) => void;
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { exit, existingBook, onSave, isbn } = props;
+  const { exit, existingBook, onSave, isbn, setOriginalBook, setBookList } =
+    props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
@@ -35,16 +38,17 @@ const BookForm = (props: BookFormProps) => {
   const [editBook, setEditBook] = useState<Book | null | undefined>(
     existingBook
   );
-  const [foundSimilar, setFoundSimilar] = useState(false);
+  ///const [foundSimilar, setFoundSimilar] = useState(false);
 
   const { setConfirmPopup } = usePopup();
 
   const addToISBN = (isbn: string, updateBook: Omit<Book, "id">) => {
-    console.log("THIS IS THE ISBN", isbn);
     if (updateBook.isbn.length === 0) {
       updateBook.isbn = [isbn];
     } else {
-      updateBook.isbn.push(isbn);
+      if (!updateBook.isbn.includes(isbn)) {
+        updateBook.isbn.push(isbn);
+      }
     }
   };
 
@@ -77,7 +81,6 @@ const BookForm = (props: BookFormProps) => {
         updatedBook.availableCopies = 1;
         //for now set copies and availCopies to 1, need to go back in the future and check
         if (isbn) addToISBN(isbn, updatedBook);
-        console.log("look here now", updatedBook.isbn);
 
         return updatedBook;
       });
@@ -96,7 +99,9 @@ const BookForm = (props: BookFormProps) => {
   }, [isbn, newBook.isbn]);
 
   useEffect(() => {
-    pullISBN();
+    if (isbn) {
+      pullISBN();
+    }
   }, [isbn, pullISBN]);
 
   // handles the setState for all HTML input fields
@@ -148,6 +153,28 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
+  const bookCopiesChangeHandler = (val: number) => {
+    if (existingBook) {
+      const newVal = existingBook.copies + val;
+      setEditBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            ["copies"]: newVal,
+          } as Book)
+      );
+    } else {
+      const newVal = newBook.copies + val;
+      setNewBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            ["copies"]: newVal,
+          } as Omit<Book, "id">)
+      );
+    }
+  };
+
   const findSimilar = (allBooks: Book[], title: string) => {
     return allBooks.filter(
       (book) =>
@@ -158,6 +185,7 @@ const BookForm = (props: BookFormProps) => {
   };
   const handleSave = async () => {
     try {
+      let similarBooks = [];
       if (editBook) {
         const editedBook = await updateBook(editBook);
 
@@ -173,28 +201,11 @@ const BookForm = (props: BookFormProps) => {
       } else if (newBook) {
         const allBooks = await getAllBooks();
         //checks if any similar books are returned, but should also ask the user
-        const similarBooks = findSimilar(allBooks!, newBook.title);
-        console.log("look here", newBook, similarBooks);
-        if (similarBooks.length != 0) {
-          //for now just pick the first matching title
-          similarBooks[0].isbn.push(newBook.isbn[0]);
-          similarBooks[0].copies += 1;
-          similarBooks[0].availableCopies += 1;
-          setFoundSimilar(true);
-          //we can create a modal from this
-          console.log(foundSimilar);
-          const updatedBook = await updateBook(similarBooks[0]);
+        similarBooks = findSimilar(allBooks!, newBook.title);
+        if (setBookList) setBookList(similarBooks);
+        if (setOriginalBook) setOriginalBook(newBook);
 
-          setConfirmPopup({
-            type: ConfirmPopupTypes.EXISTING_BOOK,
-            action: ConfirmPopupActions.ADD,
-            success: !!updatedBook,
-          });
-
-          if (updatedBook && onSave) {
-            onSave(updatedBook);
-          }
-        } else {
+        if (similarBooks.length === 0) {
           const createdBook = await createBook(newBook);
 
           setConfirmPopup({
@@ -208,7 +219,7 @@ const BookForm = (props: BookFormProps) => {
           }
         }
       }
-      exit();
+      exit(similarBooks.length != 0);
     } catch (error) {
       console.error(error);
     }
@@ -232,7 +243,7 @@ const BookForm = (props: BookFormProps) => {
               <CommonButton
                 label="Cancel"
                 onClick={() => {
-                  exit();
+                  exit(false);
                 }}
               />
               <CommonButton
@@ -418,6 +429,28 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
 
+        <div className="flex flex-col w-[90%] mx-auto space-x-4">
+          <div className=" w-[50%] ">
+            <p className="text-lg mb-2">Copies</p>
+            <div className="flex flex-row gap-4">
+              <div className="h-10 text-black border border-medium-grey-border rounded-lg border-solid block font-normal text-center">
+                {editBook ? editBook.copies : newBook.copies}
+              </div>
+              <button
+                onClick={() => bookCopiesChangeHandler(-1)}
+                className="h-10 w-10 border border-dark-blue text-dark-blue rounded-lg border-solid"
+              >
+                -
+              </button>
+              <button
+                onClick={() => bookCopiesChangeHandler(1)}
+                className="h-10 w-10 border border-dark-blue-border rounded-lg border-solid bg-dark-blue text-white"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
         <div>
           <p className="block text-lg ml-[5%] mb-2">Skills</p>
           <div className="flex space-x-4 mx-[5%] ">

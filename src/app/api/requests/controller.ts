@@ -60,7 +60,6 @@ export const getOneRequestController = async (
   }
 };
 
-
 /**
  * Utility controller that gets a user's Request in the backend.
  *
@@ -70,9 +69,8 @@ export const getOneRequestController = async (
  *  - This controller can later be modified to call other backend functions as needed.
  */
 export const getUserRequestController = async (
-  userId: string,
-): Promise<
-(BookRequest & { book: Book })[]> => {
+  userId: string
+): Promise<(BookRequest & { book: Book })[]> => {
   try {
     const requests = await prisma.bookRequest.findMany({
       where: { userId: userId },
@@ -87,8 +85,6 @@ export const getUserRequestController = async (
     throw error;
   }
 };
-
-
 
 /**
  * Utility controller that validates requests fields, then creates a BookRequest in backend. Also emails all administators.
@@ -149,9 +145,10 @@ export const postRequestController = async (
               </p>`,
             };
 
-            await sgMail.send(msg).catch((error: unknown) => {
-              console.error(error);
-            });
+            // UNCOMMENT THIS WHEN DONE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // await sgMail.send(msg).catch((error: unknown) => {
+            //   console.error(error);
+            // });
           }
         });
 
