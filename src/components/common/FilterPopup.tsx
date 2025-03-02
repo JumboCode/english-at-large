@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { BookSkills, BookLevel, BookStatus } from "@prisma/client";
+import { BookSkills, BookLevel } from "@prisma/client";
 import MultiSelectTagButton from "./forms/MultiSelectTagButton";
 import { CustomChangeEvent } from "@/lib/util/types";
 import TagButton from "./button/TagButton";
@@ -13,8 +13,8 @@ interface FilterPopupProps {
   setSkills: (skill: BookSkills[]) => void;
   levels: BookLevel[];
   setLevels: (level: BookLevel[]) => void;
-  status: BookStatus[];
-  setStatus: (status: BookStatus[]) => void;
+  bookAvailable?: boolean;
+  setBookAvailable?: (status: boolean) => void;
   sortBook: string;
   setSortBook: (sort: string) => void;
 }
@@ -27,14 +27,14 @@ const FilterPopup = (props: FilterPopupProps) => {
     setSkills,
     levels,
     setLevels,
-    status,
-    setStatus,
+    bookAvailable,
+    setBookAvailable,
     sortBook,
     setSortBook,
   } = props;
   const [saveSkills, setSaveSkills] = useState<BookSkills[]>([]);
   const [saveLevels, setSaveLevels] = useState<BookLevel[]>([]);
-  const [saveStatus, setSaveStatus] = useState<BookStatus[]>([]);
+  const [saveAvailable, setSaveAvailable] = useState<boolean>(true);
   const [saveSortBook, setSaveSortBook] = useState<string>("By Title");
 
   const skillsList = Object.values(BookSkills);
@@ -49,10 +49,6 @@ const FilterPopup = (props: FilterPopupProps) => {
     setSaveLevels(event.target.value);
   };
 
-  const handleStatusChange = (event: CustomChangeEvent<BookStatus[]>) => {
-    setSaveStatus(event.target.value);
-  };
-
   const handleSortChange = (sorting: string) => {
     setSaveSortBook(sorting);
   };
@@ -60,14 +56,14 @@ const FilterPopup = (props: FilterPopupProps) => {
   const reset = () => {
     setSaveSkills([]);
     setSaveLevels([]);
-    setSaveStatus([]);
+    setSaveAvailable(true);
     setSaveSortBook("By Title");
   };
 
   const exit = () => {
     setSaveSkills(skills);
     setSaveLevels(levels);
-    setSaveStatus(status);
+    if (bookAvailable) setSaveAvailable(bookAvailable);
     setSaveSortBook(sortBook);
     toggle();
   };
@@ -75,8 +71,8 @@ const FilterPopup = (props: FilterPopupProps) => {
   const submit = () => {
     setSkills(saveSkills);
     setLevels(saveLevels);
-    setStatus(saveStatus);
     setSortBook(saveSortBook);
+    if (saveAvailable && setBookAvailable) setBookAvailable(saveAvailable);
     toggle();
   };
 
@@ -137,11 +133,17 @@ const FilterPopup = (props: FilterPopupProps) => {
               Availability
             </h2>
             <div className="flex flex-wrap gap-2 ml-4">
-              <MultiSelectTagButton
+              {/* <MultiSelectTagButton
                 name="status"
                 label="Available"
                 value={saveStatus}
                 onSelect={handleStatusChange}
+              /> */}
+
+              <TagButton
+                label={"Available"}
+                isSelected={saveAvailable}
+                onClick={() => setSaveAvailable(!saveAvailable)}
               />
             </div>
             <hr className="h-px mx-4 my-3 bg-gray-200 border-0 dark:bg-gray-700" />

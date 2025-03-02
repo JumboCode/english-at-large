@@ -27,13 +27,14 @@ const BorrowPopup = (props: BorrowPopupProps) => {
     toggleOpen();
   };
 
-  // this also needs to be changed to a request
   const toggleNextBorrow = async () => {
     if (user) {
       const request = await createQuickRequest(book, user);
+      book.availableCopies = book.availableCopies - 1;
 
       setConfirmPopup({
         type: ConfirmPopupTypes.BOOK,
+        // TODO: check other copies
         action: ConfirmPopupActions.BORROW,
         success: !!request,
       });
@@ -71,6 +72,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
                   releaseDate={book.releaseDate}
                   copies={10}
                   numPages={book.numPages}
+                  availableCopies={book.availableCopies}
                   altStyle="flex row-span-2 my-5"
                   altWidth="pb-3"
                 />
