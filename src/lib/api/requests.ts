@@ -1,4 +1,4 @@
-import { Book, BookRequest, BookStatus, User } from "@prisma/client";
+import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import axios from "axios";
 import {
   validateBookData,
@@ -57,11 +57,11 @@ export const getRequests = async (): Promise<
  *
  * @remarks
  */
-export const getUserRequests = async (userId: string): Promise<
-  (BookRequest & { user: User; book: Book })[] | undefined
-> => {
+export const getUserRequests = async (
+  userId: string
+): Promise<(BookRequest & { user: User; book: Book })[] | undefined> => {
   try {
-    const response = await axios.get(`/api/requests?userId=${userId}`)
+    const response = await axios.get(`/api/requests?userId=${userId}`);
     return response.data;
   } catch (error) {
     throw new Error("Failed to fetch user's requests");
@@ -104,7 +104,7 @@ export const createRequest = async (
 export const createQuickRequest = async (
   book: Book,
   user: User,
-  newStatus: BookStatus,
+  newStatus: RequestStatus,
 ): Promise<BookRequest | undefined> => {
   try {
     if (!validateBookData(book) || !validateUserData(user)) {
@@ -125,7 +125,6 @@ export const createQuickRequest = async (
 
     const response = await axios.post("/api/requests", request);
     await updateBook({ ...book, status: newStatus });
-    //
     
     return response.data;
   } catch (error) {

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book, BookRequest, BookStatus, User } from "@prisma/client";
+import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
@@ -49,11 +49,11 @@ const Loans = () => {
   const requestFilter = (request: BookRequest) => {
     switch (selectedValue) {
       case "Pick-up":
-        return request.status === BookStatus.Pickup;
+        return request.status === RequestStatus.Pickup;
       case "Borrowed":
-        return request.status === BookStatus.Borrowed;
+        return request.status === RequestStatus.Borrowed;
       default:
-        return request.status !== BookStatus.Returned;
+        return request.status !== RequestStatus.Returned;
     }
   };
 
@@ -74,11 +74,9 @@ const Loans = () => {
     try {
       await updateBook({
         ...request.book,
-        status: BookStatus.Available,
       });
       await updateReq({
         ...request,
-        status: BookStatus.Returned,
       });
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,

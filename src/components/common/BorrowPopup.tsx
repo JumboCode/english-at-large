@@ -3,12 +3,11 @@ import { useState } from "react";
 import BookDetail from "@/components/Details";
 import ConfirmBookRequestPopup from "./ConfirmBookRequestPopup";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book } from "@prisma/client";
+import { Book, RequestStatus } from "@prisma/client";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { createQuickRequest } from "@/lib/api/requests";
-import { BookStatus } from "@prisma/client";
 import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
@@ -28,13 +27,14 @@ const BorrowPopup = (props: BorrowPopupProps) => {
     toggleOpen();
   };
 
-  // this also needs to be changed to a request
   const toggleNextBorrow = async () => {
     if (user) {
-      const request = await createQuickRequest(book, user, BookStatus.Requested);
+      const request = await createQuickRequest(book, user, RequestStatus.Requested);
+      book.availableCopies = book.availableCopies - 1;
 
       setConfirmPopup({
         type: ConfirmPopupTypes.BOOK,
+        // TODO: check other copies
         action: ConfirmPopupActions.BORROW,
         success: !!request,
       });
@@ -72,6 +72,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
                   releaseDate={book.releaseDate}
                   copies={10}
                   numPages={book.numPages}
+                  availableCopies={book.availableCopies}
                   altStyle="flex row-span-2 my-5"
                   altWidth="pb-3"
                 />

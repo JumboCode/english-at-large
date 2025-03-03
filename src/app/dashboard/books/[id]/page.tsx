@@ -8,7 +8,7 @@ import holdBookClock from "../../../../assets/icons/holdBookClock.svg"
 import BorrowPopup from "@/components/common/BorrowPopup";
 import HoldPopup from "@/components/common/HoldPopup";
 import { getOneBook } from "@/lib/api/books";
-import { Book, BookStatus } from "@prisma/client";
+import { Book } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -67,7 +67,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
           onSave={(b: Book | null) => {
             setBook(b);
           }}
-          isbn={book.isbn}
+          isbn={book.isbn[0]}
         />
       ) : (
         <div className="pb-12">
@@ -85,20 +85,22 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     <div className="flex">
                       {
                         <CommonButton
-                          label= {book.status === BookStatus.Available ? "Borrow" : "Place hold"}
+                          label= {book.availableCopies != 0 ? "Borrow" : "Place hold"}
                           altStyle={`w-40 h-10 ${
-                            book.status === BookStatus.Borrowed// may have to change the case for when someone else requests -- add a hold
-                              ? "bg-[#7890CD]"
-                              : "bg-dark-blue"
+                            book.availableCopies != 0
+                              ? "bg-dark-blue"
+                              : "bg-medium-grey-border"
                           } border-none mr-3`}
                           onClick={
-                            book.status === BookStatus.Available ? toggleBorrowOpen : toggleHoldOpen
+                            book.availableCopies != 0
+                              ? toggleBorrowOpen
+                              : toggleHoldOpen
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
                             <Image
                               src={
-                                book.status === BookStatus.Available ? bookIconGreyed : holdBookClock
+                                book.availableCopies != 0 ? bookIconGreyed : holdBookClock
                               }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
@@ -195,8 +197,9 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     isbn={book.isbn}
                     publisher={book.publisher}
                     releaseDate={book.releaseDate}
-                    copies={10}
+                    copies={book.copies}
                     numPages={book.numPages}
+                    availableCopies={book.availableCopies}
                     lineSpacing="space-y-6"
                   />
                 </div>

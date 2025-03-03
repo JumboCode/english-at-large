@@ -2,10 +2,11 @@
 import React from "react";
 
 interface DetailProps {
-  isbn: string;
+  isbn: string[];
   publisher: string;
   releaseDate: string | null;
   copies: number;
+  availableCopies: number;
   numPages: number | null;
   lineSpacing?: string;
   verticalSpacing?: string;
@@ -20,6 +21,7 @@ const BookDetail = (props: DetailProps) => {
     publisher,
     releaseDate,
     copies,
+    availableCopies,
     numPages,
     lineSpacing,
     verticalSpacing,
@@ -41,10 +43,14 @@ const BookDetail = (props: DetailProps) => {
         </div>
       </div>
       <div className={`${lineSpacing} ${verticalSpacing} ${fontSize}`}>
-        <div className={`relative ${altWidth}`}>{isbn}</div>
+        <div className={`relative ${altWidth}`}>
+          {[...new Set(isbn)].join(", ")}
+        </div>
         <div className={`relative ${altWidth}`}>{publisher}</div>{" "}
         <div className={`relative`}>{`${releaseDate ?? "1/1/1900"}`} </div>
-        <div className={`relative ${altWidth}`}>{copies}</div>
+        <div className={`relative ${altWidth}`}>
+          {copies}, {availableCopies} available
+        </div>
         <div className={`relative ${altWidth}`}>{numPages}</div>
       </div>
     </div>

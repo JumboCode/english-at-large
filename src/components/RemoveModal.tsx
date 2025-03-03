@@ -78,6 +78,7 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
                 publisher={book.publisher}
                 releaseDate={book.releaseDate}
                 numPages={book.numPages}
+                availableCopies={book.availableCopies}
                 copies={10}
                 lineSpacing="space-y-5"
                 fontSize="text-sm"
