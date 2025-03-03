@@ -38,7 +38,13 @@ const BookForm = (props: BookFormProps) => {
   const [editBook, setEditBook] = useState<Book | null | undefined>(
     existingBook
   );
-  ///const [foundSimilar, setFoundSimilar] = useState(false);
+  const [numCopies, setNumCopies] = useState<number>(
+    existingBook ? existingBook.copies : 1
+  );
+  const [availableCopies, setAvailableCopies] = useState<number>(
+    existingBook ? existingBook.availableCopies : 1
+  );
+  const [isInvalidCopies, setisInvalidCopies] = useState<boolean>(false);
 
   const { setConfirmPopup } = usePopup();
 
@@ -153,27 +159,27 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
-  const bookCopiesChangeHandler = (val: number) => {
+  useEffect(() => {
     if (existingBook) {
-      const newVal = existingBook.copies + val;
       setEditBook(
         (prevBook) =>
           ({
             ...prevBook,
-            ["copies"]: newVal,
+            ["copies"]: numCopies,
+            ["availableCopies"]: availableCopies,
           } as Book)
       );
     } else {
-      const newVal = newBook.copies + val;
       setNewBook(
         (prevBook) =>
           ({
             ...prevBook,
-            ["copies"]: newVal,
+            ["copies"]: numCopies,
+            ["availableCopies"]: availableCopies,
           } as Omit<Book, "id">)
       );
     }
-  };
+  }, [numCopies, availableCopies, existingBook]);
 
   const findSimilar = (allBooks: Book[], title: string) => {
     return allBooks.filter(
@@ -307,7 +313,6 @@ const BookForm = (props: BookFormProps) => {
               }
               onChange={bookChangeHandler}
               value={editBook ? editBook.author : newBook.author}
-              required
             />
           </div>
           <div className="flex flex-col w-[50%]">
@@ -324,7 +329,6 @@ const BookForm = (props: BookFormProps) => {
               }
               onChange={bookChangeHandler}
               value={editBook ? editBook.publisher : newBook.publisher}
-              required
             />
           </div>
         </div>
@@ -362,7 +366,6 @@ const BookForm = (props: BookFormProps) => {
                   ? editBook.numPages
                   : newBook.numPages ?? 1
               }
-              required
             />
           </div>
         </div>
@@ -379,7 +382,6 @@ const BookForm = (props: BookFormProps) => {
             }
             onChange={bookChangeHandler}
             value={editBook ? editBook.description : newBook.description}
-            required
           ></textarea>
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
@@ -393,7 +395,6 @@ const BookForm = (props: BookFormProps) => {
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
               defaultValue={editBook ? editBook.level : ""}
-              required
             >
               <option value="">Select level</option>
               {levels.map((bookLevel, index) => {
@@ -415,7 +416,6 @@ const BookForm = (props: BookFormProps) => {
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
               defaultValue={editBook ? editBook.bookType : ""}
-              required
             >
               <option value="">Select book type</option>
               {types.map((bookType, index) => {
@@ -431,24 +431,44 @@ const BookForm = (props: BookFormProps) => {
 
         <div className="flex flex-col w-[90%] mx-auto space-x-4">
           <div className=" w-[50%] ">
-            <p className="text-lg mb-2">Copies</p>
+            <p className="text-lg mb-2">Number of Copies</p>
             <div className="flex flex-row gap-4">
-              <div className="h-10 text-black border border-medium-grey-border rounded-lg border-solid block font-normal text-center">
-                {editBook ? editBook.copies : newBook.copies}
+              <div
+                className={`w-full h-10 flex flex-row justify-center items-center text-black  rounded-lg border border-solid font-normal text-center ${
+                  isInvalidCopies ? `border-red-500` : ` border-medium-grey`
+                }`}
+              >
+                <p>{editBook ? editBook.copies : newBook.copies}</p>
               </div>
               <button
-                onClick={() => bookCopiesChangeHandler(-1)}
-                className="h-10 w-10 border border-dark-blue text-dark-blue rounded-lg border-solid"
+                onClick={() => {
+                  if (availableCopies > 0) {
+                    setNumCopies(numCopies - 1);
+                    setAvailableCopies(availableCopies - 1);
+                  } else {
+                    setisInvalidCopies(true);
+                  }
+                }}
+                className="h-10 w-10 p-4 border border-dark-blue text-dark-blue rounded-lg border-solid flex flex-row justify-center items-center"
               >
-                -
+                <p>-</p>
               </button>
               <button
-                onClick={() => bookCopiesChangeHandler(1)}
-                className="h-10 w-10 border border-dark-blue-border rounded-lg border-solid bg-dark-blue text-white"
+                onClick={() => {
+                  setNumCopies(numCopies + 1);
+                  setAvailableCopies(availableCopies + 1);
+                  setisInvalidCopies(false);
+                }}
+                className="h-10 w-10 p-4 border border-dark-blue-border rounded-lg border-solid bg-dark-blue text-white flex flex-row justify-center items-center"
               >
-                +
+                <div>+</div>
               </button>
             </div>
+            {isInvalidCopies ? (
+              <p className="text-red-500 font-normal">
+                A book must have at least one copy
+              </p>
+            ) : null}
           </div>
         </div>
         <div>
