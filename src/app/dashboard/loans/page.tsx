@@ -10,12 +10,14 @@ import { getRequests, updateRequest } from "@/lib/api/requests";
 import LoanDropdown from "@/components/common/forms/LoanDropdown";
 import { updateBook } from "@/lib/api/books";
 import { emptyRequest } from "@/lib/util/types";
+import { sendWaitlistNotificationEmail } from "@/app/api/requests/controller";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
+
 
 const Loans = () => {
   const [requests, setRequests] = useState<
@@ -84,10 +86,20 @@ const Loans = () => {
         success: true,
       });
 
-      // send users who are on hold an email when book is available
-      // TODO: implement waitlist functionality (CHANGE INPUTTED REQUEST HERE)
-      await sendWaitlistNotificationEmail(request.id); 
+      // finds oldest request of status hold and sends email
+      const holds = requests.filter(holdRequest => 
+        holdRequest.status === RequestStatus.Hold && holdRequest.bookId === request.bookId
+      );
 
+      // if there are any holds for the current book
+      if (holds) {
+        const earliestHold = holds.reduce((earliest, current) => 
+          !earliest || current.createdAt < earliest.createdAt ? current : earliest, emptyRequest
+        );
+        console.log(earliestHold.book);
+        await sendWaitlistNotificationEmail(earliestHold.id); 
+      }
+      
 
     } catch (error) {
       setConfirmPopup({

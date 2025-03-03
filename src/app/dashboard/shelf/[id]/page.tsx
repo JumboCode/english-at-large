@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, use } from "react";
 import { getOneUser } from "@/lib/api/users";
-import { User, BookRequest, Book } from "@prisma/client";
+import { User, BookRequest, Book, RequestStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import { getUserRequests } from "@/lib/api/requests";
 import { MAX_REQUESTS } from "@/lib/util/types";
@@ -32,8 +32,8 @@ const Shelf = (props: { params: Promise<Params> }) => {
 
     const fetchRequests= async () => {
       const allUserRequests = await getUserRequests(user.id);
-      const userLoans = allUserRequests?.filter(request => request.status === "Requested");
-      const userHolds = allUserRequests?.filter(request => request.status === "Hold");
+      const userLoans = allUserRequests?.filter(request => request.status === RequestStatus.Requested);
+      const userHolds = allUserRequests?.filter(request => request.status === RequestStatus.Hold);
 
       setLoans(userLoans ?? []);
       setHolds(userHolds ?? []);

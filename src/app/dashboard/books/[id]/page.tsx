@@ -8,7 +8,7 @@ import holdBookClock from "../../../../assets/icons/holdBookClock.svg"
 import BorrowPopup from "@/components/common/BorrowPopup";
 import HoldPopup from "@/components/common/HoldPopup";
 import { getOneBook } from "@/lib/api/books";
-import { Book } from "@prisma/client";
+import { Book, RequestStatus, BookRequest, User } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -16,6 +16,7 @@ import BookDetail from "@/components/Details";
 import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
+import { getUserRequests } from "@/lib/api/requests";
 
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
@@ -37,6 +38,12 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [isHoldOpen, setIsHoldOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [userLoan, setUserLoan] = useState<
+      (BookRequest & { user: User; book: Book })[]
+    >([]);
+  const [userHold, setUserHold] = useState<
+      (BookRequest & { user: User; book: Book })[]
+    >([]);
   const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
 
@@ -46,7 +53,26 @@ const BookDetails = (props: { params: Promise<Params> }) => {
       setBook(book || null);
     };
     fetchBook();
-  }, [params]);
+
+    if (user && book) {
+      const fetchRequests = async () => {
+        const allUserRequests = await getUserRequests(user.id);
+        const userLoan = (allUserRequests ?? []).filter(request => 
+          request.status === RequestStatus.Borrowed && request.bookId === book.id
+        );
+        const userHold = (allUserRequests ?? []).filter(request => 
+          request.status === RequestStatus.Hold && request.bookId === book.id
+        );
+
+        // should only be 1 item or none 
+        setUserLoan(userLoan);
+        setUserHold(userHold);
+  
+      };
+      fetchRequests();
+    }
+    
+  }, [params, user, book]);
 
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
@@ -85,15 +111,27 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     <div className="flex">
                       {
                         <CommonButton
-                          label= {book.availableCopies != 0 ? "Borrow" : "Place hold"}
+                          label= {
+                            book.availableCopies != 0 
+                            ? userLoan.length > 0 
+                               ? "Borrowed"
+                               : userHold.length > 0
+                                  ? "Hold placed"
+                                  : "Borrow"
+                            : "Place hold"
+                          }
                           altStyle={`w-40 h-10 ${
-                            book.availableCopies != 0
-                              ? "bg-dark-blue"
-                              : "bg-medium-grey-border"
+                            userLoan.length > 0 || userHold.length > 0 
+                              ? "bg-medium-grey-border"
+                              : "bg-dark-blue"
                           } border-none mr-3`}
                           onClick={
-                            book.availableCopies != 0
-                              ? toggleBorrowOpen
+                              book.availableCopies != 0 
+                              ? userLoan.length > 0 
+                                 ? undefined
+                                 : userHold.length > 0
+                                    ? undefined
+                                    : toggleBorrowOpen
                               : toggleHoldOpen
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"

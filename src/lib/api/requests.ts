@@ -124,7 +124,7 @@ export const createQuickRequest = async (
     };
 
     const response = await axios.post("/api/requests", request);
-    await updateBook({ ...book, status: newStatus });
+    await updateBook({ ...book});
     
     return response.data;
   } catch (error) {

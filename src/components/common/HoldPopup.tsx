@@ -3,12 +3,11 @@ import { useState } from "react";
 import BookDetail from "@/components/Details";
 import ConfirmBookRequestPopup from "./ConfirmBookRequestPopup";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book } from "@prisma/client";
+import { Book, RequestStatus } from "@prisma/client";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { createQuickRequest } from "@/lib/api/requests";
-import { BookStatus } from "@prisma/client";
 import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
@@ -32,7 +31,7 @@ const HoldPopup = (props: HoldPopupProps) => {
   
   const toggleNextHold = async () => {
     if (user) {
-      const request = await createQuickRequest(book, user, BookStatus.Hold);
+      const request = await createQuickRequest(book, user, RequestStatus.Hold);
 
       setConfirmPopup({
         type: ConfirmPopupTypes.HOLD,
@@ -72,6 +71,7 @@ const HoldPopup = (props: HoldPopupProps) => {
                   publisher={book.publisher}
                   releaseDate={book.releaseDate}
                   copies={10}
+                  availableCopies={book.availableCopies}
                   numPages={book.numPages}
                   altStyle="flex row-span-2 my-5"
                   altWidth="pb-3"

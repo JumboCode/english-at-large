@@ -89,8 +89,6 @@ export const getUserRequestController = async (
   }
 };
 
-
-
 /**
  * Utility controller that validates requests fields, then creates a BookRequest in backend. Also emails all administators.
  *
@@ -150,9 +148,9 @@ export const postRequestController = async (
               </p>`,
             };
 
-            await sgMail.send(msg).catch((error: unknown) => {
-              console.error(error);
-            });
+            // await sgMail.send(msg).catch((error: unknown) => {
+            //   console.error(error);
+            // });
           }
         });
 

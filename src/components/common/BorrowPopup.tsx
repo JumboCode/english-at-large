@@ -30,11 +30,10 @@ const BorrowPopup = (props: BorrowPopupProps) => {
   const toggleNextBorrow = async () => {
     if (user) {
       const request = await createQuickRequest(book, user, RequestStatus.Requested);
-      book.availableCopies = book.availableCopies - 1;
+      book.availableCopies = book.availableCopies > 0 ? book.availableCopies - 1 : 0;
 
       setConfirmPopup({
         type: ConfirmPopupTypes.BOOK,
-        // TODO: check other copies
         action: ConfirmPopupActions.BORROW,
         success: !!request,
       });
