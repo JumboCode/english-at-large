@@ -17,7 +17,7 @@ import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 import { getUserRequests } from "@/lib/api/requests";
-
+import { MAX_REQUESTS } from "@/lib/util/types";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
@@ -38,14 +38,16 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [isHoldOpen, setIsHoldOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [userLoan, setUserLoan] = useState<
+  const [userLoans, setUserLoans] = useState<
       (BookRequest & { user: User; book: Book })[]
     >([]);
-  const [userHold, setUserHold] = useState<
+  const [userHolds, setUserHolds] = useState<
       (BookRequest & { user: User; book: Book })[]
     >([]);
   const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
+  const [borrowed, setBorrowed] = useState(false);
+  const [holdPlaced, setHoldPlaced] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -53,26 +55,37 @@ const BookDetails = (props: { params: Promise<Params> }) => {
       setBook(book || null);
     };
     fetchBook();
+  }, [params]); 
 
+  useEffect(() => {
     if (user && book) {
       const fetchRequests = async () => {
         const allUserRequests = await getUserRequests(user.id);
-        const userLoan = (allUserRequests ?? []).filter(request => 
-          request.status === RequestStatus.Borrowed && request.bookId === book.id
+        const userLoans = (allUserRequests ?? []).filter(request => 
+          request.status === RequestStatus.Borrowed
         );
-        const userHold = (allUserRequests ?? []).filter(request => 
-          request.status === RequestStatus.Hold && request.bookId === book.id
+        const userHolds = (allUserRequests ?? []).filter(request => 
+          request.status === RequestStatus.Hold
         );
 
-        // should only be 1 item or none 
-        setUserLoan(userLoan);
-        setUserHold(userHold);
-  
-      };
-      fetchRequests();
+        setUserLoans(userLoans);
+        setUserHolds(userHolds);
+
+        // checking if user has already borrowed or placed hold 
+        //  for the current book
+        const isBookLoaned = userLoans.some(request => request.bookId === book.id);
+        const isBookHeld = userHolds.some(request => request.bookId === book.id);
+        if (isBookLoaned) {
+          setBorrowed(true); 
+        } 
+        if (isBookHeld) {
+          setHoldPlaced(true); 
+        } 
+      }
+      fetchRequests(); 
     }
-    
-  }, [params, user, book]);
+  }, [user, book]);
+
 
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
@@ -112,33 +125,42 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                       {
                         <CommonButton
                           label= {
-                            book.availableCopies != 0 
-                            ? userLoan.length > 0 
-                               ? "Borrowed"
-                               : userHold.length > 0
-                                  ? "Hold placed"
-                                  : "Borrow"
-                            : "Place hold"
+                            book.availableCopies > 0 
+                            ? userLoans.length < MAX_REQUESTS
+                              ? borrowed
+                                ? "Borrowed"
+                                : "Borrow"
+                              : "Loans exceeded"
+                            : userHolds.length < MAX_REQUESTS
+                                ? holdPlaced
+                                    ? "Hold placed"
+                                    : "Place hold"
+                                : "Holds exceeded"
                           }
                           altStyle={`w-40 h-10 ${
-                            userLoan.length > 0 || userHold.length > 0 
+                            userLoans.length >= MAX_REQUESTS || userHolds.length >= MAX_REQUESTS
+                            || borrowed || holdPlaced
                               ? "bg-medium-grey-border"
                               : "bg-dark-blue"
                           } border-none mr-3`}
                           onClick={
-                              book.availableCopies != 0 
-                              ? userLoan.length > 0 
-                                 ? undefined
-                                 : userHold.length > 0
-                                    ? undefined
-                                    : toggleBorrowOpen
-                              : toggleHoldOpen
+                            book.availableCopies > 0 
+                            ? userLoans.length < MAX_REQUESTS && !borrowed
+                              ? toggleBorrowOpen
+                              : undefined
+                            : userHolds.length < MAX_REQUESTS && !holdPlaced
+                                ? toggleHoldOpen
+                                : undefined
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
-                            <Image
+                            borrowed || holdPlaced 
+                            ? undefined
+                            : <Image
                               src={
-                                book.availableCopies != 0 ? bookIconGreyed : holdBookClock
+                                book.availableCopies > 0 
+                                ? bookIconGreyed
+                                : holdBookClock
                               }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
