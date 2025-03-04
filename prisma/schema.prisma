@@ -23,23 +23,22 @@ model User {
 }
 
 model Book {
-  id              Int           @id @default(autoincrement())
-  notes           String?
-  scanLink        String?
-  title           String
-  author          String
-  description     String
-  publisher       String
-  releaseDate     String?
-  skills          BookSkills[]
-  bookType        BookType
-  level           BookLevel
-  numPages        Int?          @default(0)
-  coverURL        String        @default("placeholder")
-  availableCopies Int           @default(0)
-  copies          Int           @default(0)
-  isbn            String[]
-  requests        BookRequest[]
+  id          Int           @id @default(autoincrement())
+  notes       String?
+  scanLink    String?
+  title       String
+  author      String
+  description String
+  publisher   String
+  releaseDate String?
+  skills      BookSkills[]
+  bookType    BookType
+  level       BookLevel
+  numPages    Int?          @default(0)
+  coverURL    String        @default("placeholder")
+  copies      Int           @default(0)
+  isbn        String[]
+  requests    BookRequest[]
 
   @@map("Books")
 }
@@ -48,12 +47,12 @@ model BookRequest {
   id          Int           @id @default(autoincrement())
   userId      String
   bookId      Int
-  status      RequestStatus
   createdAt   DateTime
   message     String
   bookTitle   String
   requestedOn DateTime
   returnedBy  DateTime
+  status      RequestStatus
   book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 

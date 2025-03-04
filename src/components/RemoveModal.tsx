@@ -11,6 +11,7 @@ import {
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
 import imageToAdd from "../assets/images/harry_potter.jpg";
+import { getAvailableCopies } from "@/lib/util/types";
 
 interface RemoveModalProps {
   book: Book;
@@ -78,8 +79,8 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
                 publisher={book.publisher}
                 releaseDate={book.releaseDate}
                 numPages={book.numPages}
-                availableCopies={book.availableCopies}
-                copies={10}
+                availableCopies={getAvailableCopies(book)}
+                copies={book.copies}
                 lineSpacing="space-y-5"
                 fontSize="text-sm"
               />

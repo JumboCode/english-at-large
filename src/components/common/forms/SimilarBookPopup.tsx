@@ -25,7 +25,6 @@ const SimilarBookPopup = (props: SimilarBookPopupProps) => {
     }
 
     bookList[index].copies += 1;
-    bookList[index].availableCopies += 1;
     const updatedBook = await updateBook(bookList[index]);
 
     setConfirmPopup({

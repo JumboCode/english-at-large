@@ -2,7 +2,11 @@
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "./common/button/CommonButton";
 import { useCallback, useEffect, useState } from "react";
-import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
+import {
+  CustomChangeEvent,
+  getAvailableCopies,
+  newEmptyBook,
+} from "@/lib/util/types";
 import {
   createBook,
   getBookCover,
@@ -42,7 +46,7 @@ const BookForm = (props: BookFormProps) => {
     existingBook ? existingBook.copies : 1
   );
   const [availableCopies, setAvailableCopies] = useState<number>(
-    existingBook ? existingBook.availableCopies : 1
+    existingBook ? getAvailableCopies(existingBook) : 1
   );
   const [isInvalidCopies, setisInvalidCopies] = useState<boolean>(false);
 
@@ -84,7 +88,6 @@ const BookForm = (props: BookFormProps) => {
         if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
         if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
         updatedBook.copies = 1;
-        updatedBook.availableCopies = 1;
         //for now set copies and availCopies to 1, need to go back in the future and check
         if (isbn) addToISBN(isbn, updatedBook);
 
@@ -160,13 +163,15 @@ const BookForm = (props: BookFormProps) => {
   };
 
   useEffect(() => {
+    console.log("num:", numCopies);
+    console.log("available:", availableCopies);
+
     if (existingBook) {
       setEditBook(
         (prevBook) =>
           ({
             ...prevBook,
             ["copies"]: numCopies,
-            ["availableCopies"]: availableCopies,
           } as Book)
       );
     } else {
@@ -175,7 +180,6 @@ const BookForm = (props: BookFormProps) => {
           ({
             ...prevBook,
             ["copies"]: numCopies,
-            ["availableCopies"]: availableCopies,
           } as Omit<Book, "id">)
       );
     }
@@ -194,7 +198,6 @@ const BookForm = (props: BookFormProps) => {
       let similarBooks = [];
       if (editBook) {
         const editedBook = await updateBook(editBook);
-
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
           action: ConfirmPopupActions.ADD,
@@ -466,7 +469,9 @@ const BookForm = (props: BookFormProps) => {
             </div>
             {isInvalidCopies ? (
               <p className="text-red-500 font-normal">
-                A book must have at least one copy
+                {(editBook ? editBook.copies : newBook ? newBook.copies : 0) -
+                  availableCopies}{" "}
+                out right now, cannot have less copies than loans
               </p>
             ) : null}
           </div>

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { validateBookData } from "@/lib/util/types";
-import { Book } from "@prisma/client";
+import { Book, BookRequest } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
  *
@@ -20,6 +20,9 @@ export const postBookController = async (
 
     const newBook = await prisma.book.create({
       data: bookData,
+      include: {
+        requests: true,
+      },
     });
 
     return newBook;
@@ -77,10 +80,17 @@ export const putBookController = async (bookData: Book): Promise<Book> => {
     if (!bookData.id || !validateBookData(bookData)) {
       throw new Error("Missing id, and name or owner");
     }
+    const bookWithRequests = bookData as Book & { requests: BookRequest };
+
+    const { requests, ...updatedBookData } = bookWithRequests;
+    void requests;
 
     const updatedBook = await prisma.book.update({
-      where: { id: bookData.id },
-      data: bookData,
+      where: { id: updatedBookData.id },
+      data: updatedBookData,
+      include: {
+        requests: true,
+      },
     });
 
     if (updatedBook) return updatedBook;

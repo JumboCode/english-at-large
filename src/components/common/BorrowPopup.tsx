@@ -13,6 +13,7 @@ import {
   ConfirmPopupTypes,
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
+import { getAvailableCopies } from "@/lib/util/types";
 interface BorrowPopupProps {
   book: Book;
   toggleOpen: () => void;
@@ -30,7 +31,8 @@ const BorrowPopup = (props: BorrowPopupProps) => {
   const toggleNextBorrow = async () => {
     if (user) {
       const request = await createQuickRequest(book, user);
-      book.availableCopies = book.availableCopies - 1;
+      //TODO!! Gaby + Owen
+      // book.availableCopies = book.availableCopies - 1;
 
       setConfirmPopup({
         type: ConfirmPopupTypes.BOOK,
@@ -72,7 +74,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
                   releaseDate={book.releaseDate}
                   copies={10}
                   numPages={book.numPages}
-                  availableCopies={book.availableCopies}
+                  availableCopies={getAvailableCopies(book)}
                   altStyle="flex row-span-2 my-5"
                   altWidth="pb-3"
                 />

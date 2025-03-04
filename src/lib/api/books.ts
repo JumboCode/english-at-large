@@ -65,10 +65,12 @@ export const createBook = async (
  */
 export const updateBook = async (book: Book): Promise<Book | undefined> => {
   try {
+    console.log("updated book: ", book);
+
     const response = await axios.put("/api/books", book);
     return response.data;
   } catch (error) {
-    console.error("Failed to create book: ", error);
+    console.error("Failed to update book: ", error);
   }
 };
 
@@ -85,7 +87,7 @@ export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
     const response = await axios.delete(`/api/books?id=${bookId}`);
     return response.data;
   } catch (error) {
-    console.error("Failed to create book: ", error);
+    console.error("Failed to delete book: ", error);
   }
 };
 
