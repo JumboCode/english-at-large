@@ -19,6 +19,7 @@ import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
+import { getAvailableCopies } from "@/lib/util/types";
 
 type Params = Promise<{ id: string }>;
 
@@ -37,6 +38,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
+  const [availableCopies, setAvailableCopies] = useState<number>(0);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -45,6 +47,12 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     };
     fetchBook();
   }, [params]);
+
+  useEffect(() => {
+    if (book) {
+      setAvailableCopies(getAvailableCopies(book));
+    }
+  }, [book]);
 
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
@@ -81,14 +89,12 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         <CommonButton
                           label="Borrow"
                           altStyle={`w-40 h-10 ${
-                            book.availableCopies != 0
+                            availableCopies != 0
                               ? "bg-dark-blue"
                               : "bg-medium-grey-border"
                           } border-none mr-3`}
                           onClick={
-                            book.availableCopies != 0
-                              ? toggleBorrowOpen
-                              : undefined
+                            availableCopies != 0 ? toggleBorrowOpen : undefined
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
@@ -191,7 +197,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     releaseDate={book.releaseDate}
                     copies={book.copies}
                     numPages={book.numPages}
-                    availableCopies={book.availableCopies}
+                    availableCopies={availableCopies}
                     lineSpacing="space-y-6"
                   />
                 </div>

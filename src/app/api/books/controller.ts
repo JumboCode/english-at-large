@@ -31,7 +31,11 @@ export const postBookController = async (
 
 export const getAllBooksController = async (): Promise<Book[]> => {
   try {
-    const Books = await prisma.book.findMany();
+    const Books = await prisma.book.findMany({
+      include: {
+        requests: true,
+      },
+    });
     return Books;
   } catch (error) {
     console.error("Error fetching books: ", error);
@@ -47,6 +51,9 @@ export const getOneBookController = async (bookId: number): Promise<Book> => {
 
     const findBook = await prisma.book.findUnique({
       where: { id: bookId },
+      include: {
+        requests: true,
+      },
     });
 
     if (findBook) return findBook;

@@ -43,6 +43,16 @@ export function validateBookData(bookData: Partial<Book>): boolean {
   return true; // No errors
 }
 
+export function getAvailableCopies(book: Book): number {
+  const bookAndRequests = book as Book & { requests: BookRequest[] };
+
+  const filteredRequests = bookAndRequests.requests.filter((r) => {
+    return r.status != RequestStatus.Returned;
+  });
+
+  return bookAndRequests.copies - filteredRequests.length;
+}
+
 /**
  * "Empty book" with dummy data.
  */
