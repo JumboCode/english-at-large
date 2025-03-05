@@ -191,9 +191,9 @@ export const putRequestController = async (
       data: newRequest,
     });
 
-    // changing hold to pickup --> send email //TODO:
+    // changing hold to pickup --> send email 
     if (newRequest.status === RequestStatus.Pickup) {
-        // Get the tutor (user who made the request)
+        // notify tutor 
         if (!user.email) {
           throw new Error("Tutor email not found");
         }
@@ -213,8 +213,8 @@ export const putRequestController = async (
           html: `<p> The following hold for: <br>
           <strong> Book Title: </strong>  ${book.title} <br> 
           <strong> Book ID: <strong> ${book.id}  <br>
-          which was placed on <strong> ${requestData.requestedOn} </strong> has been moved from hold to pickup. 
-          Please ensure you arrive to retrieve it. </p>`,
+          which was placed on <strong> ${requestData.requestedOn} </strong> has been moved 
+          from hold to pickup. Please ensure you arrive to retrieve it. </p>`,
         };
     
         await sgMail.send(tutorMsg).catch((error: unknown) => {
@@ -226,120 +226,49 @@ export const putRequestController = async (
           where: { role: UserRole.Admin },
         });
 
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
-
-    if (admins) {
-      
-        admins.filter((admin) => {
-          return admin.role === UserRole.Admin;
-        })
-        .map(async (user) => {
-          const email = user.email;
-          if (email) {
-            const adminMsg = {
-              to: email,
-              from: "englishatlarge427@gmail.com",
-              subject: `${user.email ?? "[No Username]"} Borrowed a Book`,
-
-              text: `Borrower Name: ${user.email?? "[No Username]"} \n
-              Borrower ID: ${requestData.userId} \n
-              Book Borrowed: ${requestData.bookTitle} \n
-              Book ID: ${requestData.bookId} \n
-              Borrowed on: ${requestData.requestedOn}`,
-
-              html: `<p>
-              <strong>Borrower Name:</strong> ${
-                borrower?.name ?? "[No Username]"
-              } <br>
-              <strong> Borrower ID:</strong> ${requestData.userId} <br>
-              <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br>
-              <strong>Book ID: </strong>${requestData.bookId} <br>
-              <strong>Borrowed on:</strong> ${requestData.requestedOn}
-              </p>`,
-            };
-
-            await sgMail.send(msg).catch((error: unknown) => {
-              console.error(error);
-            });
-          }
-        });
-
-      await Promise.all(admins);
-
-      //compy
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
-
-      if (users) {
-        const admins = users
-          .filter((user) => {
-            return user.role === UserRole.Admin;
+        if (admins) {
+          admins.filter((admin) => {
+            return admin.role === UserRole.Admin;
           })
           .map(async (user) => {
             const email = user.email;
             if (email) {
-              const borrower = await prisma.user.findUnique({
-                where: { id: requestData.userId },
-              });
-              const msg = {
+              const adminMsg = {
                 to: email,
                 from: "englishatlarge427@gmail.com",
-                subject: `${borrower?.name ?? "[No Username]"} Borrowed a Book`,
-  
-                text: `Borrower Name: ${borrower?.name ?? "[No Username]"} \n
-                Borrower ID: ${requestData.userId} \n
-                Book Borrowed: ${requestData.bookTitle} \n
+                subject: `Request by ${user.email ?? "[No Username]"}: Hold to Pickup`,
+
+                text: `Holder Name: ${user.email?? "[No Username]"} \n
+                Holder ID: ${requestData.userId} \n
+                Book Held: ${requestData.bookTitle} \n
                 Book ID: ${requestData.bookId} \n
-                Borrowed on: ${requestData.requestedOn}`,
-  
+                Hold Placed On: ${requestData.requestedOn} \n\n
+                The status of this request has been changed from Hold to Pickup.\n
+                Please ensure proper handling of request.`,
+
                 html: `<p>
-                <strong>Borrower Name:</strong> ${
-                  borrower?.name ?? "[No Username]"
+                <strong> Holder Name:</strong> ${
+                  user.email ?? "[No Username]"
                 } <br>
-                <strong> Borrower ID:</strong> ${requestData.userId} <br>
-                <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br>
+                <strong> Holder ID:</strong> ${requestData.userId} <br>
+                <strong>Book Held:</strong> ${requestData.bookTitle} <br>
                 <strong>Book ID: </strong>${requestData.bookId} <br>
-                <strong>Borrowed on:</strong> ${requestData.requestedOn}
-                </p>`,
+                <strong>Hold Placed On:</strong> ${requestData.requestedOn} <br><br>
+                The status of this request has been changed from <strong> Hold </strong> 
+                to <strong> Pickup </strong>. <br>
+                Please ensure proper handling of request. </p>`,
               };
-  
-              await sgMail.send(msg).catch((error: unknown) => {
+
+              await sgMail.send(adminMsg).catch((error: unknown) => {
                 console.error(error);
               });
             }
-          });
-  
-        await Promise.all(admins);
-      //copy
+        });
 
-
-
-
-
-
-
-
-
-
-
-
-    
-        const adminEmails = admins.map((admin) => admin.email).filter(Boolean);
-
-        if (adminEmails.length > 0) {
-          const adminMsg = {
-            to: adminEmails,
-            from: "englishatlarge427@gmail.com",
-            subject: `Waitlist Update: ${book.title} Moved to Pickup`,
-            text: `A book request for "${book.title}" has been moved from hold to pickup. Please ensure proper handling in the system.`,
-            html: `<p>A book request for <strong>${book.title}</strong> has been moved from hold to pickup. Please ensure proper handling in the system.</p>`
-          };
-    
-          await sgMail.send(adminMsg).catch((error: unknown) => {
-            console.error(error);
-          });
-        }
+      await Promise.all(admins);
     }
-
+  }
+    
     return updatedRequest;
   } catch (error) {
     console.error("Error updating requests", error);
