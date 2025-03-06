@@ -65,8 +65,6 @@ export const createBook = async (
  */
 export const updateBook = async (book: Book): Promise<Book | undefined> => {
   try {
-    console.log("updated book: ", book);
-
     const response = await axios.put("/api/books", book);
     return response.data;
   } catch (error) {

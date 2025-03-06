@@ -62,8 +62,6 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const bookData: Book = await req.json();
-
-    console.log("book in router: ", bookData);
     const updatedBook = await putBookController(bookData);
 
     return NextResponse.json(updatedBook, { status: 200 });
