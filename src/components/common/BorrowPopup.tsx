@@ -3,7 +3,7 @@ import { useState } from "react";
 import BookDetail from "@/components/Details";
 import ConfirmBookRequestPopup from "./ConfirmBookRequestPopup";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book } from "@prisma/client";
+import { Book, User, BookRequest, RequestStatus } from "@prisma/client";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
@@ -24,22 +24,38 @@ const BorrowPopup = (props: BorrowPopupProps) => {
   const [isNextBorrowOpen, setIsNextBorrowOpen] = useState(true);
   const user = useCurrentUser(); // currently logged in user
   const { setConfirmPopup } = usePopup();
+  const [success, setSuccess] = useState<boolean>(true);
   const exit = () => {
     toggleOpen();
   };
 
   const toggleNextBorrow = async () => {
     if (user) {
-      const request = await createQuickRequest(book, user);
-      //TODO!! Gaby + Owen
-      // book.availableCopies = book.availableCopies - 1;
-
-      setConfirmPopup({
-        type: ConfirmPopupTypes.BOOK,
-        // TODO: check other copies
-        action: ConfirmPopupActions.BORROW,
-        success: !!request,
-      });
+      const requests = (user as User & { requests: BookRequest[] }).requests;
+      //if a request already exists for the book for this user, don't borrow it
+      if (
+        requests &&
+        requests.some(
+          (request) =>
+            request.bookId === book.id &&
+            request.status !== RequestStatus.Returned &&
+            request.status !== RequestStatus.Lost
+        )
+      ) {
+        setSuccess(false);
+        setConfirmPopup({
+          type: ConfirmPopupTypes.BOOK,
+          action: ConfirmPopupActions.BORROW,
+          success: false,
+        });
+      } else {
+        const request = await createQuickRequest(book, user);
+        setConfirmPopup({
+          type: ConfirmPopupTypes.BOOK,
+          action: ConfirmPopupActions.BORROW,
+          success: !!request,
+        });
+      }
     } // you shouldn't be here if you're not authenticated...
     setIsNextBorrowOpen(!isNextBorrowOpen);
   };
@@ -72,7 +88,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
                   isbn={book.isbn}
                   publisher={book.publisher}
                   releaseDate={book.releaseDate}
-                  copies={10}
+                  copies={book.copies}
                   numPages={book.numPages}
                   availableCopies={getAvailableCopies(book)}
                   altStyle="flex row-span-2 my-5"
@@ -99,7 +115,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
         </div>
       ) : (
         <div>
-          <ConfirmBookRequestPopup toggle={toggleOpen} />
+          <ConfirmBookRequestPopup toggle={toggleOpen} success={success} />
         </div>
       )}
     </div>

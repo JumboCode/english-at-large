@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { validateBookData } from "@/lib/util/types";
+import { getAvailableCopies, validateBookData } from "@/lib/util/types";
 import { Book, BookRequest } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
@@ -17,13 +17,18 @@ export const postBookController = async (
     if (!validateBookData(bookData)) {
       throw new Error("Missing required book properties");
     }
-
     const newBook = await prisma.book.create({
       data: bookData,
       include: {
         requests: true,
       },
     });
+
+    if (getAvailableCopies(newBook) < 0) {
+      throw new Error(
+        `Invariant violated: Available copies are below 0 for ${newBook.title} : ${newBook.id}`
+      );
+    }
 
     return newBook;
   } catch (error) {
@@ -39,6 +44,19 @@ export const getAllBooksController = async (): Promise<Book[]> => {
         requests: true,
       },
     });
+
+    let failedBook: Book | null = null;
+
+    Books.map((book) => {
+      failedBook = book;
+
+      if (getAvailableCopies(book) < 0) {
+        throw new Error(
+          `Invariant violated: Available copies are below 0 for ${failedBook.title} : ${failedBook.id}`
+        );
+      }
+    });
+
     return Books;
   } catch (error) {
     console.error("Error fetching books: ", error);
@@ -58,6 +76,12 @@ export const getOneBookController = async (bookId: number): Promise<Book> => {
         requests: true,
       },
     });
+
+    if (findBook && getAvailableCopies(findBook) < 0) {
+      throw new Error(
+        `Invariant violated: Available copies are below 0 for ${findBook.title} : ${findBook.id}`
+      );
+    }
 
     if (findBook) return findBook;
     else throw new Error("Book not found!");
@@ -80,7 +104,14 @@ export const putBookController = async (bookData: Book): Promise<Book> => {
     if (!bookData.id || !validateBookData(bookData)) {
       throw new Error("Missing id, and name or owner");
     }
-    const bookWithRequests = bookData as Book & { requests: BookRequest };
+
+    if (getAvailableCopies(bookData) < 0) {
+      throw new Error(
+        `Invariant violated: cannot update book to have less than 0 available copies: ${bookData.title} : ${bookData.id}`
+      );
+    }
+
+    const bookWithRequests = bookData as Book & { requests: BookRequest[] };
 
     const { requests, ...updatedBookData } = bookWithRequests;
     void requests;
@@ -93,8 +124,14 @@ export const putBookController = async (bookData: Book): Promise<Book> => {
       },
     });
 
-    if (updatedBook) return updatedBook;
-    else throw new Error("Book not found!");
+    if (updatedBook) {
+      if (getAvailableCopies(updatedBook) < 0) {
+        throw new Error(
+          `Invariant violated: book updated to have less than 0 availlable copies: ${updatedBook.title} : ${updatedBook.id}`
+        );
+      }
+      return updatedBook;
+    } else throw new Error("Book not found!");
   } catch (error) {
     console.error("Error Putting Book: ", error);
     throw error;
