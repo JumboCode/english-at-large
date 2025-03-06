@@ -145,10 +145,9 @@ export const postRequestController = async (
               </p>`,
             };
 
-            // UNCOMMENT THIS WHEN DONE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // await sgMail.send(msg).catch((error: unknown) => {
-            //   console.error(error);
-            // });
+            await sgMail.send(msg).catch((error: unknown) => {
+              console.error(error);
+            });
           }
         });
 
