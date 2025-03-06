@@ -89,6 +89,8 @@ export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
   }
 };
 
+const DEFAULT_IMAGE = 'https://drive.google.com/file/d/16AqCXCMmHGEN1kLqjaGe2DYKEQEyhIMk/view?usp=drive_link' 
+
 export const getBookCover = async (
   bookISBN: string
 ): Promise<string | undefined> => {
@@ -103,5 +105,5 @@ export const getBookCover = async (
     console.warn("Error fetching image");
   }
 
-  // return imageToAdd.src;
+  return DEFAULT_IMAGE;
 };
