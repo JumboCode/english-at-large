@@ -89,6 +89,7 @@ const Loans = () => {
         const earliestHold = holds[0];
         await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
