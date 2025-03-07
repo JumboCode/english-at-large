@@ -3,7 +3,7 @@ import { useState } from "react";
 import BookDetail from "@/components/Details";
 import ConfirmBookRequestPopup from "./ConfirmBookRequestPopup";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book, User, BookRequest, RequestStatus } from "@prisma/client";
+import { User, BookRequest, RequestStatus } from "@prisma/client";
 import Image from "next/image";
 import imageToAdd from "../../assets/images/harry_potter.jpg";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
@@ -13,9 +13,9 @@ import {
   ConfirmPopupTypes,
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
-import { getAvailableCopies } from "@/lib/util/types";
+import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 interface BorrowPopupProps {
-  book: Book;
+  book: BookWithRequests;
   toggleOpen: () => void;
 }
 

@@ -3,6 +3,7 @@ import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "./common/button/CommonButton";
 import { useCallback, useEffect, useState } from "react";
 import {
+  BookWithRequests,
   CustomChangeEvent,
   getAvailableCopies,
   newEmptyBook,
@@ -23,11 +24,11 @@ import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
   exit: (arg0: boolean) => void;
-  existingBook?: Book | null;
-  onSave?: (arg0: Book | null) => void;
+  existingBook?: BookWithRequests | null;
+  onSave?: (arg0: BookWithRequests | null) => void;
   isbn?: string;
   setOriginalBook?: (origBook: Omit<Book, "id">) => void;
-  setBookList?: (bookList: Book[]) => void;
+  setBookList?: (bookList: BookWithRequests[]) => void;
 }
 
 const BookForm = (props: BookFormProps) => {
@@ -39,7 +40,7 @@ const BookForm = (props: BookFormProps) => {
   const types = Object.values(BookType);
 
   const [newBook, setNewBook] = useState<Omit<Book, "id">>(newEmptyBook);
-  const [editBook, setEditBook] = useState<Book | null | undefined>(
+  const [editBook, setEditBook] = useState<BookWithRequests | null | undefined>(
     existingBook
   );
   const [numCopies, setNumCopies] = useState<number>(
@@ -126,7 +127,7 @@ const BookForm = (props: BookFormProps) => {
           ({
             ...prevBook,
             [name]: value,
-          } as Book)
+          } as BookWithRequests)
       );
     } else if (newBook) {
       setNewBook(
@@ -148,7 +149,7 @@ const BookForm = (props: BookFormProps) => {
           ({
             ...prevBook,
             [name]: value,
-          } as Book)
+          } as BookWithRequests)
       );
     } else {
       setNewBook(
@@ -171,7 +172,7 @@ const BookForm = (props: BookFormProps) => {
           ({
             ...prevBook,
             ["copies"]: numCopies,
-          } as Book)
+          } as BookWithRequests)
       );
     } else {
       setNewBook(
@@ -184,7 +185,7 @@ const BookForm = (props: BookFormProps) => {
     }
   }, [numCopies, availableCopies, existingBook]);
 
-  const findSimilar = (allBooks: Book[], title: string) => {
+  const findSimilar = (allBooks: BookWithRequests[], title: string) => {
     return (
       allBooks.filter(
         (book) =>

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { validateBookData } from "@/lib/util/types";
+import { BookWithRequests, validateBookData } from "@/lib/util/types";
 import { Book, BookRequest } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
@@ -11,7 +11,7 @@ import { Book, BookRequest } from "@prisma/client";
  */
 export const postBookController = async (
   bookData: Omit<Book, "id">
-): Promise<Book> => {
+): Promise<BookWithRequests> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   try {
     if (!validateBookData(bookData)) {
@@ -31,7 +31,7 @@ export const postBookController = async (
   }
 };
 
-export const getAllBooksController = async (): Promise<Book[]> => {
+export const getAllBooksController = async (): Promise<BookWithRequests[]> => {
   try {
     const Books = await prisma.book.findMany({
       include: {
@@ -46,7 +46,9 @@ export const getAllBooksController = async (): Promise<Book[]> => {
   }
 };
 
-export const getOneBookController = async (bookId: number): Promise<Book> => {
+export const getOneBookController = async (
+  bookId: number
+): Promise<BookWithRequests> => {
   try {
     if (bookId === undefined || bookId === null) {
       throw new Error("Missing book id");
@@ -75,7 +77,9 @@ export const getOneBookController = async (bookId: number): Promise<Book> => {
  * @remarks
  *  - N/A
  */
-export const putBookController = async (bookData: Book): Promise<Book> => {
+export const putBookController = async (
+  bookData: BookWithRequests
+): Promise<BookWithRequests> => {
   try {
     if (!bookData.id || !validateBookData(bookData)) {
       throw new Error("Missing id, and name or owner");

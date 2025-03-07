@@ -4,6 +4,7 @@ import {
   // BookSkills,
   BookType,
   OnlineResource,
+  Prisma,
   RequestStatus,
   ResourceFormat,
   ResourceTopic,
@@ -19,6 +20,11 @@ import { BookRequest } from "@prisma/client";
 
 export const MAX_REQUESTS = 10;
 
+const bookWithRequests = Prisma.validator<Prisma.BookDefaultArgs>()({
+  include: { requests: true },
+});
+
+export type BookWithRequests = Prisma.BookGetPayload<typeof bookWithRequests>;
 /**
  * Utility function for checking if a book is valid (no fields are empty, etc.)
  *
@@ -43,8 +49,8 @@ export function validateBookData(bookData: Partial<Book>): boolean {
   return true; // No errors
 }
 
-export function getAvailableCopies(book: Book): number {
-  const bookAndRequests = book as Book & { requests: BookRequest[] };
+export function getAvailableCopies(book: BookWithRequests): number {
+  const bookAndRequests = book as BookWithRequests;
 
   const filteredRequests = bookAndRequests.requests.filter((r) => {
     return r.status != RequestStatus.Returned;

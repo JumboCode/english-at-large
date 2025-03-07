@@ -5,9 +5,7 @@ import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 // import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
 import BorrowPopup from "@/components/common/BorrowPopup";
-
 import { getOneBook } from "@/lib/api/books";
-import { Book } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -19,8 +17,7 @@ import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
-import { getAvailableCopies } from "@/lib/util/types";
-
+import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -34,7 +31,7 @@ type Params = Promise<{ id: string }>;
  */
 const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<BookWithRequests | null>(null);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -68,7 +65,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
         <BookForm
           exit={(show: boolean) => setShowBookForm(show)}
           existingBook={book}
-          onSave={(b: Book | null) => {
+          onSave={(b: BookWithRequests | null) => {
             setBook(b);
           }}
           isbn={book.isbn[0]}
