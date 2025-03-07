@@ -14,62 +14,94 @@ import {
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
 import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
-interface BorrowPopupProps {
+import { MAX_REQUESTS } from "@/lib/util/types";
+
+interface BookPopupProps {
   book: BookWithRequests;
   toggleOpen: () => void;
+  borrow: boolean;
 }
 
-const BorrowPopup = (props: BorrowPopupProps) => {
-  const { toggleOpen, book } = props;
-  const [isNextBorrowOpen, setIsNextBorrowOpen] = useState(true);
+const BookPopup = (props: BookPopupProps) => {
+  const { toggleOpen, book, borrow } = props;
+  const [isNextOpen, setIsNextOpen] = useState(true);
   const user = useCurrentUser(); // currently logged in user
   const { setConfirmPopup } = usePopup();
   const [success, setSuccess] = useState<boolean>(true);
+  const [limitExceeded, setLimitExceeded] = useState(false);
   const exit = () => {
     toggleOpen();
   };
-
-  const toggleNextBorrow = async () => {
+  const toggleNext = async () => {
+    let isSuccess = true;
     if (user) {
       const requests = (user as User & { requests: BookRequest[] }).requests;
-      //if a request already exists for the book for this user, don't borrow it
-      if (
-        requests &&
-        requests.some(
-          (request) =>
-            request.bookId === book.id &&
-            request.status !== RequestStatus.Returned &&
-            request.status !== RequestStatus.Lost
-        )
+      const userRequested = requests.filter(
+        (request) =>
+          request.status !== RequestStatus.Returned &&
+          request.status !== RequestStatus.Lost
+      );
+
+      // checking if user already requested book or if limits are exceeded
+      const borrowed = userRequested.filter(
+        (req) => req.status !== RequestStatus.Hold
+      );
+      const holds = userRequested.filter(
+        (req) =>
+          req.status !== RequestStatus.Borrowed &&
+          req.status !== RequestStatus.Requested
+      );
+
+      if (requests && userRequested.some((req) => req.bookId === book.id)) {
+        isSuccess = false;
+      } else if (
+        (borrow && borrowed.length > MAX_REQUESTS) ||
+        (!borrow && holds.length > MAX_REQUESTS)
       ) {
-        setSuccess(false);
+        isSuccess = false;
+        setLimitExceeded(true);
+      }
+
+      if (isSuccess) {
+        const request = await createQuickRequest(
+          book,
+          user,
+          borrow ? RequestStatus.Requested : RequestStatus.Hold
+        );
         setConfirmPopup({
-          type: ConfirmPopupTypes.BOOK,
-          action: ConfirmPopupActions.BORROW,
-          success: false,
-        });
-      } else {
-        const request = await createQuickRequest(book, user);
-        setConfirmPopup({
-          type: ConfirmPopupTypes.BOOK,
-          action: ConfirmPopupActions.BORROW,
+          type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
+          action: borrow
+            ? ConfirmPopupActions.BORROW
+            : ConfirmPopupActions.PLACE,
           success: !!request,
         });
+        setSuccess(isSuccess);
+      } else {
+        setConfirmPopup({
+          type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
+          action: borrow
+            ? ConfirmPopupActions.BORROW
+            : ConfirmPopupActions.PLACE,
+          success: false,
+        });
+        setSuccess(isSuccess);
       }
     } // you shouldn't be here if you're not authenticated...
-    setIsNextBorrowOpen(!isNextBorrowOpen);
+    setIsNextOpen(!isNextOpen);
   };
 
   return (
     <div>
-      {isNextBorrowOpen ? (
+      {isNextOpen ? (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-white rounded-lg shadow-lg p-8 w-5/12">
             <div className="flex justify-end items-center h-full"></div>
             <h1 className="font-[family-name:var(--font-rubik)] font-semibold text-2xl">
-              Borrow
+              {borrow ? "Borrow" : "Place hold"}
             </h1>
-            <div className="text-[#757575] text-sm"> You are borrowing: </div>
+            <div className="text-[#757575] text-sm">
+              You are {borrow ? "borrowing" : "placing a hold for"}:
+            </div>
             <hr className="h-px bg-[#D4D4D4] border-0 mt-5"></hr>
             <div className="flex grid-cols-2 gap-4 mt-4 ">
               <Image
@@ -107,7 +139,7 @@ const BorrowPopup = (props: BorrowPopupProps) => {
               <CommonButton
                 label="Confirm"
                 altStyle="w-36 h-10 bg-[#202D74]"
-                onClick={toggleNextBorrow}
+                onClick={toggleNext}
                 altTextStyle="text-white font-[family-name:var(--font-rubik)] font-medium -ml-2"
               />
             </div>
@@ -115,11 +147,16 @@ const BorrowPopup = (props: BorrowPopupProps) => {
         </div>
       ) : (
         <div>
-          <ConfirmBookRequestPopup toggle={toggleOpen} success={success} />
+          <ConfirmBookRequestPopup
+            toggle={toggleOpen}
+            success={success}
+            borrow={borrow}
+            limitExceeded={limitExceeded}
+          />
         </div>
       )}
     </div>
   );
 };
 
-export default BorrowPopup;
+export default BookPopup;

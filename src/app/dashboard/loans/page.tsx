@@ -1,15 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
+import { BookRequest, RequestStatus } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { getRequests, updateRequest } from "@/lib/api/requests";
 import LoanDropdown from "@/components/common/forms/LoanDropdown";
 import { updateBook } from "@/lib/api/books";
-import { emptyRequest } from "@/lib/util/types";
+import { RequestWithBookAndUser } from "@/lib/util/types";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import {
@@ -18,10 +18,7 @@ import {
 } from "@/lib/context/ConfirmPopupContext";
 
 const Loans = () => {
-  const [requests, setRequests] = useState<
-    (BookRequest & { user: User; book: Book })[]
-  >([]);
-  const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
+  const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
 
@@ -30,32 +27,28 @@ const Loans = () => {
   // use of structured clone creates new subset of search target requests
   // allows filter to act on subset of searched requests
 
-  const subsetRequest = structuredClone<
-    (BookRequest & { user: User; book: Book })[]
-  >(requests).filter(
-    (request) =>
-      request.bookTitle.toLowerCase().includes(searchData) ||
-      request.user?.name?.toLowerCase().includes(searchData) ||
-      request.user?.email?.toLowerCase().includes(searchData)
+  const subsetRequest = useMemo(() => {
+    return requests.filter(
+      (request) =>
+        request.bookTitle.toLowerCase().includes(searchData.toLowerCase()) ||
+        request.user?.name?.toLowerCase().includes(searchData.toLowerCase()) ||
+        request.user?.email?.toLowerCase().includes(searchData.toLowerCase())
+    );
+  }, [requests, searchData]);
+
+  const requestFilter = useCallback(
+    (request: BookRequest) => {
+      switch (selectedValue) {
+        case "Pick-up":
+          return request.status === RequestStatus.Pickup;
+        case "Borrowed":
+          return request.status === RequestStatus.Borrowed;
+        default:
+          return request.status !== RequestStatus.Returned;
+      }
+    },
+    [selectedValue]
   );
-
-  const updateReq = async (req: BookRequest) => {
-    await updateRequest(req);
-    if (req) {
-      setOneRequest(req);
-    }
-  };
-
-  const requestFilter = (request: BookRequest) => {
-    switch (selectedValue) {
-      case "Pick-up":
-        return request.status === RequestStatus.Pickup;
-      case "Borrowed":
-        return request.status === RequestStatus.Borrowed;
-      default:
-        return request.status !== RequestStatus.Returned;
-    }
-  };
 
   const sortByDate = (a: BookRequest, b: BookRequest) => {
     switch (selectedValue) {
@@ -68,21 +61,34 @@ const Loans = () => {
     }
   };
 
-  const markAsReturned = async (
-    request: BookRequest & { user: User; book: Book }
-  ) => {
+  const markAsReturned = async (request: RequestWithBookAndUser) => {
     try {
       await updateBook({
         ...request.book,
       });
-      await updateReq({
+      await updateRequest({
         ...request,
+        status: RequestStatus.Returned,
       });
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
         action: ConfirmPopupActions.MARK,
         success: true,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+      // finds oldest request of status hold and sends email
+      const holds = requests.filter(
+        (holdRequest) =>
+          holdRequest.status === RequestStatus.Hold &&
+          holdRequest.bookId === request.bookId
+      );
+
+      // if there are any holds for the current book
+      if (holds.length > 0) {
+        const earliestHold = holds[0];
+        await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
+      }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
@@ -100,7 +106,7 @@ const Loans = () => {
     };
 
     getReqs();
-  }, [oneRequest, selectedValue]);
+  }, []);
 
   return (
     <div className="bg-white">
@@ -181,9 +187,7 @@ const Loans = () => {
                     <LoanDropdown
                       report={request}
                       selectedValue={selectedValue}
-                      // oneRequest={oneRequest}
-                      updateReq={updateReq}
-                    ></LoanDropdown>
+                    />
                   </td>
 
                   <td>

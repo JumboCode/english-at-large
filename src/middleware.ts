@@ -9,7 +9,7 @@ export default clerkMiddleware(async (auth, req) => {
 
   if (isProtectedRoute(req) && !userId) {
     //comment this out if you want to access dashboard without being logged in
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/signup", req.url));
   }
 });
 

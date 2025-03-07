@@ -23,7 +23,6 @@ export async function GET(req: Request) {
       // if id, fetch the specific user
       const request = await getUserRequestController(userId);
       return NextResponse.json(request);
-
     } else {
       // if no id, fetch all users
       const requests: BookRequest[] = await getAllRequestsController();
@@ -60,6 +59,7 @@ export async function PUT(req: Request) {
     const requestData: BookRequest & { user: User; book: Book } =
       await req.json();
     // controller defined in controllers.ts
+    console.log("making request");
     const updated = await putRequestController(requestData);
 
     return NextResponse.json(updated);

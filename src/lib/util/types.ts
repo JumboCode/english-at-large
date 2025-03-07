@@ -18,7 +18,7 @@ import { BookRequest } from "@prisma/client";
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
 
-export const MAX_REQUESTS = 10;
+export const MAX_REQUESTS = 5;
 
 export type BookWithRequests = Prisma.BookGetPayload<{
   include: { requests: true };
