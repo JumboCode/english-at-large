@@ -118,9 +118,9 @@ const BooksPage = () => {
   }, []);
 
   const bookFormExit = (listLen: boolean) => {
-    listLen
-      ? setFormShown(formState.SIMILAR_BOOK_FORM_OPEN)
-      : setFormShown(formState.FORM_CLOSED);
+    setFormShown(
+      listLen ? formState.SIMILAR_BOOK_FORM_OPEN : formState.FORM_CLOSED
+    );
   };
 
   return formShown == formState.BOOK_FORM_OPEN ? (

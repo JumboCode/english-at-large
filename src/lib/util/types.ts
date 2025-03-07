@@ -20,11 +20,10 @@ import { BookRequest } from "@prisma/client";
 
 export const MAX_REQUESTS = 10;
 
-const bookWithRequests = Prisma.validator<Prisma.BookDefaultArgs>()({
-  include: { requests: true },
-});
+export type BookWithRequests = Prisma.BookGetPayload<{
+  include: { requests: true };
+}>;
 
-export type BookWithRequests = Prisma.BookGetPayload<typeof bookWithRequests>;
 /**
  * Utility function for checking if a book is valid (no fields are empty, etc.)
  *
