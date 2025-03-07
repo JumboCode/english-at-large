@@ -5,7 +5,6 @@ import CommonDropdown from "../forms/Dropdown";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { User, BookRequest } from "@prisma/client";
-import { updateRequest } from "@/lib/api/requests";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import LoanDropdown from "../forms/LoanDropdown";
@@ -60,14 +59,6 @@ const UserHistory = (props: UserHistoryProps) => {
     .filter(
       (user) => requestsByUser[user.id] && requestsByUser[user.id].length > 0
     ); // Filter users with requests
-
-  // function for updating the request
-  const updateReq = async (req: BookRequest) => {
-    await updateRequest(req);
-    if (req) {
-      setOneRequest(req);
-    }
-  };
 
   return (
     <div className="bg-white">
@@ -144,7 +135,6 @@ const UserHistory = (props: UserHistoryProps) => {
                             <LoanDropdown
                               report={request}
                               selectedValue={selectedValue}
-                              updateReq={updateReq}
                             />
                           </div>
                         </React.Fragment>
