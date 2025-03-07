@@ -24,6 +24,10 @@ export type BookWithRequests = Prisma.BookGetPayload<{
   include: { requests: true };
 }>;
 
+export interface BookStats {
+  totalRequests: number;
+  uniqueUsers: number;
+}
 /**
  * Utility function for checking if a book is valid (no fields are empty, etc.)
  *
@@ -106,6 +110,10 @@ export const newEmptyBook: Omit<Book, "id"> = {
 /////                              REQUESTS                                /////
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
+
+export type RequestWithBookAndUser = Prisma.BookRequestGetPayload<{
+  include: { book: true; user: true };
+}>;
 /**
  * "Empty book" with dummy data.
  */

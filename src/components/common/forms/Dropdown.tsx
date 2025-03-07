@@ -6,12 +6,13 @@ import { useState } from "react";
 interface DropdownProps {
   items: string[];
   altButtonStyle?: string;
+  leftIcon?: React.ReactElement;
   buttonText: string;
   setFilter: (arg0: string) => void;
 }
 
 const CommonDropdown = (props: DropdownProps) => {
-  const { items, buttonText, setFilter, altButtonStyle } = props;
+  const { items, buttonText, setFilter, altButtonStyle, leftIcon } = props;
   const [filterType, setFilterType] = useState<string>(buttonText);
 
   return (
@@ -21,6 +22,7 @@ const CommonDropdown = (props: DropdownProps) => {
     >
       <div>
         <MenuButton className="inline-flex min-w-12 w-full justify-center gap-2 rounded-lg bg-white p-3  text-gray-900 hover:bg-gray-50 border border-dark-blue">
+        {leftIcon ? leftIcon : null}
           <p className="text-sm font-medium text-dark-blue font-[family-name:var(--font-rubik)]">
             {filterType}
           </p>
