@@ -123,6 +123,14 @@ const NavBar = () => {
             style={STYLES.logo}
           />
         </Link>
+        <div className="relative group mt-2">
+          <Link
+            href="/dashboard/datapage"
+            className="font-[family-name:var(--font-rubik)] font-semibold"
+          >
+            Dashboard
+          </Link>
+        </div>
 
         {/* Browse Dropdown */}
         <DropdownMenu title="Browse" items={browseItems} />
@@ -143,15 +151,6 @@ const NavBar = () => {
                 className="font-[family-name:var(--font-rubik)] font-semibold"
               >
                 Users
-              </Link>
-            </div>
-
-            <div className="relative group mt-2">
-              <Link
-                href="/dashboard/tables"
-                className="font-[family-name:var(--font-rubik)] font-semibold"
-              >
-                Dashboard
               </Link>
             </div>
           </>

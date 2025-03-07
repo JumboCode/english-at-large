@@ -123,9 +123,6 @@ const UserHistory = () => {
 
   return (
     <div className="bg-white">
-      <h1 className="bg-white text-black px-16 pt-12 font-bold text-3xl font-[family-name:var(--font-rubik)]">
-        User History
-      </h1>
       <SearchBar
         button={
           <CommonDropdown
