@@ -4,6 +4,7 @@ import { RequestWithBookAndUser, validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 import { MAX_REQUESTS } from "@/lib/util/types";
+import { checkSendGridLimits } from "@/lib/api/requests";
 
 /**
  * Utility controller that gets all the Request in the backend.
@@ -193,6 +194,8 @@ export const putRequestController = async (
     // if you edit another field of something on pickup it'll send another email
     // changing hold to pickup --> send email
     if (newRequest.status === RequestStatus.Pickup) {
+      const emailsLeft = await checkSendGridLimits();
+      if (emailsLeft <= 0) throw new Error("Maximum emails reached today.");
       // notify tutor
       if (!user.email) {
         throw new Error("Tutor email not found");

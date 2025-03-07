@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { BookRequest, RequestStatus } from "@prisma/client";
+import { updateRequest } from "@/lib/api/requests";
 
 interface DropdownProps {
   report: BookRequest;
   selectedValue: string;
-  updateReq: (arg0: BookRequest) => void;
 }
 
 const LoanDropdown = (props: DropdownProps) => {
-  const { report, selectedValue, updateReq } = props;
+  const { report, selectedValue } = props;
   const [filterType, setFilterType] = useState<RequestStatus>(report.status);
 
+  const updateReq = useCallback(async (req: BookRequest) => {
+    await updateRequest(req);
+  }, []);
   useEffect(() => {
     setFilterType(report.status);
   }, [report.status, selectedValue]);

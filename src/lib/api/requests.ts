@@ -137,7 +137,7 @@ export const createRequest = async (
 export const createQuickRequest = async (
   book: Book,
   user: User,
-  newStatus: RequestStatus,
+  newStatus: RequestStatus
 ): Promise<BookRequest | undefined> => {
   try {
     if (!validateBookData(book) || !validateUserData(user)) {
@@ -157,8 +157,8 @@ export const createQuickRequest = async (
     };
 
     const response = await axios.post("/api/requests", request);
-    await updateBook({ ...book});
-    
+    await updateBook({ ...book });
+
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);
@@ -210,5 +210,24 @@ export const deleteRequest = async (
   }
 };
 
+export const checkSendGridLimits = async () => {
+  try {
+    const response = await fetch("https://api.sendgrid.com/v3/user/credits", {
+      headers: {
+        Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
 
+    if (!response.ok) {
+      throw new Error("Failed to fetch SendGrid limits");
+    }
 
+    const data = await response.json();
+    console.log("SendGrid Email Credits:", data);
+    return data.remain || 0; // Remaining emails allowed
+  } catch (error) {
+    console.error("Error checking SendGrid limits:", error);
+    return 0; // Assume limit is reached if check fails
+  }
+};
