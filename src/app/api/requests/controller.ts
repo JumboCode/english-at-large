@@ -5,7 +5,6 @@ import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 import { MAX_REQUESTS } from "@/lib/util/types";
 
-
 /**
  * Utility controller that gets all the Request in the backend.
  *
@@ -190,71 +189,85 @@ export const putRequestController = async (
       data: newRequest,
     });
 
-    // changing hold to pickup --> send email 
+    // changing hold to pickup --> send email
     if (newRequest.status === RequestStatus.Pickup) {
-        // notify tutor 
-        if (!user.email) {
-          throw new Error("Tutor email not found");
-        }
-    
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
+      // notify tutor
+      if (!user.email) {
+        throw new Error("Tutor email not found");
+      }
 
-        // seeing if user has exceeded limit
-        let exceededLimit = false;
-        const requests = await prisma.bookRequest.findMany({
-          where: { userId: user.id }
-        });
-        const borrowed =  requests.filter(
-          (request) =>
-            request.status !== RequestStatus.Returned &&
-            request.status !== RequestStatus.Lost &&
-            request.status !== RequestStatus.Hold
-        )
-        
-        if (borrowed && borrowed.length > MAX_REQUESTS) {
-          exceededLimit = true;
-        }
-    
-        const tutorMsg = {
-          to: user.email,
-          from: "englishatlarge427@gmail.com",
-          subject: `Book Request Moved to Pickup: ${book.title}`,
-          text: `The following hold for: \n
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
+
+      // seeing if user has exceeded limit
+      let exceededLimit = false;
+      const requests = await prisma.bookRequest.findMany({
+        where: { userId: user.id },
+      });
+      const borrowed = requests.filter(
+        (request) =>
+          request.status !== RequestStatus.Returned &&
+          request.status !== RequestStatus.Lost &&
+          request.status !== RequestStatus.Hold
+      );
+
+      if (borrowed && borrowed.length > MAX_REQUESTS) {
+        exceededLimit = true;
+      }
+
+      const tutorMsg = {
+        to: user.email,
+        from: "englishatlarge427@gmail.com",
+        subject: `Book Request Moved to Pickup: ${book.title}`,
+        text: `The following hold for: \n
           Book Title: ${book.title} \n
           Book ID: ${book.id} \n
-          which was placed on ${requestData.requestedOn} has been moved from hold to pickup. 
+          which was placed on ${
+            requestData.requestedOn
+          } has been moved from hold to pickup. 
           Please ensure you arrive to retrieve it. \n\n
-          ${ exceededLimit ? "However, you are currently at the max number of borrowed books. \
-            Please return a book before picking up this one. </strong>" : "" }`,
+          ${
+            exceededLimit
+              ? "However, you are currently at the max number of borrowed books. \
+            Please return a book before picking up this one. </strong>"
+              : ""
+          }`,
 
-          html: `<p> The following hold for: <br>
+        html: `<p> The following hold for: <br>
           <strong> Book Title: </strong>  ${book.title} <br> 
           <strong> Book ID: </strong> ${book.id}  <br>
-          which was placed on <strong> ${requestData.requestedOn} </strong> has been moved 
+          which was placed on <strong> ${
+            requestData.requestedOn
+          } </strong> has been moved 
           from hold to pickup. Please ensure you arrive to retrieve it. <br> <br>
-          ${ exceededLimit ? "<strong> However, you are currently at the max number of borrowed books. \
-            Please return a book before picking up this one. </strong>" : ""} </p>`,
-        };
-    
-        await sgMail.send(tutorMsg).catch((error: unknown) => {
-          console.error(error);
-        });
-    
-        // Notify admins
-        const admins = await prisma.user.findMany({
-          where: { role: UserRole.Admin },
-        });
+          ${
+            exceededLimit
+              ? "<strong> However, you are currently at the max number of borrowed books. \
+            Please return a book before picking up this one. </strong>"
+              : ""
+          } </p>`,
+      };
 
-        if (admins) {
-          admins.map(async (user) => {
-            const email = user.email;
-            if (email) {
-              const adminMsg = {
-                to: email,
-                from: "englishatlarge427@gmail.com",
-                subject: `Request by ${user.email ?? "[No Username]"}: Hold to Pickup`,
+      await sgMail.send(tutorMsg).catch((error: unknown) => {
+        console.error(error);
+      });
 
-                text: `Holder Name: ${user.email?? "[No Username]"} \n
+      // Notify admins
+      const admins = await prisma.user.findMany({
+        where: { role: UserRole.Admin },
+      });
+
+      if (admins) {
+        admins.map(async (user) => {
+          const email = user.email;
+          if (email) {
+            const adminMsg = {
+              to: email,
+              from: "englishatlarge427@gmail.com",
+              subject: `Request by ${
+                user.email ?? "[No Username]"
+              }: Hold to Pickup`,
+
+              text: `Holder Name: ${user.email ?? "[No Username]"} \n
                 Holder ID: ${requestData.userId} \n
                 Book Held: ${requestData.bookTitle} \n
                 Book ID: ${requestData.bookId} \n
@@ -262,29 +275,31 @@ export const putRequestController = async (
                 The status of this request has been changed from Hold to Pickup.\n
                 Please ensure proper handling of request.`,
 
-                html: `<p>
+              html: `<p>
                 <strong> Holder Name:</strong> ${
                   user.email ?? "[No Username]"
                 } <br>
                 <strong> Holder ID:</strong> ${requestData.userId} <br>
                 <strong>Book Held:</strong> ${requestData.bookTitle} <br>
                 <strong>Book ID: </strong>${requestData.bookId} <br>
-                <strong>Hold Placed On:</strong> ${requestData.requestedOn} <br><br>
+                <strong>Hold Placed On:</strong> ${
+                  requestData.requestedOn
+                } <br><br>
                 The status of this request has been changed from <strong> Hold </strong> 
                 to <strong> Pickup </strong>. <br>
                 Please ensure proper handling of request. </p>`,
-              };
+            };
 
-              await sgMail.send(adminMsg).catch((error: unknown) => {
-                console.error(error);
-              });
-            }
+            await sgMail.send(adminMsg).catch((error: unknown) => {
+              console.error(error);
+            });
+          }
         });
 
-      await Promise.all(admins);
+        await Promise.all(admins);
+      }
     }
-  }
-    
+
     return updatedRequest;
   } catch (error) {
     console.error("Error updating requests", error);
@@ -317,5 +332,3 @@ export const deleteRequestController = async (
     throw error;
   }
 };
-
-

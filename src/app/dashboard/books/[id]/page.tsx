@@ -4,7 +4,7 @@ import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 // import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
-import holdBookClock from "../../../../assets/icons/holdBookClock.svg"
+import holdBookClock from "../../../../assets/icons/holdBookClock.svg";
 import BookPopup from "@/components/common/BookPopUp";
 import { getOneBook } from "@/lib/api/books";
 import pencil from "@/assets/icons/Pencil.svg";
@@ -89,24 +89,20 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     <div className="flex">
                       {
                         <CommonButton
-                          label= {
-                            availableCopies > 0 
-                            ? "Borrow"
-                            : "Place Hold"
-                          }
+                          label={availableCopies > 0 ? "Borrow" : "Place Hold"}
                           altStyle={`w-40 h-10 bg-dark-blue border-none mr-3`}
                           onClick={
-                            availableCopies > 0 
-                            ? toggleBorrowOpen
-                            : toggleHoldOpen
+                            availableCopies > 0
+                              ? toggleBorrowOpen
+                              : toggleHoldOpen
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
                             <Image
                               src={
-                                availableCopies > 0 
-                                ? bookIconGreyed
-                                : holdBookClock
+                                availableCopies > 0
+                                  ? bookIconGreyed
+                                  : holdBookClock
                               }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
@@ -212,11 +208,19 @@ const BookDetails = (props: { params: Promise<Params> }) => {
               </div>
 
               {isBorrowOpen ? (
-                <BookPopup toggleOpen={toggleBorrowOpen} book={book} borrow={true} />
+                <BookPopup
+                  toggleOpen={toggleBorrowOpen}
+                  book={book}
+                  borrow={true}
+                />
               ) : null}
 
               {isHoldOpen ? (
-                <BookPopup toggleOpen={toggleHoldOpen} book={book} borrow={false} />
+                <BookPopup
+                  toggleOpen={toggleHoldOpen}
+                  book={book}
+                  borrow={false}
+                />
               ) : null}
             </div>
           ) : null}

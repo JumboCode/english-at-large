@@ -17,7 +17,6 @@ import {
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
 
-
 const Loans = () => {
   const [requests, setRequests] = useState<
     (BookRequest & { user: User; book: Book })[]
@@ -77,7 +76,7 @@ const Loans = () => {
         ...request.book,
       });
       await updateReq({
-        ...request, 
+        ...request,
         status: RequestStatus.Returned,
       });
       setConfirmPopup({
@@ -88,18 +87,18 @@ const Loans = () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
       // finds oldest request of status hold and sends email
-      const holds = requests.filter(holdRequest => 
-        holdRequest.status === RequestStatus.Hold && holdRequest.bookId === request.bookId
+      const holds = requests.filter(
+        (holdRequest) =>
+          holdRequest.status === RequestStatus.Hold &&
+          holdRequest.bookId === request.bookId
       );
 
       // if there are any holds for the current book
       if (holds.length > 0) {
         const earliestHold = holds[0];
-        await updateRequest({ ...earliestHold, status: RequestStatus.Pickup});
+        await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
         console.log("email sent");
       }
-      
-
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,

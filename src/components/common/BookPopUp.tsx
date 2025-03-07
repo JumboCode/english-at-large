@@ -33,51 +33,59 @@ const BookPopup = (props: BookPopupProps) => {
     toggleOpen();
   };
   const toggleNext = async () => {
-    let isSuccess = true; 
+    let isSuccess = true;
     if (user) {
-      const requests = (user as User & { requests: BookRequest[]}).requests;
+      const requests = (user as User & { requests: BookRequest[] }).requests;
       const userRequested = requests.filter(
         (request) =>
           request.status !== RequestStatus.Returned &&
-          request.status !== RequestStatus.Lost 
-      )
+          request.status !== RequestStatus.Lost
+      );
 
-      // checking if user already requested book or if limits are exceeded 
-      const borrowed = userRequested.filter((req) => req.status !== RequestStatus.Hold);
-      const holds = userRequested.filter((req) => 
-        req.status !== RequestStatus.Borrowed &&
-        req.status !== RequestStatus.Requested);
+      // checking if user already requested book or if limits are exceeded
+      const borrowed = userRequested.filter(
+        (req) => req.status !== RequestStatus.Hold
+      );
+      const holds = userRequested.filter(
+        (req) =>
+          req.status !== RequestStatus.Borrowed &&
+          req.status !== RequestStatus.Requested
+      );
 
       if (requests && userRequested.some((req) => req.bookId === book.id)) {
-        isSuccess = false; 
+        isSuccess = false;
+      } else if (
+        (borrow && borrowed.length > MAX_REQUESTS) ||
+        (!borrow && holds.length > MAX_REQUESTS)
+      ) {
+        isSuccess = false;
+        setLimitExceeded(true);
+      }
 
-      } else if ((borrow && borrowed.length > MAX_REQUESTS) || 
-        (!borrow && holds.length > MAX_REQUESTS)) {
-          isSuccess = false; 
-          setLimitExceeded(true);
-      } 
-    
       if (isSuccess) {
-        const request = await createQuickRequest(book, user, 
-          borrow 
-            ? RequestStatus.Requested
-            : RequestStatus.Hold);
+        const request = await createQuickRequest(
+          book,
+          user,
+          borrow ? RequestStatus.Requested : RequestStatus.Hold
+        );
         setConfirmPopup({
           type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
-          action: borrow ? ConfirmPopupActions.BORROW : ConfirmPopupActions.PLACE,
+          action: borrow
+            ? ConfirmPopupActions.BORROW
+            : ConfirmPopupActions.PLACE,
           success: !!request,
         });
-        setSuccess(isSuccess); 
-        
+        setSuccess(isSuccess);
       } else {
         setConfirmPopup({
           type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
-          action: borrow ? ConfirmPopupActions.BORROW : ConfirmPopupActions.PLACE,
+          action: borrow
+            ? ConfirmPopupActions.BORROW
+            : ConfirmPopupActions.PLACE,
           success: false,
         });
-        setSuccess(isSuccess); 
+        setSuccess(isSuccess);
       }
-      
     } // you shouldn't be here if you're not authenticated...
     setIsNextOpen(!isNextOpen);
   };
@@ -91,8 +99,8 @@ const BookPopup = (props: BookPopupProps) => {
             <h1 className="font-[family-name:var(--font-rubik)] font-semibold text-2xl">
               {borrow ? "Borrow" : "Place hold"}
             </h1>
-            <div className="text-[#757575] text-sm"> 
-              You are {borrow ? "borrowing" : "placing a hold for"}: 
+            <div className="text-[#757575] text-sm">
+              You are {borrow ? "borrowing" : "placing a hold for"}:
             </div>
             <hr className="h-px bg-[#D4D4D4] border-0 mt-5"></hr>
             <div className="flex grid-cols-2 gap-4 mt-4 ">
@@ -131,7 +139,7 @@ const BookPopup = (props: BookPopupProps) => {
               <CommonButton
                 label="Confirm"
                 altStyle="w-36 h-10 bg-[#202D74]"
-                onClick = {toggleNext}
+                onClick={toggleNext}
                 altTextStyle="text-white font-[family-name:var(--font-rubik)] font-medium -ml-2"
               />
             </div>
@@ -139,11 +147,12 @@ const BookPopup = (props: BookPopupProps) => {
         </div>
       ) : (
         <div>
-          <ConfirmBookRequestPopup 
-              toggle={toggleOpen} 
-              success={success} 
-              borrow={borrow} 
-              limitExceeded={limitExceeded}/>
+          <ConfirmBookRequestPopup
+            toggle={toggleOpen}
+            success={success}
+            borrow={borrow}
+            limitExceeded={limitExceeded}
+          />
         </div>
       )}
     </div>
