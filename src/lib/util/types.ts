@@ -52,7 +52,7 @@ export function getAvailableCopies(book: BookWithRequests): number {
   const bookAndRequests = book as BookWithRequests;
 
   const filteredRequests = bookAndRequests.requests.filter((r) => {
-    return r.status != RequestStatus.Returned;
+    return r.status !== RequestStatus.Returned; // TODO: track the lost case
   });
 
   return bookAndRequests.copies - filteredRequests.length;
