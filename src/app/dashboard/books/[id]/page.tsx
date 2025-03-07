@@ -1,14 +1,12 @@
 "use client";
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState, use, useMemo } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 // import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
 import holdBookClock from "../../../../assets/icons/holdBookClock.svg"
-import BorrowPopup from "@/components/common/BorrowPopup";
-import HoldPopup from "@/components/common/HoldPopup";
+import BookPopup from "@/components/common/BookPopUp";
 import { getOneBook } from "@/lib/api/books";
-import { Book, RequestStatus, BookRequest, User } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -16,12 +14,10 @@ import BookDetail from "@/components/Details";
 import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
-import { getUserRequests } from "@/lib/api/requests";
-import { MAX_REQUESTS } from "@/lib/util/types";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
-
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -30,24 +26,18 @@ type Params = Promise<{ id: string }>;
  * @returns the book details page
  * @notes uses Next.js 15's asynchronous pages. find out more here:
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
+ *
+ * TODO: Hook up the availability logic again once schema changes are pushed
  */
 const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<BookWithRequests | null>(null);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [isHoldOpen, setIsHoldOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [userLoans, setUserLoans] = useState<
-      (BookRequest & { user: User; book: Book })[]
-    >([]);
-  const [userHolds, setUserHolds] = useState<
-      (BookRequest & { user: User; book: Book })[]
-    >([]);
   const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
-  const [borrowed, setBorrowed] = useState(false);
-  const [holdPlaced, setHoldPlaced] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -55,37 +45,12 @@ const BookDetails = (props: { params: Promise<Params> }) => {
       setBook(book || null);
     };
     fetchBook();
-  }, [params]); 
+  }, [params]);
 
-  useEffect(() => {
-    if (user && book) {
-      const fetchRequests = async () => {
-        const allUserRequests = await getUserRequests(user.id);
-        const userLoans = (allUserRequests ?? []).filter(request => 
-          request.status === RequestStatus.Borrowed
-        );
-        const userHolds = (allUserRequests ?? []).filter(request => 
-          request.status === RequestStatus.Hold
-        );
-
-        setUserLoans(userLoans);
-        setUserHolds(userHolds);
-
-        // checking if user has already borrowed or placed hold 
-        //  for the current book
-        const isBookLoaned = userLoans.some(request => request.bookId === book.id);
-        const isBookHeld = userHolds.some(request => request.bookId === book.id);
-        if (isBookLoaned) {
-          setBorrowed(true); 
-        } 
-        if (isBookHeld) {
-          setHoldPlaced(true); 
-        } 
-      }
-      fetchRequests(); 
-    }
-  }, [user, book]);
-
+  const availableCopies = useMemo(
+    () => (book ? getAvailableCopies(book) : 0),
+    [book]
+  );
 
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
@@ -101,9 +66,9 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     <div>
       {showBookForm ? (
         <BookForm
-          exit={() => setShowBookForm(false)}
+          exit={(show: boolean) => setShowBookForm(show)}
           existingBook={book}
-          onSave={(b: Book | null) => {
+          onSave={(b: BookWithRequests | null) => {
             setBook(b);
           }}
           isbn={book.isbn[0]}
@@ -125,40 +90,21 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                       {
                         <CommonButton
                           label= {
-                            book.availableCopies > 0 
-                            ? userLoans.length < MAX_REQUESTS
-                              ? borrowed
-                                ? "Borrowed"
-                                : "Borrow"
-                              : "Loans exceeded"
-                            : userHolds.length < MAX_REQUESTS
-                                ? holdPlaced
-                                    ? "Hold placed"
-                                    : "Place hold"
-                                : "Holds exceeded"
+                            availableCopies > 0 
+                            ? "Borrow"
+                            : "Place Hold"
                           }
-                          altStyle={`w-40 h-10 ${
-                            userLoans.length >= MAX_REQUESTS || userHolds.length >= MAX_REQUESTS
-                            || borrowed || holdPlaced
-                              ? "bg-medium-grey-border"
-                              : "bg-dark-blue"
-                          } border-none mr-3`}
+                          altStyle={`w-40 h-10 bg-dark-blue border-none mr-3`}
                           onClick={
-                            book.availableCopies > 0 
-                            ? userLoans.length < MAX_REQUESTS && !borrowed
-                              ? toggleBorrowOpen
-                              : undefined
-                            : userHolds.length < MAX_REQUESTS && !holdPlaced
-                                ? toggleHoldOpen
-                                : undefined
+                            availableCopies > 0 
+                            ? toggleBorrowOpen
+                            : toggleHoldOpen
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
-                            borrowed || holdPlaced 
-                            ? undefined
-                            : <Image
+                            <Image
                               src={
-                                book.availableCopies > 0 
+                                availableCopies > 0 
                                 ? bookIconGreyed
                                 : holdBookClock
                               }
@@ -259,18 +205,18 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     releaseDate={book.releaseDate}
                     copies={book.copies}
                     numPages={book.numPages}
-                    availableCopies={book.availableCopies}
+                    availableCopies={availableCopies}
                     lineSpacing="space-y-6"
                   />
                 </div>
               </div>
 
               {isBorrowOpen ? (
-                <BorrowPopup toggleOpen={toggleBorrowOpen} book={book} />
+                <BookPopup toggleOpen={toggleBorrowOpen} book={book} borrow={true} />
               ) : null}
 
               {isHoldOpen ? (
-                <HoldPopup toggleOpen={toggleHoldOpen} book={book} />
+                <BookPopup toggleOpen={toggleHoldOpen} book={book} borrow={false} />
               ) : null}
             </div>
           ) : null}

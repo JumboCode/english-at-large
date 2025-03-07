@@ -1,7 +1,6 @@
 "use client";
 import { deleteBook } from "@/lib/api/books";
 import CommonButton from "./common/button/CommonButton";
-import { Book } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import BookDetail from "./Details";
@@ -11,9 +10,10 @@ import {
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
 import imageToAdd from "../assets/images/harry_potter.jpg";
+import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 
 interface RemoveModalProps {
-  book: Book;
+  book: BookWithRequests;
   setShowRemoveModal: (arg0: boolean) => void;
 }
 
@@ -33,6 +33,7 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
         customMessage: "Book removed successfully.",
       });
       router.push("/dashboard/books");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setShowRemoveModal(false);
       setConfirmPopup({
@@ -78,8 +79,8 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
                 publisher={book.publisher}
                 releaseDate={book.releaseDate}
                 numPages={book.numPages}
-                availableCopies={book.availableCopies}
-                copies={10}
+                availableCopies={getAvailableCopies(book)}
+                copies={book.copies}
                 lineSpacing="space-y-5"
                 fontSize="text-sm"
               />

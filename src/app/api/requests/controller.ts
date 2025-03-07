@@ -61,7 +61,6 @@ export const getOneRequestController = async (
   }
 };
 
-
 /**
  * Utility controller that gets a user's Request in the backend.
  *
@@ -71,9 +70,8 @@ export const getOneRequestController = async (
  *  - This controller can later be modified to call other backend functions as needed.
  */
 export const getUserRequestController = async (
-  userId: string,
-): Promise<
-(BookRequest & { book: Book })[]> => {
+  userId: string
+): Promise<(BookRequest & { book: Book })[]> => {
   try {
     const requests = await prisma.bookRequest.findMany({
       where: { userId: userId },

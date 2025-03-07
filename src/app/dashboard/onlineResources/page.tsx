@@ -89,6 +89,7 @@ const OnlineResourcesPage = () => {
         if (allResources) {
           setResources(allResources);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
         console.error("Failed to get all books");
       }

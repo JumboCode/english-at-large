@@ -1,5 +1,6 @@
-import { Book } from "@prisma/client";
 import axios from "axios";
+import { BookWithRequests } from "../util/types";
+import { Book } from "@prisma/client";
 
 /**
  * Utility function for fetching all books
@@ -9,12 +10,18 @@ import axios from "axios";
  *
  * @remarks
  */
-export const getAllBooks = async (): Promise<Book[] | undefined> => {
+export const getAllBooks = async (): Promise<
+  BookWithRequests[] | undefined
+> => {
   try {
     const response = await axios.get("/api/books");
     return response.data; //JSOn
   } catch (error) {
-    throw new Error("Failed to fetch books");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch books: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch books: An unknown error occurred");
+    }
   }
 };
 
@@ -26,12 +33,18 @@ export const getAllBooks = async (): Promise<Book[] | undefined> => {
  *
  * @remarks
  */
-export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
+export const getOneBook = async (
+  bookId: number
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.get(`/api/books/?id=${bookId}`); // Using template literals for cleaner URL construction
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch books");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch book: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch book: An unknown error occurred");
+    }
   }
 };
 
@@ -46,7 +59,7 @@ export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
  */
 export const createBook = async (
   book: Omit<Book, "id">
-): Promise<Book | undefined> => {
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.post("/api/books", book);
     return response.data;
@@ -63,12 +76,14 @@ export const createBook = async (
  *
  * @remarks
  */
-export const updateBook = async (book: Book): Promise<Book | undefined> => {
+export const updateBook = async (
+  book: BookWithRequests | Book
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.put("/api/books", book);
     return response.data;
   } catch (error) {
-    console.error("Failed to create book: ", error);
+    console.error("Failed to update book: ", error);
   }
 };
 
@@ -80,14 +95,19 @@ export const updateBook = async (book: Book): Promise<Book | undefined> => {
  *
  * @remarks
  */
-export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
+export const deleteBook = async (
+  bookId: number
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.delete(`/api/books?id=${bookId}`);
     return response.data;
   } catch (error) {
-    console.error("Failed to create book: ", error);
+    console.error("Failed to delete book: ", error);
   }
 };
+
+const DEFAULT_IMAGE =
+  "https://drive.google.com/file/d/16AqCXCMmHGEN1kLqjaGe2DYKEQEyhIMk/view?usp=drive_link";
 
 export const getBookCover = async (
   bookISBN: string
@@ -100,8 +120,8 @@ export const getBookCover = async (
       return url;
     }
   } catch (error) {
-    console.warn("Error fetching image");
+    console.warn("Error fetching image", error);
   }
 
-  // return imageToAdd.src;
+  return DEFAULT_IMAGE;
 };

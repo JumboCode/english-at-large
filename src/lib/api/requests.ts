@@ -45,7 +45,11 @@ export const getRequests = async (): Promise<
 
     return response.data; //JSOn
   } catch (error) {
-    throw new Error("Failed to fetch requests");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch requests: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch requests: An unknown error occurred");
+    }
   }
 };
 
@@ -64,7 +68,13 @@ export const getUserRequests = async (
     const response = await axios.get(`/api/requests?userId=${userId}`);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch user's requests");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch user's requests: ${error.message}`);
+    } else {
+      throw new Error(
+        "Failed to fetch user's requests: An unknown error occurred"
+      );
+    }
   }
 };
 

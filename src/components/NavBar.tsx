@@ -145,11 +145,20 @@ const NavBar = () => {
                 Users
               </Link>
             </div>
+
+            <div className="relative group mt-2">
+              <Link
+                href="/dashboard/tables"
+                className="font-[family-name:var(--font-rubik)] font-semibold"
+              >
+                Dashboard
+              </Link>
+            </div>
           </>
         ) : (
           <div className="relative group mt-2">
             <Link
-              href={'/dashboard/shelf/' + user?.id}
+              href={"/dashboard/shelf/" + user?.id}
               className="font-[family-name:var(--font-rubik)] font-semibold"
             >
               Shelf
@@ -161,14 +170,12 @@ const NavBar = () => {
       {/* User Section */}
       <div className="flex row gap-3 mr-14 mt-2">
         {/* Profile Picture */}
-        <Link href="/profile">
-          <Image
-            src={profilePic}
-            alt="Profile Picture"
-            style={STYLES.profilePic}
-            className="w-8 h-8 rounded-full -mt-1"
-          />
-        </Link>
+        <Image
+          src={profilePic}
+          alt="Profile Picture"
+          style={STYLES.profilePic}
+          className="w-8 h-8 rounded-full -mt-1"
+        />
 
         {/* User Menu */}
         <UserMenu name={user?.name} onSignOut={handleSignOut} />
