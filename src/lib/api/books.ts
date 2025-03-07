@@ -77,7 +77,7 @@ export const createBook = async (
  * @remarks
  */
 export const updateBook = async (
-  book: BookWithRequests
+  book: BookWithRequests | Book
 ): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.put("/api/books", book);

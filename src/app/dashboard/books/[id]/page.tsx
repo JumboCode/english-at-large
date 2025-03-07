@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState, use, useMemo } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
@@ -37,7 +37,6 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
-  const [availableCopies, setAvailableCopies] = useState<number>(0);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -47,11 +46,10 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     fetchBook();
   }, [params]);
 
-  useEffect(() => {
-    if (book) {
-      setAvailableCopies(getAvailableCopies(book));
-    }
-  }, [book]);
+  const availableCopies = useMemo(
+    () => (book ? getAvailableCopies(book) : 0),
+    [book]
+  );
 
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);

@@ -1,7 +1,6 @@
 "use client";
 import { deleteBook } from "@/lib/api/books";
 import CommonButton from "./common/button/CommonButton";
-import { Book } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import BookDetail from "./Details";
@@ -11,10 +10,10 @@ import {
   usePopup,
 } from "@/lib/context/ConfirmPopupContext";
 import imageToAdd from "../assets/images/harry_potter.jpg";
-import { getAvailableCopies } from "@/lib/util/types";
+import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 
 interface RemoveModalProps {
-  book: Book;
+  book: BookWithRequests;
   setShowRemoveModal: (arg0: boolean) => void;
 }
 
