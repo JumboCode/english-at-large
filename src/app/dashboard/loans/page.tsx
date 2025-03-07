@@ -83,6 +83,7 @@ const Loans = () => {
         action: ConfirmPopupActions.MARK,
         success: true,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,

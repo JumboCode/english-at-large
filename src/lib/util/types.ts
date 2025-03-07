@@ -63,6 +63,7 @@ export const emptyBook: Book = {
   coverURL: "",
   availableCopies: 0,
   copies: 0,
+  createdAt: new Date(),
 };
 
 /**
@@ -84,6 +85,7 @@ export const newEmptyBook: Omit<Book, "id"> = {
   coverURL: "",
   availableCopies: 0,
   copies: 0,
+  createdAt: new Date(),
 };
 
 ////////////////////////////////////////////////////////////////////////////////

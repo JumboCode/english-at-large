@@ -77,8 +77,6 @@ const BookForm = (props: BookFormProps) => {
         updatedBook.availableCopies = 1;
         //for now set copies and availCopies to 1, need to go back in the future and check
         if (isbn) addToISBN(isbn, updatedBook);
-        console.log("look here now", updatedBook.isbn);
-
         return updatedBook;
       });
       // Book cover retrieval
@@ -149,11 +147,13 @@ const BookForm = (props: BookFormProps) => {
   };
 
   const findSimilar = (allBooks: Book[], title: string) => {
-    return allBooks.filter(
-      (book) =>
-        book.title === title ||
-        book.title.toLowerCase().includes(title.toLowerCase()) ||
-        title.toLowerCase().includes(book.title.toLowerCase())
+    return (
+      allBooks.filter(
+        (book) =>
+          book.title === title ||
+          book.title.toLowerCase().includes(title.toLowerCase()) ||
+          title.toLowerCase().includes(book.title.toLowerCase())
+      ) || []
     );
   };
   const handleSave = async () => {
@@ -172,16 +172,14 @@ const BookForm = (props: BookFormProps) => {
         }
       } else if (newBook) {
         const allBooks = await getAllBooks();
-        //checks if any similar books are returned, but should also ask the user
         const similarBooks = findSimilar(allBooks!, newBook.title);
-        console.log("look here", newBook, similarBooks);
         if (similarBooks.length != 0) {
-          //for now just pick the first matching title
+          // for now just pick the first matching title
           similarBooks[0].isbn.push(newBook.isbn[0]);
           similarBooks[0].copies += 1;
           similarBooks[0].availableCopies += 1;
           setFoundSimilar(true);
-          //we can create a modal from this
+          // we can create a modal from this
           console.log(foundSimilar);
           const updatedBook = await updateBook(similarBooks[0]);
 
