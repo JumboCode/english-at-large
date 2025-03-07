@@ -4,17 +4,22 @@ import SearchBar from "@/components/SearchBar";
 import CommonDropdown from "../forms/Dropdown";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { User, Book, BookRequest } from "@prisma/client";
-import { getRequests, updateRequest } from "@/lib/api/requests";
-import { getAllUsers } from "@/lib/api/users";
+import { User, BookRequest } from "@prisma/client";
+import { updateRequest } from "@/lib/api/requests";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import LoanDropdown from "../forms/LoanDropdown";
-import { emptyRequest } from "@/lib/util/types";
+import { emptyRequest, RequestWithBookAndUser } from "@/lib/util/types";
 
-const UserHistory = () => {
+interface UserHistoryProps {
+  users: User[];
+  requests: RequestWithBookAndUser[];
+}
+
+const UserHistory = (props: UserHistoryProps) => {
   const user = useCurrentUser();
 
+  const { users, requests } = props;
   const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
@@ -23,7 +28,6 @@ const UserHistory = () => {
     }
   }, [user]);
 
-  const [users, setUsers] = useState<User[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filter, setFilter] = useState<string>("");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -31,17 +35,10 @@ const UserHistory = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedValue, setSelectedValue] = useState<string>("");
 
-  const [requests, setRequests] = useState<
-    (BookRequest & { user: User; book: Book })[]
-  >([]);
-
   // use of structured clone creates new subset of search target users
   // allows filter to act on subset of searched users
   const requestsByUser = useMemo(() => {
-    const grouped: Record<
-      string,
-      (BookRequest & { user: User; book: Book })[]
-    > = {};
+    const grouped: Record<string, RequestWithBookAndUser[]> = {};
 
     requests.forEach((request) => {
       const userId = request.user.id;
@@ -64,56 +61,7 @@ const UserHistory = () => {
       (user) => requestsByUser[user.id] && requestsByUser[user.id].length > 0
     ); // Filter users with requests
 
-  useEffect(() => {
-    const getReqs = async () => {
-      const allRequests = await getRequests();
-      setRequests(allRequests ?? []);
-    };
-
-    getReqs();
-  }, []);
-
-  useEffect(() => {
-    const getUsers = async () => {
-      const allUsers = await getAllUsers();
-      setUsers(allUsers ?? []);
-    };
-    getUsers();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      // Use Promise.allSettled to run both requests concurrently
-      const [usersResult, requestsResult] = await Promise.allSettled([
-        getAllUsers(),
-        getRequests(),
-      ]);
-
-      // Handle the results of the users request
-      const allUsers =
-        usersResult.status === "fulfilled" && usersResult.value !== undefined
-          ? usersResult.value
-          : [];
-      // Handle the results of the requests request
-      const allRequests =
-        requestsResult.status === "fulfilled" &&
-        requestsResult.value !== undefined
-          ? requestsResult.value
-          : [];
-
-      // Filter users who have requests
-      const usersWithRequests = allUsers.filter((user) =>
-        allRequests.some((request) => request.userId === user.id)
-      );
-
-      // Update state
-      setUsers(usersWithRequests);
-      setRequests(allRequests);
-    };
-
-    fetchData();
-  }, []);
-
+  // function for updating the request
   const updateReq = async (req: BookRequest) => {
     await updateRequest(req);
     if (req) {

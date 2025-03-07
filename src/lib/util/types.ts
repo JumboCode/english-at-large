@@ -106,6 +106,10 @@ export const newEmptyBook: Omit<Book, "id"> = {
 /////                              REQUESTS                                /////
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
+
+export type RequestWithBookAndUser = Prisma.BookRequestGetPayload<{
+  include: { book: true; user: true };
+}>;
 /**
  * "Empty book" with dummy data.
  */

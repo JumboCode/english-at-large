@@ -54,6 +54,29 @@ export const getRequests = async (): Promise<
 };
 
 /**
+ * Utility function for fetching all requests
+ *
+ * @param none
+ * @returns array of request (of type Requests)
+ *
+ * @remarks
+ * - TODO: add filtering if needed
+ */
+export const getRequestCount = async (): Promise<number> => {
+  try {
+    const response = await axios.get("/api/requests/count");
+
+    return response.data; //JSOn
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch requests: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch requests: An unknown error occurred");
+    }
+  }
+};
+
+/**
  * Utility function for fetching user's requests
  *
  * @param user
