@@ -91,7 +91,7 @@ const Loans = () => {
       );
 
       // if there are any holds for the current book
-      if (holds) {
+      if (holds.length > 0) {
         const earliestHold = holds[0];
         await updateRequest({ ...earliestHold, status: RequestStatus.Pickup});
         console.log("email sent");
