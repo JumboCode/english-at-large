@@ -77,7 +77,8 @@ const Loans = () => {
         ...request.book,
       });
       await updateReq({
-        ...request,
+        ...request, 
+        status: RequestStatus.Returned,
       });
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,

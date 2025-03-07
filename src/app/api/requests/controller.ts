@@ -3,6 +3,7 @@ import { Book, BookRequest, User, RequestStatus } from "@prisma/client";
 import { validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
+import { MAX_REQUESTS } from "@/lib/util/types";
 
 
 /**
@@ -146,9 +147,9 @@ export const postRequestController = async (
               </p>`,
             };
 
-            await sgMail.send(msg).catch((error: unknown) => {
-              console.error(error);
-            });
+            // await sgMail.send(msg).catch((error: unknown) => {
+            //   console.error(error);
+            // });
           }
         });
 
@@ -197,6 +198,22 @@ export const putRequestController = async (
         }
     
         sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
+
+        // seeing if user has exceeded limit
+        let exceededLimit = false;
+        const requests = await prisma.bookRequest.findMany({
+          where: { userId: user.id }
+        });
+        const borrowed =  requests.filter(
+          (request) =>
+            request.status !== RequestStatus.Returned &&
+            request.status !== RequestStatus.Lost &&
+            request.status !== RequestStatus.Hold
+        )
+        
+        if (borrowed && borrowed.length > MAX_REQUESTS) {
+          exceededLimit = true;
+        }
     
         const tutorMsg = {
           to: user.email,
@@ -206,13 +223,17 @@ export const putRequestController = async (
           Book Title: ${book.title} \n
           Book ID: ${book.id} \n
           which was placed on ${requestData.requestedOn} has been moved from hold to pickup. 
-          Please ensure you arrive to retrieve it.`,
+          Please ensure you arrive to retrieve it. \n\n
+          ${ exceededLimit ? "However, you are currently at the max number of borrowed books. \
+            Please return a book before picking up this one. </strong>" : "" }`,
 
           html: `<p> The following hold for: <br>
           <strong> Book Title: </strong>  ${book.title} <br> 
-          <strong> Book ID: <strong> ${book.id}  <br>
+          <strong> Book ID: </strong> ${book.id}  <br>
           which was placed on <strong> ${requestData.requestedOn} </strong> has been moved 
-          from hold to pickup. Please ensure you arrive to retrieve it. </p>`,
+          from hold to pickup. Please ensure you arrive to retrieve it. <br> <br>
+          ${ exceededLimit ? "<strong> However, you are currently at the max number of borrowed books. \
+            Please return a book before picking up this one. </strong>" : ""} </p>`,
         };
     
         await sgMail.send(tutorMsg).catch((error: unknown) => {
@@ -225,10 +246,7 @@ export const putRequestController = async (
         });
 
         if (admins) {
-          admins.filter((admin) => {
-            return admin.role === UserRole.Admin;
-          })
-          .map(async (user) => {
+          admins.map(async (user) => {
             const email = user.email;
             if (email) {
               const adminMsg = {

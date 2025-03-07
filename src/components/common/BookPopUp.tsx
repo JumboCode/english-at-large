@@ -28,12 +28,12 @@ const BookPopup = (props: BookPopupProps) => {
   const user = useCurrentUser(); // currently logged in user
   const { setConfirmPopup } = usePopup();
   const [success, setSuccess] = useState<boolean>(true);
+  const [limitExceeded, setLimitExceeded] = useState(false);
   const exit = () => {
     toggleOpen();
   };
-  const [errorMsg, setErrorMsg] = useState(""); 
-
   const toggleNext = async () => {
+    let isSuccess = true; 
     if (user) {
       const requests = (user as User & { requests: BookRequest[]}).requests;
       const userRequested = requests.filter(
@@ -42,47 +42,40 @@ const BookPopup = (props: BookPopupProps) => {
           request.status !== RequestStatus.Lost 
       )
 
-      // checking if user already requested book
+      // checking if user already requested book or if limits are exceeded 
+      const borrowed = userRequested.filter((req) => req.status !== RequestStatus.Hold);
+      const holds = userRequested.filter((req) => 
+        req.status !== RequestStatus.Borrowed &&
+        req.status !== RequestStatus.Requested);
+
       if (requests && userRequested.some((req) => req.bookId === book.id)) {
-        setErrorMsg(borrow 
-          ? "You cannot borrow more than one copy of the same book." 
-          : "You cannot hold more than one copy of the same book. ");
-        setSuccess(false);
-      }
+        isSuccess = false; 
 
-      if (borrow) {
-        // retrieving borrowed books
-        const borrowed = userRequested.filter((req) => req.status !== RequestStatus.Hold);
-        if (requests && borrowed.length > MAX_REQUESTS) {
-          setErrorMsg("You have exceeded the borrow limit. Please return one before borrowing another");
-          setSuccess(false);
-        } 
-
-      } else {
-        // retrieving holds
-        const holds = userRequested.filter((req) => req.status !== RequestStatus.Borrowed);
-        if (requests && holds.length > MAX_REQUESTS) {
-          setErrorMsg("You have exceeded the hold limit. Please wait before placing another hold.");
-          setSuccess(false);
-        }
-      }
-
-      if (!success) {
-        setConfirmPopup({
-          type: ConfirmPopupTypes.BOOK,
-          action: borrow ? ConfirmPopupActions.BORROW : ConfirmPopupActions.PLACE,
-          success: false,
-        });
-      } else {
+      } else if ((borrow && borrowed.length > MAX_REQUESTS) || 
+        (!borrow && holds.length > MAX_REQUESTS)) {
+          isSuccess = false; 
+          setLimitExceeded(true);
+      } 
+    
+      if (isSuccess) {
         const request = await createQuickRequest(book, user, 
           borrow 
             ? RequestStatus.Requested
             : RequestStatus.Hold);
         setConfirmPopup({
-          type: ConfirmPopupTypes.BOOK,
+          type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
           action: borrow ? ConfirmPopupActions.BORROW : ConfirmPopupActions.PLACE,
           success: !!request,
         });
+        setSuccess(isSuccess); 
+        
+      } else {
+        setConfirmPopup({
+          type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
+          action: borrow ? ConfirmPopupActions.BORROW : ConfirmPopupActions.PLACE,
+          success: false,
+        });
+        setSuccess(isSuccess); 
       }
       
     } // you shouldn't be here if you're not authenticated...
@@ -146,7 +139,11 @@ const BookPopup = (props: BookPopupProps) => {
         </div>
       ) : (
         <div>
-          <ConfirmBookRequestPopup toggle={toggleOpen} success={success} errorMsg={errorMsg}/>
+          <ConfirmBookRequestPopup 
+              toggle={toggleOpen} 
+              success={success} 
+              borrow={borrow} 
+              limitExceeded={limitExceeded}/>
         </div>
       )}
     </div>
