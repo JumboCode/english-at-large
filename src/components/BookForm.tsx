@@ -90,7 +90,6 @@ const BookForm = (props: BookFormProps) => {
         updatedBook.copies = 1;
         //for now set copies and availCopies to 1, need to go back in the future and check
         if (isbn) addToISBN(isbn, updatedBook);
-
         return updatedBook;
       });
       // Book cover retrieval
@@ -186,11 +185,13 @@ const BookForm = (props: BookFormProps) => {
   }, [numCopies, availableCopies, existingBook]);
 
   const findSimilar = (allBooks: Book[], title: string) => {
-    return allBooks.filter(
-      (book) =>
-        book.title === title ||
-        book.title.toLowerCase().includes(title.toLowerCase()) ||
-        title.toLowerCase().includes(book.title.toLowerCase())
+    return (
+      allBooks.filter(
+        (book) =>
+          book.title === title ||
+          book.title.toLowerCase().includes(title.toLowerCase()) ||
+          title.toLowerCase().includes(book.title.toLowerCase())
+      ) || []
     );
   };
   const handleSave = async () => {

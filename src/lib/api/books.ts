@@ -14,7 +14,11 @@ export const getAllBooks = async (): Promise<Book[] | undefined> => {
     const response = await axios.get("/api/books");
     return response.data; //JSOn
   } catch (error) {
-    throw new Error("Failed to fetch books");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch books: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch books: An unknown error occurred");
+    }
   }
 };
 
@@ -31,7 +35,11 @@ export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
     const response = await axios.get(`/api/books/?id=${bookId}`); // Using template literals for cleaner URL construction
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch books");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch book: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch book: An unknown error occurred");
+    }
   }
 };
 
@@ -89,6 +97,9 @@ export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
   }
 };
 
+const DEFAULT_IMAGE =
+  "https://drive.google.com/file/d/16AqCXCMmHGEN1kLqjaGe2DYKEQEyhIMk/view?usp=drive_link";
+
 export const getBookCover = async (
   bookISBN: string
 ): Promise<string | undefined> => {
@@ -100,8 +111,8 @@ export const getBookCover = async (
       return url;
     }
   } catch (error) {
-    console.warn("Error fetching image");
+    console.warn("Error fetching image", error);
   }
 
-  // return imageToAdd.src;
+  return DEFAULT_IMAGE;
 };

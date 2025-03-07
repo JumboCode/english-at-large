@@ -2,8 +2,8 @@
 import React, { useEffect, useState, use } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-// import bookIcon from "../../../../assets/icons/bookmark_add.svg";
-import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
+import bookIcon from "../../../../assets/icons/bookmark_add.svg";
+// import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
 import BorrowPopup from "@/components/common/BorrowPopup";
 
 import { getOneBook } from "@/lib/api/books";
@@ -29,6 +29,8 @@ type Params = Promise<{ id: string }>;
  * @returns the book details page
  * @notes uses Next.js 15's asynchronous pages. find out more here:
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
+ *
+ * TODO: Hook up the availability logic again once schema changes are pushed
  */
 const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
@@ -87,7 +89,11 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     <div className="flex">
                       {
                         <CommonButton
-                          label="Borrow"
+                          label={
+                            // book.status === BookStatus.Available
+                            "Borrow"
+                            // : "You have already borrowed this book"
+                          }
                           altStyle={`w-40 h-10 ${
                             availableCopies != 0
                               ? "bg-dark-blue"
@@ -96,10 +102,18 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                           onClick={
                             availableCopies != 0 ? toggleBorrowOpen : undefined
                           }
-                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                          altTextStyle={
+                            // book.status === BookStatus.Available
+                            "text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                            // : "text-gray-500 font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                          }
                           leftIcon={
                             <Image
-                              src={bookIconGreyed}
+                              src={
+                                // book.status === BookStatus.Available
+                                bookIcon
+                                // : bookIconGreyed
+                              }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
                             />

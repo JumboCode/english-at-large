@@ -107,8 +107,9 @@ const BooksPage = () => {
         if (allBooks) {
           setBooks(allBooks);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        console.error("Failed to get all books");
+        console.error("Failed to get all books", err);
       } finally {
         setLoadingBooks(false);
       }

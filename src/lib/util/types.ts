@@ -72,6 +72,7 @@ export const emptyBook: Book = {
   numPages: 0,
   coverURL: "",
   copies: 1,
+  createdAt: new Date(),
 };
 
 /**
@@ -92,6 +93,7 @@ export const newEmptyBook: Omit<Book, "id"> = {
   numPages: 0,
   coverURL: "",
   copies: 1,
+  createdAt: new Date(),
 };
 
 ////////////////////////////////////////////////////////////////////////////////
