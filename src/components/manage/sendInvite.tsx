@@ -75,6 +75,9 @@ const SendInvite = (props: SendInviteProps) => {
       } else {
         throw "Not all fields completed!";
       }
+
+      // don't want to print errors to client console
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.USER,

@@ -16,7 +16,11 @@ export const getAllResources = async (): Promise<
     const response = await axios.get("/api/resources");
     return response.data; //JSOn
   } catch (error) {
-    throw new Error("Failed to fetch resources");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch resources: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch resources: An unknown error occurred");
+    }
   }
 };
 
@@ -35,7 +39,11 @@ export const getOneResource = async (
     const response = await axios.get(`/api/resources/?id=${resourceId}`); // Using template literals for cleaner URL construction
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch resources");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch resources: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch resources: An unknown error occurred");
+    }
   }
 };
 
