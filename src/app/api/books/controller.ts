@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { validateBookData } from "@/lib/util/types";
-import { Book } from "@prisma/client";
+import { BookWithRequests, validateBookData } from "@/lib/util/types";
+import { Book, BookRequest } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
  *
@@ -11,15 +11,17 @@ import { Book } from "@prisma/client";
  */
 export const postBookController = async (
   bookData: Omit<Book, "id">
-): Promise<Book> => {
+): Promise<BookWithRequests> => {
   // Validate required fields. Note that empty strings are also false values (so they can't be blank)
   try {
     if (!validateBookData(bookData)) {
       throw new Error("Missing required book properties");
     }
-
     const newBook = await prisma.book.create({
       data: bookData,
+      include: {
+        requests: true,
+      },
     });
 
     return newBook;
@@ -29,9 +31,14 @@ export const postBookController = async (
   }
 };
 
-export const getAllBooksController = async (): Promise<Book[]> => {
+export const getAllBooksController = async (): Promise<BookWithRequests[]> => {
   try {
-    const Books = await prisma.book.findMany();
+    const Books = await prisma.book.findMany({
+      include: {
+        requests: true,
+      },
+    });
+
     return Books;
   } catch (error) {
     console.error("Error fetching books: ", error);
@@ -39,7 +46,9 @@ export const getAllBooksController = async (): Promise<Book[]> => {
   }
 };
 
-export const getOneBookController = async (bookId: number): Promise<Book> => {
+export const getOneBookController = async (
+  bookId: number
+): Promise<BookWithRequests> => {
   try {
     if (bookId === undefined || bookId === null) {
       throw new Error("Missing book id");
@@ -47,6 +56,9 @@ export const getOneBookController = async (bookId: number): Promise<Book> => {
 
     const findBook = await prisma.book.findUnique({
       where: { id: bookId },
+      include: {
+        requests: true,
+      },
     });
 
     if (findBook) return findBook;
@@ -65,19 +77,30 @@ export const getOneBookController = async (bookId: number): Promise<Book> => {
  * @remarks
  *  - N/A
  */
-export const putBookController = async (bookData: Book): Promise<Book> => {
+export const putBookController = async (
+  bookData: BookWithRequests
+): Promise<BookWithRequests> => {
   try {
     if (!bookData.id || !validateBookData(bookData)) {
       throw new Error("Missing id, and name or owner");
     }
 
+    const bookWithRequests = bookData as Book & { requests: BookRequest[] };
+
+    const { requests, ...updatedBookData } = bookWithRequests;
+    void requests;
+
     const updatedBook = await prisma.book.update({
-      where: { id: bookData.id },
-      data: bookData,
+      where: { id: updatedBookData.id },
+      data: updatedBookData,
+      include: {
+        requests: true,
+      },
     });
 
-    if (updatedBook) return updatedBook;
-    else throw new Error("Book not found!");
+    if (updatedBook) {
+      return updatedBook;
+    } else throw new Error("Book not found!");
   } catch (error) {
     console.error("Error Putting Book: ", error);
     throw error;

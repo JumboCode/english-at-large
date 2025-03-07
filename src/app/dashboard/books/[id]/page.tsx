@@ -1,13 +1,11 @@
 "use client";
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState, use, useMemo } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 // import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
 import BorrowPopup from "@/components/common/BorrowPopup";
-
 import { getOneBook } from "@/lib/api/books";
-import { Book } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -19,7 +17,7 @@ import imageToAdd from "../../../../assets/images/harry_potter.jpg";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
-
+import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -33,7 +31,7 @@ type Params = Promise<{ id: string }>;
  */
 const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<BookWithRequests | null>(null);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -48,6 +46,11 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     fetchBook();
   }, [params]);
 
+  const availableCopies = useMemo(
+    () => (book ? getAvailableCopies(book) : 0),
+    [book]
+  );
+
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
   };
@@ -58,9 +61,9 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     <div>
       {showBookForm ? (
         <BookForm
-          exit={() => setShowBookForm(false)}
+          exit={(show: boolean) => setShowBookForm(show)}
           existingBook={book}
-          onSave={(b: Book | null) => {
+          onSave={(b: BookWithRequests | null) => {
             setBook(b);
           }}
           isbn={book.isbn[0]}
@@ -87,14 +90,12 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                             // : "You have already borrowed this book"
                           }
                           altStyle={`w-40 h-10 ${
-                            book.availableCopies != 0
+                            availableCopies != 0
                               ? "bg-dark-blue"
                               : "bg-medium-grey-border"
                           } border-none mr-3`}
                           onClick={
-                            book.availableCopies != 0
-                              ? toggleBorrowOpen
-                              : undefined
+                            availableCopies != 0 ? toggleBorrowOpen : undefined
                           }
                           altTextStyle={
                             // book.status === BookStatus.Available
@@ -205,7 +206,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     releaseDate={book.releaseDate}
                     copies={book.copies}
                     numPages={book.numPages}
-                    availableCopies={book.availableCopies}
+                    availableCopies={availableCopies}
                     lineSpacing="space-y-6"
                   />
                 </div>

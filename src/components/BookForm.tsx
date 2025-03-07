@@ -2,7 +2,12 @@
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "./common/button/CommonButton";
 import { useCallback, useEffect, useState } from "react";
-import { CustomChangeEvent, newEmptyBook } from "@/lib/util/types";
+import {
+  BookWithRequests,
+  CustomChangeEvent,
+  getAvailableCopies,
+  newEmptyBook,
+} from "@/lib/util/types";
 import {
   createBook,
   getBookCover,
@@ -18,33 +23,43 @@ import axios from "axios";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 
 interface BookFormProps {
-  exit: () => void;
-  existingBook?: Book | null;
-  onSave?: (arg0: Book | null) => void;
+  exit: (arg0: boolean) => void;
+  existingBook?: BookWithRequests | null;
+  onSave?: (arg0: BookWithRequests | null) => void;
   isbn?: string;
+  setOriginalBook?: (origBook: Omit<Book, "id">) => void;
+  setBookList?: (bookList: BookWithRequests[]) => void;
 }
 
 const BookForm = (props: BookFormProps) => {
-  const { exit, existingBook, onSave, isbn } = props;
+  const { exit, existingBook, onSave, isbn, setOriginalBook, setBookList } =
+    props;
 
   const skills = Object.values(BookSkills);
   const levels = Object.values(BookLevel);
   const types = Object.values(BookType);
 
   const [newBook, setNewBook] = useState<Omit<Book, "id">>(newEmptyBook);
-  const [editBook, setEditBook] = useState<Book | null | undefined>(
+  const [editBook, setEditBook] = useState<BookWithRequests | null | undefined>(
     existingBook
   );
-  const [foundSimilar, setFoundSimilar] = useState(false);
+  const [numCopies, setNumCopies] = useState<number>(
+    existingBook ? existingBook.copies : 1
+  );
+  const [availableCopies, setAvailableCopies] = useState<number>(
+    existingBook ? getAvailableCopies(existingBook) : 1
+  );
+  const [isInvalidCopies, setisInvalidCopies] = useState<boolean>(false);
 
   const { setConfirmPopup } = usePopup();
 
   const addToISBN = (isbn: string, updateBook: Omit<Book, "id">) => {
-    console.log("THIS IS THE ISBN", isbn);
     if (updateBook.isbn.length === 0) {
       updateBook.isbn = [isbn];
     } else {
-      updateBook.isbn.push(isbn);
+      if (!updateBook.isbn.includes(isbn)) {
+        updateBook.isbn.push(isbn);
+      }
     }
   };
 
@@ -74,7 +89,6 @@ const BookForm = (props: BookFormProps) => {
         if (bookFields.publisher) updatedBook.publisher = bookFields.publisher;
         if (bookFields.numPages) updatedBook.numPages = bookFields.numPages;
         updatedBook.copies = 1;
-        updatedBook.availableCopies = 1;
         //for now set copies and availCopies to 1, need to go back in the future and check
         if (isbn) addToISBN(isbn, updatedBook);
         return updatedBook;
@@ -94,7 +108,9 @@ const BookForm = (props: BookFormProps) => {
   }, [isbn, newBook.isbn]);
 
   useEffect(() => {
-    pullISBN();
+    if (isbn) {
+      pullISBN();
+    }
   }, [isbn, pullISBN]);
 
   // handles the setState for all HTML input fields
@@ -111,7 +127,7 @@ const BookForm = (props: BookFormProps) => {
           ({
             ...prevBook,
             [name]: value,
-          } as Book)
+          } as BookWithRequests)
       );
     } else if (newBook) {
       setNewBook(
@@ -133,7 +149,7 @@ const BookForm = (props: BookFormProps) => {
           ({
             ...prevBook,
             [name]: value,
-          } as Book)
+          } as BookWithRequests)
       );
     } else {
       setNewBook(
@@ -146,7 +162,30 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
-  const findSimilar = (allBooks: Book[], title: string) => {
+  useEffect(() => {
+    console.log("num:", numCopies);
+    console.log("available:", availableCopies);
+
+    if (existingBook) {
+      setEditBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            ["copies"]: numCopies,
+          } as BookWithRequests)
+      );
+    } else {
+      setNewBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            ["copies"]: numCopies,
+          } as Omit<Book, "id">)
+      );
+    }
+  }, [numCopies, availableCopies, existingBook]);
+
+  const findSimilar = (allBooks: BookWithRequests[], title: string) => {
     return (
       allBooks.filter(
         (book) =>
@@ -158,9 +197,9 @@ const BookForm = (props: BookFormProps) => {
   };
   const handleSave = async () => {
     try {
+      let similarBooks = [];
       if (editBook) {
         const editedBook = await updateBook(editBook);
-
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
           action: ConfirmPopupActions.ADD,
@@ -172,27 +211,12 @@ const BookForm = (props: BookFormProps) => {
         }
       } else if (newBook) {
         const allBooks = await getAllBooks();
-        const similarBooks = findSimilar(allBooks!, newBook.title);
-        if (similarBooks.length != 0) {
-          // for now just pick the first matching title
-          similarBooks[0].isbn.push(newBook.isbn[0]);
-          similarBooks[0].copies += 1;
-          similarBooks[0].availableCopies += 1;
-          setFoundSimilar(true);
-          // we can create a modal from this
-          console.log(foundSimilar);
-          const updatedBook = await updateBook(similarBooks[0]);
+        //checks if any similar books are returned, but should also ask the user
+        similarBooks = findSimilar(allBooks!, newBook.title);
+        if (setBookList) setBookList(similarBooks);
+        if (setOriginalBook) setOriginalBook(newBook);
 
-          setConfirmPopup({
-            type: ConfirmPopupTypes.EXISTING_BOOK,
-            action: ConfirmPopupActions.ADD,
-            success: !!updatedBook,
-          });
-
-          if (updatedBook && onSave) {
-            onSave(updatedBook);
-          }
-        } else {
+        if (similarBooks.length === 0) {
           const createdBook = await createBook(newBook);
 
           setConfirmPopup({
@@ -206,7 +230,7 @@ const BookForm = (props: BookFormProps) => {
           }
         }
       }
-      exit();
+      exit(similarBooks.length != 0);
     } catch (error) {
       console.error(error);
     }
@@ -230,7 +254,7 @@ const BookForm = (props: BookFormProps) => {
               <CommonButton
                 label="Cancel"
                 onClick={() => {
-                  exit();
+                  exit(false);
                 }}
               />
               <CommonButton
@@ -294,7 +318,6 @@ const BookForm = (props: BookFormProps) => {
               }
               onChange={bookChangeHandler}
               value={editBook ? editBook.author : newBook.author}
-              required
             />
           </div>
           <div className="flex flex-col w-[50%]">
@@ -311,7 +334,6 @@ const BookForm = (props: BookFormProps) => {
               }
               onChange={bookChangeHandler}
               value={editBook ? editBook.publisher : newBook.publisher}
-              required
             />
           </div>
         </div>
@@ -349,7 +371,6 @@ const BookForm = (props: BookFormProps) => {
                   ? editBook.numPages
                   : newBook.numPages ?? 1
               }
-              required
             />
           </div>
         </div>
@@ -366,7 +387,6 @@ const BookForm = (props: BookFormProps) => {
             }
             onChange={bookChangeHandler}
             value={editBook ? editBook.description : newBook.description}
-            required
           ></textarea>
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
@@ -380,7 +400,6 @@ const BookForm = (props: BookFormProps) => {
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
               defaultValue={editBook ? editBook.level : ""}
-              required
             >
               <option value="">Select level</option>
               {levels.map((bookLevel, index) => {
@@ -402,7 +421,6 @@ const BookForm = (props: BookFormProps) => {
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
               defaultValue={editBook ? editBook.bookType : ""}
-              required
             >
               <option value="">Select book type</option>
               {types.map((bookType, index) => {
@@ -416,6 +434,50 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
 
+        <div className="flex flex-col w-[90%] mx-auto space-x-4">
+          <div className=" w-[50%] ">
+            <p className="text-lg mb-2">Number of Copies</p>
+            <div className="flex flex-row gap-4">
+              <div
+                className={`w-full h-10 flex flex-row justify-center items-center text-black  rounded-lg border border-solid font-normal text-center ${
+                  isInvalidCopies ? `border-red-500` : ` border-medium-grey`
+                }`}
+              >
+                <p>{editBook ? editBook.copies : newBook.copies}</p>
+              </div>
+              <button
+                onClick={() => {
+                  if (availableCopies > 0) {
+                    setNumCopies(numCopies - 1);
+                    setAvailableCopies(availableCopies - 1);
+                  } else {
+                    setisInvalidCopies(true);
+                  }
+                }}
+                className="h-10 w-10 p-4 border border-dark-blue text-dark-blue rounded-lg border-solid flex flex-row justify-center items-center"
+              >
+                <p>-</p>
+              </button>
+              <button
+                onClick={() => {
+                  setNumCopies(numCopies + 1);
+                  setAvailableCopies(availableCopies + 1);
+                  setisInvalidCopies(false);
+                }}
+                className="h-10 w-10 p-4 border border-dark-blue-border rounded-lg border-solid bg-dark-blue text-white flex flex-row justify-center items-center"
+              >
+                <div>+</div>
+              </button>
+            </div>
+            {isInvalidCopies ? (
+              <p className="text-red-500 font-normal">
+                {(editBook ? editBook.copies : newBook ? newBook.copies : 0) -
+                  availableCopies}{" "}
+                out right now, cannot have less copies than loans
+              </p>
+            ) : null}
+          </div>
+        </div>
         <div>
           <p className="block text-lg ml-[5%] mb-2">Skills</p>
           <div className="flex space-x-4 mx-[5%] ">
