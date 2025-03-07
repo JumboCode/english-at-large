@@ -48,12 +48,12 @@ model BookRequest {
   id          Int           @id @default(autoincrement())
   userId      String
   bookId      Int
+  status      RequestStatus
   createdAt   DateTime
   message     String
   bookTitle   String
   requestedOn DateTime
   returnedBy  DateTime
-  status      RequestStatus
   book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -77,6 +77,15 @@ enum UserRole {
   Admin
   Volunteer
   Tutor
+}
+
+enum RequestStatus {
+  Requested
+  Hold
+  Borrowed
+  Lost
+  Pickup
+  Returned
 }
 
 enum BookSkills {
@@ -114,13 +123,4 @@ enum ResourceFormat {
   Worksheet
   Reading
   Video
-}
-
-enum RequestStatus {
-  Requested
-  Hold
-  Borrowed
-  Lost
-  Pickup
-  Returned
 }
