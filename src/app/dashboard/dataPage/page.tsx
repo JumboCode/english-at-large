@@ -8,13 +8,8 @@ import TableOverview from "@/components/common/tables/TableOverview";
 import { Book, User } from "@prisma/client";
 import { getAllUsers } from "@/lib/api/users";
 import { getRequestCount, getRequests } from "@/lib/api/requests";
-import { RequestWithBookAndUser } from "@/lib/util/types";
+import { BookStats, RequestWithBookAndUser } from "@/lib/util/types";
 import { getAllBooks } from "@/lib/api/books";
-
-export interface BookStats {
-  totalRequests: number;
-  uniqueUsers: number;
-}
 
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");

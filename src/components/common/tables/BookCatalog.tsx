@@ -5,7 +5,7 @@ import SearchBar from "@/components/SearchBar";
 import CommonDropdown from "../forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
-import { BookStats } from "@/app/dashboard/datapage/page";
+import { BookStats } from "@/lib/util/types";
 
 interface BookCatalogProps {
   bookStats: Record<number, BookStats>;
