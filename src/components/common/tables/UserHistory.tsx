@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonDropdown from "../forms/Dropdown";
 import Link from "next/link";
@@ -37,11 +37,32 @@ const UserHistory = () => {
 
   // use of structured clone creates new subset of search target users
   // allows filter to act on subset of searched users
-  const subsetUsers = structuredClone<User[]>(users).filter(
-    (user) =>
-      user.name?.toLowerCase().includes(searchData) ||
-      user.email?.toLowerCase().includes(searchData)
-  );
+  const requestsByUser = useMemo(() => {
+    const grouped: Record<
+      string,
+      (BookRequest & { user: User; book: Book })[]
+    > = {};
+
+    requests.forEach((request) => {
+      const userId = request.user.id;
+      if (!grouped[userId]) {
+        grouped[userId] = [];
+      }
+      grouped[userId].push(request);
+    });
+
+    return grouped;
+  }, [requests]); // Recompute only when `requests` changes
+
+  const subsetUsers = structuredClone<User[]>(users)
+    .filter(
+      (user) =>
+        user.name?.toLowerCase().includes(searchData) ||
+        user.email?.toLowerCase().includes(searchData)
+    )
+    .filter(
+      (user) => requestsByUser[user.id] && requestsByUser[user.id].length > 0
+    ); // Filter users with requests
 
   useEffect(() => {
     const getReqs = async () => {
@@ -62,25 +83,36 @@ const UserHistory = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const allUsers = await getAllUsers();
-      const allRequests = (await getRequests()) ?? [];
-      const usersWithRequests =
-        allUsers?.filter((user) =>
-          allRequests.some((request) => request.userId === user.id)
-        ) ?? [];
+      // Use Promise.allSettled to run both requests concurrently
+      const [usersResult, requestsResult] = await Promise.allSettled([
+        getAllUsers(),
+        getRequests(),
+      ]);
 
+      // Handle the results of the users request
+      const allUsers =
+        usersResult.status === "fulfilled" && usersResult.value !== undefined
+          ? usersResult.value
+          : [];
+      // Handle the results of the requests request
+      const allRequests =
+        requestsResult.status === "fulfilled" &&
+        requestsResult.value !== undefined
+          ? requestsResult.value
+          : [];
+
+      // Filter users who have requests
+      const usersWithRequests = allUsers.filter((user) =>
+        allRequests.some((request) => request.userId === user.id)
+      );
+
+      // Update state
       setUsers(usersWithRequests);
+      setRequests(allRequests);
     };
 
     fetchData();
   }, []);
-
-  const requestsByUser = (
-    requests: (BookRequest & { user: User; book: Book })[],
-    id: string
-  ) => {
-    return requests.filter((request) => request.user.id === id);
-  };
 
   const updateReq = async (req: BookRequest) => {
     await updateRequest(req);
@@ -129,7 +161,7 @@ const UserHistory = () => {
           </thead>
           <tbody className="divide-y divide-solid">
             {subsetUsers.map((user, index) => {
-              const userRequests = requestsByUser(requests, user.id);
+              const userRequests = requestsByUser[user.id];
 
               return (
                 <tr key={index} className="bg-white h-16">

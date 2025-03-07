@@ -77,8 +77,6 @@ const BookForm = (props: BookFormProps) => {
         updatedBook.availableCopies = 1;
         //for now set copies and availCopies to 1, need to go back in the future and check
         if (isbn) addToISBN(isbn, updatedBook);
-        console.log("look here now", updatedBook.isbn);
-
         return updatedBook;
       });
       // Book cover retrieval
@@ -175,8 +173,6 @@ const BookForm = (props: BookFormProps) => {
       } else if (newBook) {
         const allBooks = await getAllBooks();
         const similarBooks = findSimilar(allBooks!, newBook.title);
-
-        console.log("look here", newBook, "found similar:", similarBooks);
         if (similarBooks.length != 0) {
           // for now just pick the first matching title
           similarBooks[0].isbn.push(newBook.isbn[0]);

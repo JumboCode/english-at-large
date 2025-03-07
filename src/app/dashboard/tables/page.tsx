@@ -5,8 +5,8 @@ import UserHistory from "@/components/common/tables/UserHistory";
 export default function TablesPage() {
   return (
     <div>
-      <BookCatalog></BookCatalog>
-      <UserHistory></UserHistory>
+      <BookCatalog />
+      <UserHistory />
     </div>
   );
 }

@@ -2,19 +2,21 @@
 import React, { useEffect, useState } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { getRequests } from "@/lib/api/requests";
-import { Book, BookRequest, User } from "@prisma/client";
+import { Book } from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
 import CommonDropdown from "../forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 
 const BookCatalog = () => {
+  interface BookStats {
+    totalRequests: number;
+    uniqueUsers: number;
+  }
+
   const [books, setBooks] = useState<Book[]>([]);
-  //   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
-  const [requests, setRequests] = useState<
-    (BookRequest & { user: User; book: Book })[]
-  >([]);
+  const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
 
   const subsetBooks = structuredClone<Book[]>(books).filter((book) =>
     book.title.toLowerCase().includes(searchData)
@@ -23,47 +25,55 @@ const BookCatalog = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const allBooks = await getAllBooks();
-        if (allBooks) {
-          setBooks(allBooks);
+        const [booksResult, requestsResult] = await Promise.allSettled([
+          getAllBooks(),
+          getRequests(),
+        ]);
+
+        if (booksResult.status === "fulfilled" && booksResult.value) {
+          setBooks(booksResult.value);
+        } else if (booksResult.status === "rejected") {
+          console.error("Failed to fetch books:", booksResult.reason);
+        }
+
+        if (requestsResult.status === "fulfilled" && requestsResult.value) {
+          // Process requests to calculate stats for each book
+          // create temp record and stick users into a set
+          const stats: Record<
+            number,
+            { totalRequests: number; uniqueUsers: Set<string> }
+          > = {};
+
+          requestsResult.value.forEach(({ user, book }) => {
+            if (!stats[book.id]) {
+              stats[book.id] = { totalRequests: 0, uniqueUsers: new Set() };
+            }
+            stats[book.id].totalRequests += 1;
+            stats[book.id].uniqueUsers.add(user.id);
+          });
+
+          // Convert sets to counts
+          const processedStats: Record<number, BookStats> = {};
+          for (const [bookId, { totalRequests, uniqueUsers }] of Object.entries(
+            stats
+          )) {
+            processedStats[Number(bookId)] = {
+              totalRequests,
+              uniqueUsers: uniqueUsers.size,
+            };
+          }
+
+          setBookStats(processedStats);
+        } else if (requestsResult.status === "rejected") {
+          console.error("Failed to fetch requests:", requestsResult.reason);
         }
       } catch (err) {
-        console.error("Failed to get all books");
+        console.error("Unexpected error in fetchData:", err);
       }
     };
+
     fetchData();
   }, []);
-
-  useEffect(() => {
-    const getReqs = async () => {
-      const allRequests = await getRequests();
-      setRequests(allRequests ?? []);
-    };
-
-    getReqs();
-  }, []);
-
-  const countBookRequests = (
-    requests: (BookRequest & { user: User; book: Book })[],
-    id: number
-  ) => {
-    return requests.filter((request) => request.book.id === id).length;
-  };
-
-  const countUniqueUsers = (
-    requests: (BookRequest & { user: User; book: Book })[],
-    id: number
-  ): number => {
-    const uniqueUsers = new Set<string>();
-
-    requests.forEach(({ user, book }) => {
-      if (book.id === id) {
-        uniqueUsers.add(user.id);
-      }
-    });
-
-    return uniqueUsers.size;
-  };
 
   return (
     <div className="bg-white">
@@ -111,11 +121,11 @@ const BookCatalog = () => {
                     <Link href={`books/${book.id}`}>{book.title}</Link>
                   </td>
                   <td>
-                    <p>{countBookRequests(requests, book.id)}</p>
+                    <p>{bookStats[book.id]?.totalRequests || 0}</p>
                   </td>
 
                   <td>
-                    <p>{countUniqueUsers(requests, book.id)}</p>
+                    <p>{bookStats[book.id]?.uniqueUsers || 0}</p>
                   </td>
 
                   <td>{dateToTimeString(book.createdAt)}</td>
