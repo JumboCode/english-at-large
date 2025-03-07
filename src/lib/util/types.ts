@@ -4,6 +4,7 @@ import {
   // BookSkills,
   BookType,
   OnlineResource,
+  Prisma,
   RequestStatus,
   ResourceFormat,
   ResourceTopic,
@@ -18,6 +19,10 @@ import { BookRequest } from "@prisma/client";
 ////////////////////////////////////////////////////////////////////////////////
 
 export const MAX_REQUESTS = 10;
+
+export type BookWithRequests = Prisma.BookGetPayload<{
+  include: { requests: true };
+}>;
 
 /**
  * Utility function for checking if a book is valid (no fields are empty, etc.)
@@ -43,6 +48,16 @@ export function validateBookData(bookData: Partial<Book>): boolean {
   return true; // No errors
 }
 
+export function getAvailableCopies(book: BookWithRequests): number {
+  const bookAndRequests = book as BookWithRequests;
+
+  const filteredRequests = bookAndRequests.requests.filter((r) => {
+    return r.status !== RequestStatus.Returned; // TODO: track the lost case
+  });
+
+  return bookAndRequests.copies - filteredRequests.length;
+}
+
 /**
  * "Empty book" with dummy data.
  */
@@ -61,8 +76,7 @@ export const emptyBook: Book = {
   releaseDate: null,
   numPages: 0,
   coverURL: "",
-  availableCopies: 0,
-  copies: 0,
+  copies: 1,
   createdAt: new Date(),
 };
 
@@ -83,8 +97,7 @@ export const newEmptyBook: Omit<Book, "id"> = {
   releaseDate: null,
   numPages: 0,
   coverURL: "",
-  availableCopies: 0,
-  copies: 0,
+  copies: 1,
   createdAt: new Date(),
 };
 

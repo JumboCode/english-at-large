@@ -1,5 +1,6 @@
-import { Book } from "@prisma/client";
 import axios from "axios";
+import { BookWithRequests } from "../util/types";
+import { Book } from "@prisma/client";
 
 /**
  * Utility function for fetching all books
@@ -9,7 +10,9 @@ import axios from "axios";
  *
  * @remarks
  */
-export const getAllBooks = async (): Promise<Book[] | undefined> => {
+export const getAllBooks = async (): Promise<
+  BookWithRequests[] | undefined
+> => {
   try {
     const response = await axios.get("/api/books");
     return response.data; //JSOn
@@ -30,7 +33,9 @@ export const getAllBooks = async (): Promise<Book[] | undefined> => {
  *
  * @remarks
  */
-export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
+export const getOneBook = async (
+  bookId: number
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.get(`/api/books/?id=${bookId}`); // Using template literals for cleaner URL construction
     return response.data;
@@ -54,7 +59,7 @@ export const getOneBook = async (bookId: number): Promise<Book | undefined> => {
  */
 export const createBook = async (
   book: Omit<Book, "id">
-): Promise<Book | undefined> => {
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.post("/api/books", book);
     return response.data;
@@ -71,12 +76,14 @@ export const createBook = async (
  *
  * @remarks
  */
-export const updateBook = async (book: Book): Promise<Book | undefined> => {
+export const updateBook = async (
+  book: BookWithRequests | Book
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.put("/api/books", book);
     return response.data;
   } catch (error) {
-    console.error("Failed to create book: ", error);
+    console.error("Failed to update book: ", error);
   }
 };
 
@@ -88,12 +95,14 @@ export const updateBook = async (book: Book): Promise<Book | undefined> => {
  *
  * @remarks
  */
-export const deleteBook = async (bookId: number): Promise<Book | undefined> => {
+export const deleteBook = async (
+  bookId: number
+): Promise<BookWithRequests | undefined> => {
   try {
     const response = await axios.delete(`/api/books?id=${bookId}`);
     return response.data;
   } catch (error) {
-    console.error("Failed to create book: ", error);
+    console.error("Failed to delete book: ", error);
   }
 };
 

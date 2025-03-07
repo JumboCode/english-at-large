@@ -1,11 +1,15 @@
-import { User } from "@prisma/client";
+import { User, BookRequest } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { validateUserData } from "../../../lib/util/types";
 import clerkClient from "@/clerk";
 
 export const getAllUsersController = async (): Promise<User[]> => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      include: {
+        requests: true,
+      },
+    });
     return users;
   } catch (error) {
     console.error("Error fetching users: ", error);
@@ -17,6 +21,9 @@ export const getOneUserController = async (id: string): Promise<User> => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
+      include: {
+        requests: true,
+      },
     });
 
     if (!user) {
@@ -36,6 +43,9 @@ export const getOneUserByClerkController = async (
   try {
     const user = await prisma.user.findFirst({
       where: { clerkId: clerkId },
+      include: {
+        requests: true,
+      },
     });
 
     if (!user) {
@@ -61,6 +71,9 @@ export const postUserController = async (
     // Create the new user in the datry tabase
     const newUser = await prisma.user.create({
       data: userData,
+      include: {
+        requests: true,
+      },
     });
 
     return newUser;
@@ -76,9 +89,17 @@ export const putUserController = async (userData: User): Promise<User> => {
       throw new Error("Missing id, and name or owner");
     }
 
+    const userWithRequests = userData as User & { requests: BookRequest[] };
+
+    const { requests, ...updatedUserData } = userWithRequests;
+    void requests;
+
     const updatedUser = await prisma.user.update({
-      where: { id: userData.id },
-      data: userData,
+      where: { id: updatedUserData.id },
+      data: updatedUserData,
+      include: {
+        requests: true,
+      },
     });
 
     return updatedUser;

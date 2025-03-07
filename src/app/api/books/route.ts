@@ -7,6 +7,7 @@ import {
   postBookController,
   putBookController,
 } from "./controller";
+import { BookWithRequests } from "@/lib/util/types";
 
 export async function GET(req: Request) {
   try {
@@ -61,8 +62,7 @@ export async function POST(req: Request) {
 // PUT - Update a book
 export async function PUT(req: Request) {
   try {
-    const bookData: Book = await req.json();
-
+    const bookData: BookWithRequests = await req.json();
     const updatedBook = await putBookController(bookData);
 
     return NextResponse.json(updatedBook, { status: 200 });
