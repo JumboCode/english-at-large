@@ -147,9 +147,9 @@ export const postRequestController = async (
               </p>`,
             };
 
-            // await sgMail.send(msg).catch((error: unknown) => {
-            //   console.error(error);
-            // });
+            await sgMail.send(msg).catch((error: unknown) => {
+              console.error(error);
+            });
           }
         });
 
