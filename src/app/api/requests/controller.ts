@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { Book, BookRequest, User, RequestStatus } from "@prisma/client";
-import { validateRequestData } from "@/lib/util/types";
+import { RequestWithBookAndUser, validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 import { MAX_REQUESTS } from "@/lib/util/types";
@@ -14,7 +14,7 @@ import { MAX_REQUESTS } from "@/lib/util/types";
  *  - This controller can later be modified to call other backend functions as needed.
  */
 export const getAllRequestsController = async (): Promise<
-  (BookRequest & { user: User; book: Book })[]
+  RequestWithBookAndUser[]
 > => {
   try {
     const requests = await prisma.bookRequest.findMany({
@@ -40,7 +40,7 @@ export const getAllRequestsController = async (): Promise<
  */
 export const getOneRequestController = async (
   id: number
-): Promise<BookRequest> => {
+): Promise<RequestWithBookAndUser> => {
   try {
     const request = await prisma.bookRequest.findUnique({
       where: { id: id },
@@ -189,6 +189,8 @@ export const putRequestController = async (
       data: newRequest,
     });
 
+    // note: this is assuming that only the status changes when updating, otherwise
+    // if you edit another field of something on pickup it'll send another email
     // changing hold to pickup --> send email
     if (newRequest.status === RequestStatus.Pickup) {
       // notify tutor
@@ -198,8 +200,6 @@ export const putRequestController = async (
 
       sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
 
-      // seeing if user has exceeded limit
-      let exceededLimit = false;
       const requests = await prisma.bookRequest.findMany({
         where: { userId: user.id },
       });
@@ -210,9 +210,8 @@ export const putRequestController = async (
           request.status !== RequestStatus.Hold
       );
 
-      if (borrowed && borrowed.length > MAX_REQUESTS) {
-        exceededLimit = true;
-      }
+      // check if user has exceeded limit
+      const exceededLimit: boolean = borrowed && borrowed.length > MAX_REQUESTS;
 
       const tutorMsg = {
         to: user.email,
@@ -264,10 +263,11 @@ export const putRequestController = async (
               to: email,
               from: "englishatlarge427@gmail.com",
               subject: `Request by ${
-                user.email ?? "[No Username]"
+                user.name ?? "[No Username]"
               }: Hold to Pickup`,
 
-              text: `Holder Name: ${user.email ?? "[No Username]"} \n
+              text: `Holder Name: ${user.name ?? "[No Username]"} \n
+                Holder Email: ${user.email} \n
                 Holder ID: ${requestData.userId} \n
                 Book Held: ${requestData.bookTitle} \n
                 Book ID: ${requestData.bookId} \n
@@ -277,7 +277,7 @@ export const putRequestController = async (
 
               html: `<p>
                 <strong> Holder Name:</strong> ${
-                  user.email ?? "[No Username]"
+                  user.name ?? "[No Username]"
                 } <br>
                 <strong> Holder ID:</strong> ${requestData.userId} <br>
                 <strong>Book Held:</strong> ${requestData.bookTitle} <br>
@@ -287,7 +287,16 @@ export const putRequestController = async (
                 } <br><br>
                 The status of this request has been changed from <strong> Hold </strong> 
                 to <strong> Pickup </strong>. <br>
-                Please ensure proper handling of request. </p>`,
+                Please ensure proper handling of request. 
+                
+                ${
+                  exceededLimit
+                    ? "<br> <br> <strong> This user has exceeded the maximum \
+                       number of requests. Please ensure that they return a \
+                       book before loaning this out. </strong>"
+                    : ""
+                }
+                </p>`,
             };
 
             await sgMail.send(adminMsg).catch((error: unknown) => {

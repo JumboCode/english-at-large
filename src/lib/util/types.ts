@@ -24,10 +24,6 @@ export type BookWithRequests = Prisma.BookGetPayload<{
   include: { requests: true };
 }>;
 
-export type BookWithRequests = Prisma.BookGetPayload<{
-  include: { requests: true };
-}>;
-
 export interface BookStats {
   totalRequests: number;
   uniqueUsers: number;
