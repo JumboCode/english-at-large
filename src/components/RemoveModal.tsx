@@ -33,6 +33,7 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
         customMessage: "Book removed successfully.",
       });
       router.push("/dashboard/books");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setShowRemoveModal(false);
       setConfirmPopup({
