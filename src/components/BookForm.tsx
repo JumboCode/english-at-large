@@ -102,10 +102,14 @@ const BookForm = (props: BookFormProps) => {
           coverUrl ??
           "https://covers.openlibrary.org/b/isbn/978-1-933624-43-3-M.jpg",
       }));
-    } catch {
-      throw new Error("Book not found for this ISBN");
+    } catch (error) {
+      setConfirmPopup({
+        type: ConfirmPopupTypes.ISBN_ERROR,
+        action: ConfirmPopupActions.NONE,
+        success: true,
+      });
     }
-  }, [isbn, newBook.isbn]);
+  }, [isbn, newBook.isbn, setConfirmPopup]);
 
   useEffect(() => {
     if (isbn) {

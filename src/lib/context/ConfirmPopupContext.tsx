@@ -42,6 +42,7 @@ export enum ConfirmPopupTypes {
   RESOURCE = "resource",
   RETURNED = "as returned",
   HOLD = "a hold",
+  ISBN_ERROR = "ISBN information could not be found",
 }
 
 export const EmptyConfirmationState: ConfirmationPopupState = {
