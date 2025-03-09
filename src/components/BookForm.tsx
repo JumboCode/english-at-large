@@ -102,6 +102,7 @@ const BookForm = (props: BookFormProps) => {
           coverUrl ??
           "https://covers.openlibrary.org/b/isbn/978-1-933624-43-3-M.jpg",
       }));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.ISBN_ERROR,
