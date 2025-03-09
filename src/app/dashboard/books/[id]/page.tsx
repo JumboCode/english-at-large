@@ -173,6 +173,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                   {book.skills.map((skill, index) => (
                     <Tag key={index} label={skill} />
                   ))}
+                  {book.level ? <Tag label={book.level} /> : null}
+                  {book.bookType ? <Tag label={book.bookType} /> : null}
                 </div>
               </div>
 
