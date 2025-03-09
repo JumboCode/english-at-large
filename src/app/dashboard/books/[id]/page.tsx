@@ -1,13 +1,11 @@
 "use client";
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState, use, useMemo } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-// import bookIcon from "../../../../assets/icons/bookmark_add.svg";
-import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
-import BorrowPopup from "@/components/common/BorrowPopup";
-
+import bookIcon from "../../../../assets/icons/bookmark_add.svg";
+import holdBookClock from "../../../../assets/icons/holdBookClock.svg";
+import BookPopup from "@/components/common/BookPopUp";
 import { getOneBook } from "@/lib/api/books";
-import { Book } from "@prisma/client";
 import pencil from "@/assets/icons/Pencil.svg";
 import trash from "@/assets/icons/Trash.svg";
 import Tag from "@/components/tag";
@@ -15,11 +13,10 @@ import BookDetail from "@/components/Details";
 import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/harry_potter.jpg";
-
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
-
+import { usePopup } from "@/lib/context/ConfirmPopupContext";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -28,11 +25,14 @@ type Params = Promise<{ id: string }>;
  * @returns the book details page
  * @notes uses Next.js 15's asynchronous pages. find out more here:
  * https://nextjs.org/docs/app/building-your-application/upgrading/version-15#asynchronous-page
+ *
+ * TODO: Hook up the availability logic again once schema changes are pushed
  */
 const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<BookWithRequests | null>(null);
   const [isBorrowOpen, setIsBorrowOpen] = useState(false);
+  const [isHoldOpen, setIsHoldOpen] = useState(false);
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const user = useCurrentUser();
@@ -46,8 +46,17 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     fetchBook();
   }, [params]);
 
+  const availableCopies = useMemo(
+    () => (book ? getAvailableCopies(book) : 0),
+    [book]
+  );
+
   const toggleBorrowOpen = () => {
     setIsBorrowOpen(!isBorrowOpen);
+  };
+
+  const toggleHoldOpen = () => {
+    setIsHoldOpen(!isHoldOpen);
   };
 
   if (book === null) return null;
@@ -56,9 +65,9 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     <div>
       {showBookForm ? (
         <BookForm
-          exit={() => setShowBookForm(false)}
+          exit={(show: boolean) => setShowBookForm(show)}
           existingBook={book}
-          onSave={(b: Book | null) => {
+          onSave={(b: BookWithRequests | null) => {
             setBook(b);
           }}
           isbn={book.isbn[0]}
@@ -79,21 +88,19 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     <div className="flex">
                       {
                         <CommonButton
-                          label="Borrow"
-                          altStyle={`w-40 h-10 ${
-                            book.availableCopies != 0
-                              ? "bg-dark-blue"
-                              : "bg-medium-grey-border"
-                          } border-none mr-3`}
+                          label={availableCopies > 0 ? "Borrow" : "Place Hold"}
+                          altStyle={`w-40 h-10 bg-dark-blue border-none mr-3`}
                           onClick={
-                            book.availableCopies != 0
+                            availableCopies > 0
                               ? toggleBorrowOpen
-                              : undefined
+                              : toggleHoldOpen
                           }
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
                             <Image
-                              src={bookIconGreyed}
+                              src={
+                                availableCopies > 0 ? bookIcon : holdBookClock
+                              }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
                             />
@@ -166,6 +173,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                   {book.skills.map((skill, index) => (
                     <Tag key={index} label={skill} />
                   ))}
+                  {book.level ? <Tag label={book.level} /> : null}
+                  {book.bookType ? <Tag label={book.bookType} /> : null}
                 </div>
               </div>
 
@@ -191,14 +200,26 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                     releaseDate={book.releaseDate}
                     copies={book.copies}
                     numPages={book.numPages}
-                    availableCopies={book.availableCopies}
+                    availableCopies={availableCopies}
                     lineSpacing="space-y-6"
                   />
                 </div>
               </div>
 
               {isBorrowOpen ? (
-                <BorrowPopup toggleOpen={toggleBorrowOpen} book={book} />
+                <BookPopup
+                  toggleOpen={toggleBorrowOpen}
+                  book={book}
+                  borrow={true}
+                />
+              ) : null}
+
+              {isHoldOpen ? (
+                <BookPopup
+                  toggleOpen={toggleHoldOpen}
+                  book={book}
+                  borrow={false}
+                />
               ) : null}
             </div>
           ) : null}

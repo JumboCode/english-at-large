@@ -45,7 +45,34 @@ export const getRequests = async (): Promise<
 
     return response.data; //JSOn
   } catch (error) {
-    throw new Error("Failed to fetch requests");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch requests: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch requests: An unknown error occurred");
+    }
+  }
+};
+
+/**
+ * Utility function for fetching all requests
+ *
+ * @param none
+ * @returns array of request (of type Requests)
+ *
+ * @remarks
+ * - TODO: add filtering if needed
+ */
+export const getRequestCount = async (): Promise<number> => {
+  try {
+    const response = await axios.get("/api/requests/count");
+
+    return response.data; //JSOn
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch requests: ${error.message}`);
+    } else {
+      throw new Error("Failed to fetch requests: An unknown error occurred");
+    }
   }
 };
 
@@ -64,7 +91,13 @@ export const getUserRequests = async (
     const response = await axios.get(`/api/requests?userId=${userId}`);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch user's requests");
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch user's requests: ${error.message}`);
+    } else {
+      throw new Error(
+        "Failed to fetch user's requests: An unknown error occurred"
+      );
+    }
   }
 };
 
@@ -103,7 +136,8 @@ export const createRequest = async (
  */
 export const createQuickRequest = async (
   book: Book,
-  user: User
+  user: User,
+  newStatus: RequestStatus
 ): Promise<BookRequest | undefined> => {
   try {
     if (!validateBookData(book) || !validateUserData(user)) {
@@ -115,7 +149,7 @@ export const createQuickRequest = async (
       userId: user.id,
       bookId: book.id,
       createdAt: new Date(),
-      status: RequestStatus.Requested,
+      status: newStatus,
       message: "",
       bookTitle: book.title,
       requestedOn: new Date(),
@@ -124,6 +158,7 @@ export const createQuickRequest = async (
 
     const response = await axios.post("/api/requests", request);
     await updateBook({ ...book });
+
     return response.data;
   } catch (error) {
     console.error("Failed to create request: ", error);
@@ -172,5 +207,27 @@ export const deleteRequest = async (
     return response.data;
   } catch (error) {
     console.error("Failed to delete request: ", error);
+  }
+};
+
+export const checkSendGridLimits = async () => {
+  try {
+    const response = await fetch("https://api.sendgrid.com/v3/user/credits", {
+      headers: {
+        Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch SendGrid limits");
+    }
+
+    const data = await response.json();
+    console.log("SendGrid Email Credits:", data);
+    return data.remain || 0; // Remaining emails allowed
+  } catch (error) {
+    console.error("Error checking SendGrid limits:", error);
+    return 0; // Assume limit is reached if check fails
   }
 };

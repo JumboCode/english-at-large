@@ -6,23 +6,23 @@ import { Book, BookLevel, BookSkills } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
-// import BookForm from "@/components/BookForm";
 import IsbnPopup from "@/components/common/forms/IsbnPopup";
-
 import CommonButton from "@/components/common/button/CommonButton";
 import FilterIcon from "@/assets/icons/Filter";
 import AddIcon from "@/assets/icons/Add";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-import IsbnForm from "@/components/common/forms/IsbnForm";
-import ManualForm from "@/components/common/forms/ManualForm";
 import LoadingSkeleton from "./loading";
+import SimilarBookPopup from "@/components/common/forms/SimilarBookPopup";
+import BookForm from "@/components/BookForm";
+import { emptyBook } from "@/lib/util/types";
 
 enum formState {
   FORM_CLOSED,
   ISBN_FORM_OPEN,
   BOOK_FORM_OPEN,
+  SIMILAR_BOOK_FORM_OPEN,
 }
 
 // const fetchBooks = async () => {
@@ -47,6 +47,10 @@ const BooksPage = () => {
 
   const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
+
+  // states for the similar books popup
+  const [foundBookList, setFoundBookList] = useState<Book[]>([]);
+  const [originalBook, setOriginalBook] = useState<Omit<Book, "id">>(emptyBook);
 
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -103,8 +107,9 @@ const BooksPage = () => {
         if (allBooks) {
           setBooks(allBooks);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        console.error("Failed to get all books");
+        console.error("Failed to get all books", err);
       } finally {
         setLoadingBooks(false);
       }
@@ -112,19 +117,20 @@ const BooksPage = () => {
     fetchData();
   }, []);
 
+  const bookFormExit = (listLen: boolean) => {
+    setFormShown(
+      listLen ? formState.SIMILAR_BOOK_FORM_OPEN : formState.FORM_CLOSED
+    );
+  };
+
   return formShown == formState.BOOK_FORM_OPEN ? (
-    isbnOnSubmit ? (
-      <IsbnForm
-        exit={() => setFormShown(formState.FORM_CLOSED)}
-        existingBook={null}
-        isbn={isbnOnSubmit}
-      />
-    ) : (
-      <ManualForm
-        exit={() => setFormShown(formState.FORM_CLOSED)}
-        existingBook={null}
-      />
-    )
+    <BookForm
+      exit={bookFormExit}
+      existingBook={null}
+      isbn={isbnOnSubmit ?? undefined}
+      setOriginalBook={setOriginalBook}
+      setBookList={setFoundBookList}
+    />
   ) : (
     <div>
       <IsbnPopup
@@ -134,6 +140,12 @@ const BooksPage = () => {
           setFormShown(formState.BOOK_FORM_OPEN);
           setISBN(isbn);
         }}
+      />
+      <SimilarBookPopup
+        originalBook={originalBook}
+        isOpen={formShown == formState.SIMILAR_BOOK_FORM_OPEN}
+        exit={() => setFormShown(formState.FORM_CLOSED)}
+        bookList={foundBookList}
       />
       <SearchBar
         setSearchData={setSearchData}

@@ -1,14 +1,18 @@
 import checkmark from "../../assets/icons/checkmark.svg";
+import xmark from "../../assets/icons/xmark.svg";
 import Image from "next/image";
 import Link from "next/link";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 
 interface ConfirmBookRequestProps {
   toggle: () => void;
+  success: boolean;
+  borrow: boolean;
+  limitExceeded: boolean;
 }
 
 const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
-  const { toggle } = props;
+  const { toggle, success, borrow, limitExceeded } = props;
   const exit = () => {
     toggle();
   };
@@ -42,7 +46,7 @@ const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
           <div className="flex justify-end items-center h-full"></div>
           <div className="flex justify-center m-6">
             <Image
-              src={checkmark}
+              src={success ? checkmark : xmark}
               alt="navy check mark"
               width={50}
               height={80}
@@ -50,11 +54,26 @@ const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
             />
           </div>
           <div className="flex justify-center font-[family-name:var(--font-rubik)] font-semibold text-2xl m-2">
-            You have borrowed the book!
+            {borrow
+              ? success
+                ? "You have borrowed the book!"
+                : "Unable to borrow book"
+              : success
+              ? "You have placed a hold!"
+              : "Unable to place hold"}
           </div>
           <div className="flex justify-center text-[#757575] font-[family-name:var(--font-rubik)] text-xs mb-10">
-            Please arrange a time with the EAL office to schedule your book
-            pick-up.
+            {borrow
+              ? success
+                ? "Please arrange a time with the EAL-office to schedule your pickup."
+                : limitExceeded
+                ? "You have exceeded the borrow limit. Please return a book before borrowing another."
+                : "You cannot borrow more than one copy of the same book."
+              : success
+              ? "An email will be sent to you when this book is available."
+              : limitExceeded
+              ? "You have exceeded the hold limit. Please pickup a book before placing another hold."
+              : "You cannot place more than one request on the same book."}
           </div>
           <div className="flex row-span-2 mt-5 gap-3 justify-between">
             <a
@@ -64,7 +83,7 @@ const ConfirmBookRequestPopup = (props: ConfirmBookRequestProps) => {
               Keep Browsing
             </a>
             <Link
-              href={'/dashboard/shelf/' + useCurrentUser()?.id}
+              href={"/dashboard/shelf/" + useCurrentUser()?.id}
               className="flex flex-row items-center w-56 h-10 text-white justify-center gap-2 p-3 min-w-max border rounded-lg border-dark-blue font-[family-name:var(--font-rubik)] font-semibold bg-[#202D74] text-sm"
             >
               Go to Shelf

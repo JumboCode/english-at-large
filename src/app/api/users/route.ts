@@ -31,10 +31,17 @@ export async function GET(req: Request) {
       return NextResponse.json(users);
     }
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch users" },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Failed to fetch users:" + error },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Failed to fetch users: an unknown error occurred." },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -48,10 +55,17 @@ export async function POST(req: Request) {
     const newUser = await postUserController(userData);
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to create user" },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Failed to create user:" + error },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Failed to create user: an unknown error occurred." },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -62,10 +76,17 @@ export async function PUT(req: Request) {
     const updatedUser = putUserController(userData);
     return NextResponse.json(updatedUser, { status: 200 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to update user" },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Failed to update user:" + error },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Failed to update user: an unknown error occurred." },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -89,9 +110,16 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "No ID provided" }, { status: 400 });
     }
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to delete user" },
-      { status: 500 }
-    );
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: "Failed to delete user:" + error },
+        { status: 500 }
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Failed to delete user: an unknown error occurred." },
+        { status: 500 }
+      );
+    }
   }
 }

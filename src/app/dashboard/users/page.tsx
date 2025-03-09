@@ -72,14 +72,15 @@ export default function Manage() {
 
   const removeUser = async (user: User | null) => {
     if (!user) return; // Ensure user is not null
-     try {
+    try {
       await deleteUser(user.id); // Delete the user
-       setRemovePopupOpen(false); // Close the confirmation modal
-       setConfirmPopup({
+      setRemovePopupOpen(false); // Close the confirmation modal
+      setConfirmPopup({
         type: ConfirmPopupTypes.USER,
         action: ConfirmPopupActions.REMOVE,
         success: true,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.USER,
@@ -87,7 +88,7 @@ export default function Manage() {
         success: false,
       });
     }
-  }; 
+  };
 
   return (
     <div>
@@ -180,38 +181,43 @@ export default function Manage() {
             exit={() => setInvitePopupOpen(false)}
           />
           {removePopupOpen && selectedUser && (
-         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-           <div className="bg-white py-6 px-12 rounded-lg shadow-lg min-w-max max-w-large flex flex-col gap-6">
-             <div className="flex flex-row justify-between">
-               <p className="text-black font-semibold text-2xl font-[family-name:var(--font-rubik)]">
-                 Remove User
-               </p>
-               <button className="text-black" onClick={() => setRemovePopupOpen(false)}>
-                 <XIcon />
-               </button>
-             </div>
-             <hr />
-             <p className="text-black text-lg font-medium">
-               Are you sure you want to remove {selectedUser.name}?
-             </p>
-             <div className="flex flex-row gap-4">
-               <CommonButton
-                 label="Cancel"
-                 onClick={() => setRemovePopupOpen(false)}
-                 altStyle="w-1/2"
-               />
-               <CommonButton
-                 label="Remove"
-                 onClick={async () => {removeUser(selectedUser)}}               
-                 altTextStyle="text-white"
-                 altStyle="bg-red-600 w-1/2 border-0"
-               />
-             </div>
-           </div>
-         </div>
-       )}
-       </div>
-     ) : null}
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+              <div className="bg-white py-6 px-12 rounded-lg shadow-lg min-w-max max-w-large flex flex-col gap-6">
+                <div className="flex flex-row justify-between">
+                  <p className="text-black font-semibold text-2xl font-[family-name:var(--font-rubik)]">
+                    Remove User
+                  </p>
+                  <button
+                    className="text-black"
+                    onClick={() => setRemovePopupOpen(false)}
+                  >
+                    <XIcon />
+                  </button>
+                </div>
+                <hr />
+                <p className="text-black text-lg font-medium">
+                  Are you sure you want to remove {selectedUser.name}?
+                </p>
+                <div className="flex flex-row gap-4">
+                  <CommonButton
+                    label="Cancel"
+                    onClick={() => setRemovePopupOpen(false)}
+                    altStyle="w-1/2"
+                  />
+                  <CommonButton
+                    label="Remove"
+                    onClick={async () => {
+                      removeUser(selectedUser);
+                    }}
+                    altTextStyle="text-white"
+                    altStyle="bg-red-600 w-1/2 border-0"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : null}
 
       {popupStatus.shown ? (
         <ConfirmationPopup
