@@ -75,7 +75,6 @@ const Loans = () => {
         action: ConfirmPopupActions.MARK,
         success: true,
       });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
       // finds oldest request of status hold and sends email
       const holds = requests.filter(
