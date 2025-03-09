@@ -86,7 +86,6 @@ enum RequestStatus {
   Lost
   Pickup
   Returned
-  Hold
 }
 
 enum BookSkills {

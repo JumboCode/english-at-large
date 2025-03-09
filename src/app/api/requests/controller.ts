@@ -21,7 +21,11 @@ export const getAllRequestsController = async (): Promise<
     const requests = await prisma.bookRequest.findMany({
       include: {
         user: true, // Fetch the related User
-        book: true, // Fetch the related Book
+        book: {
+          include: {
+            requests: true,
+          },
+        }, // Fetch the related Book
       },
     });
     return requests;
@@ -47,7 +51,11 @@ export const getOneRequestController = async (
       where: { id: id },
       include: {
         user: true, // Fetch the related User
-        book: true, // Fetch the related Book
+        book: {
+          include: {
+            requests: true,
+          },
+        }, // Fetch the related Book
       },
     });
 

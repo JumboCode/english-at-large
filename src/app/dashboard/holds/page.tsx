@@ -2,14 +2,17 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book, BookRequest, BookStatus, User } from "@prisma/client";
+import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { deleteRequest, getRequests, updateRequest } from "@/lib/api/requests";
-import LoanDropdown from "@/components/common/forms/LoanDropdown";
-import { updateBook } from "@/lib/api/books";
-import { emptyRequest } from "@/lib/util/types";
+// import LoanDropdown from "@/components/common/forms/LoanDropdown";
+import {
+  emptyRequest,
+  getAvailableCopies,
+  RequestWithBookAndUser,
+} from "@/lib/util/types";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import {
@@ -18,9 +21,7 @@ import {
 } from "@/lib/context/ConfirmPopupContext";
 
 const Loans = () => {
-  const [requests, setRequests] = useState<
-    (BookRequest & { user: User; book: Book })[]
-  >([]);
+  const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
@@ -30,14 +31,14 @@ const Loans = () => {
   // use of structured clone creates new subset of search target requests
   // allows filter to act on subset of searched requests
 
-  const subsetRequest = structuredClone<
-    (BookRequest & { user: User; book: Book })[]
-  >(requests).filter(
+  const subsetRequest = structuredClone<RequestWithBookAndUser[]>(
+    requests
+  ).filter(
     (request) =>
-      request.status == BookStatus.Hold &&
+      request.status == RequestStatus.Hold &&
       (request.bookTitle.toLowerCase().includes(searchData) ||
-      request.user?.name?.toLowerCase().includes(searchData) ||
-      request.user?.email?.toLowerCase().includes(searchData))
+        request.user?.name?.toLowerCase().includes(searchData) ||
+        request.user?.email?.toLowerCase().includes(searchData))
   );
 
   const updateReq = async (req: BookRequest) => {
@@ -52,16 +53,16 @@ const Loans = () => {
     if (req) {
       setOneRequest(req);
     }
-  }
+  };
 
   const requestFilter = (request: BookRequest) => {
     switch (selectedValue) {
       case "Pick-up":
-        return request.status === BookStatus.Pickup;
+        return request.status === RequestStatus.Pickup;
       case "Borrowed":
-        return request.status === BookStatus.Borrowed;
+        return request.status === RequestStatus.Borrowed;
       default:
-        return request.status !== BookStatus.Returned;
+        return request.status !== RequestStatus.Returned;
     }
   };
 
@@ -76,23 +77,18 @@ const Loans = () => {
     }
   };
 
-  const markAsDone = async (
-    request: BookRequest & { user: User; book: Book }
-  ) => {
+  const markAsDone = async (request: RequestWithBookAndUser) => {
     try {
-      await updateBook({
-        ...request.book,
-        status: BookStatus.Borrowed,
-      });
       await updateReq({
         ...request,
-        status: BookStatus.Borrowed,
+        status: RequestStatus.Borrowed,
       });
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
         action: ConfirmPopupActions.MARK,
         success: true,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
@@ -106,9 +102,8 @@ const Loans = () => {
     request: BookRequest & { user: User; book: Book }
   ) => {
     try {
-      await deleteReq(
-        request
-      );
+      await deleteReq(request);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
@@ -116,7 +111,6 @@ const Loans = () => {
         success: false,
       });
     }
-
   };
 
   useEffect(() => {
@@ -195,13 +189,9 @@ const Loans = () => {
                     </Link>
                   </td>
 
-                  <td className="text-black">
-                    1 of 2
-                  </td>
+                  <td className="text-black">1 of 2</td>
 
-                  <td className="text-black">
-                    2
-                  </td>
+                  <td className="text-black">2</td>
 
                   <td className="text-black">
                     {dateToTimeString(request.requestedOn)}
@@ -210,23 +200,25 @@ const Loans = () => {
                   <td>
                     <div className="flex justify-center items-center">
                       {/* Add in the functionality for waitlist position when it becomes available */}
-                      {request.book.status === BookStatus.Available ? 
-                        (<CommonButton
+                      {getAvailableCopies(request.book) ? (
+                        <CommonButton
                           label="Done"
                           onClick={async () => {
                             await markAsDone(request);
                           }}
                           altTextStyle="text-white"
                           altStyle="bg-dark-blue"
-                        />) : 
-                        (<CommonButton
+                        />
+                      ) : (
+                        <CommonButton
                           label="Remove Hold"
                           onClick={async () => {
                             await removeHold(request);
                           }}
                           altTextStyle="text-white"
                           altStyle="bg-[#C00F0C]"
-                        />)}
+                        />
+                      )}
                     </div>
                   </td>
                 </tr>
