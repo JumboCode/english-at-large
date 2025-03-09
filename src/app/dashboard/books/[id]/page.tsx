@@ -2,8 +2,7 @@
 import React, { useEffect, useState, use, useMemo } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
-// import bookIcon from "../../../../assets/icons/bookmark_add.svg";
-import bookIconGreyed from "../../../../assets/icons/bookmark_add_greyed_out.svg";
+import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import holdBookClock from "../../../../assets/icons/holdBookClock.svg";
 import BookPopup from "@/components/common/BookPopUp";
 import { getOneBook } from "@/lib/api/books";
@@ -100,9 +99,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                           leftIcon={
                             <Image
                               src={
-                                availableCopies > 0
-                                  ? bookIconGreyed
-                                  : holdBookClock
+                                availableCopies > 0 ? bookIcon : holdBookClock
                               }
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
