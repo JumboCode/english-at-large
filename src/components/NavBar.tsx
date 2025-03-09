@@ -41,10 +41,10 @@ const DropdownMenu = ({
       {title} <Image src={arrow} alt="arrow down" className="-my-5 mx-16" />
     </p>
     <div className={menuClassName}>
-      <div className="my-5 p-3 bg-white rounded-md w-40">
+      <div className="my-5 p-3 bg-white rounded-md w-40 shadow-lg ring-1 ring-black ring-opacity-5">
         <div className="dropdown-menu font-[family-name:var(--font-rubik)] whitespace-nowrap">
           {items.map((item, index) => (
-            <ul key={index} className="pb-2">
+            <ul key={index} className="pb-1">
               <Link href={item.href} className="dropdown-item">
                 {item.label}
               </Link>
