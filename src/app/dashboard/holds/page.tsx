@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
+import { Book, BookRequest, User, RequestStatus } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
@@ -103,7 +103,6 @@ const Loans = () => {
   ) => {
     try {
       await deleteReq(request);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
@@ -189,9 +188,13 @@ const Loans = () => {
                     </Link>
                   </td>
 
-                  <td className="text-black">1 of 2</td>
+                  <td className="text-black">
+                    {request.book?.availableCopies} of {request.book?.copies}
+                  </td>
 
-                  <td className="text-black">2</td>
+                  <td className="text-black">
+                    {positionFinder(requests, request.id, request.book.id)}
+                  </td>
 
                   <td className="text-black">
                     {dateToTimeString(request.requestedOn)}
