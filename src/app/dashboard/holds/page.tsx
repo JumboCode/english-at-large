@@ -48,6 +48,12 @@ const Loans = () => {
     }
   };
 
+  const positionFinder = (req: RequestWithBookAndUser) => {
+    return req.book.requests.filter(
+      (currRequest) => currRequest.requestedOn < req.requestedOn && currRequest.status === RequestStatus.Hold
+    ).length;
+  };
+
   const deleteReq = async (req: BookRequest) => {
     await deleteRequest(req.id);
     if (req) {
@@ -189,11 +195,11 @@ const Loans = () => {
                   </td>
 
                   <td className="text-black">
-                    {request.book?.availableCopies} of {request.book?.copies}
+                    {getAvailableCopies(request.book)} of {request.book?.copies}
                   </td>
 
                   <td className="text-black">
-                    {positionFinder(requests, request.id, request.book.id)}
+                    {positionFinder(request) + 1}
                   </td>
 
                   <td className="text-black">
