@@ -19,22 +19,22 @@ const BookInfo = (props: BookProps) => {
   const { book } = props;
 
   return (
-    <div>
+    <div className="items-start gap-4">
       <Link
         href={`/dashboard/books/${book.id}`}
-        className="grid grid-cols-[40%_60%] items-start"
+        className="flex flex-col md:flex-row gap-4 items-start"
       >
-        <div className="w-[210px] h-[300px] object-fill">
+        <div>
           <Image
             src={book.coverURL || imageToAdd.src}
             alt="Book Cover"
             width={210}
             height={300}
-            className="w-[210px] h-[300px]"
+            className="w-full md:w-[210px] h-[300px] object-fill rounded-md"
           />
         </div>
 
-        <div className="align-middle">
+        <div className="align-middle w-full md:w-3/5">
           <div className="text-left mt-4 mb-4">
             <h3 className="text-lg text-black font-semibold">{book.title}</h3>
             <p className="text-sm text-black mt-2">
