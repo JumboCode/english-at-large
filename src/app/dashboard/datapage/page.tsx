@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import CommonDropdown from "@/components/common/forms/Dropdown";
 import CalendarMonthIcon from "@/assets/icons/calendar_month";
+import DatePicker from "@/components/common/DateRangePicker";
 import BookCatalog from "@/components/common/tables/BookCatalog";
 import UserHistory from "@/components/common/tables/UserHistory";
 import TableOverview from "@/components/common/tables/TableOverview";
@@ -138,12 +138,16 @@ export default function DataPage() {
           </div>
 
           <div className="flex">
-            <CommonDropdown
+            {/* <CommonDropdown
               items={["all time", "last 4 weeks", "last year"]}
               buttonText={"All time"}
               altButtonStyle="min-w-28"
               leftIcon={<CalendarMonthIcon />}
               setFilter={setFilter}
+            /> */}
+            <DatePicker
+              altButtonStyle="min-w-28"
+              leftIcon={<CalendarMonthIcon />}
             />
           </div>
         </div>
