@@ -21,9 +21,9 @@ const IsbnPopup = (props: IsbnPopupProps) => {
     } else {
       setIsbnError(false);
     }
-    setIsbnData(isbnVal); 
+    setIsbnData(isbnVal);
   };
-  
+
   return (
     <div>
       {isOpen ? (
@@ -54,7 +54,9 @@ const IsbnPopup = (props: IsbnPopupProps) => {
                   type="text"
                   name="email"
                   className={`text-black border p-2 rounded-lg w-full outline-none ${
-                    isbnError ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500" : "border-medium-grey-border"
+                    isbnError
+                      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                      : "border-medium-grey-border"
                   }`}
                   onChange={(event) => {
                     validateIsbn(event.target.value);
@@ -65,13 +67,15 @@ const IsbnPopup = (props: IsbnPopupProps) => {
                   label="Search"
                   altTextStyle="text-white"
                   disabled={isbnError}
-                  altStyle={`bg-dark-blue ${isbnError ? "opacity-50 cursor-not-allowed" : ""}`} // Gray out when disabled
+                  altStyle={`bg-dark-blue ${
+                    isbnError ? "opacity-50 cursor-not-allowed" : ""
+                  }`} // Gray out when disabled
                 ></CommonButton>{" "}
               </div>
               <div className="flex flex-row justify-between items-center mt-0.5">
-              {isbnError && (
-                <p className="text-red-500 text-sm">Invalid ISBN</p>
-              )}
+                {isbnError && (
+                  <p className="text-red-500 text-sm">Invalid ISBN</p>
+                )}
               </div>
               <Link
                 className="text-dark-blue text-sm font-medium"
