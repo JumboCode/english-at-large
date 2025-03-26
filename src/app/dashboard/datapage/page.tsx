@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import CalendarMonthIcon from "@/assets/icons/calendar_month";
-import DatePicker from "@/components/common/DateRangePicker";
+import DatePicker from "@/components/common/DatePicker";
 import BookCatalog from "@/components/common/tables/BookCatalog";
 import UserHistory from "@/components/common/tables/UserHistory";
 import TableOverview from "@/components/common/tables/TableOverview";
@@ -10,9 +10,11 @@ import { getAllUsers } from "@/lib/api/users";
 import { getRequestCount, getRequests } from "@/lib/api/requests";
 import { BookStats, RequestWithBookAndUser } from "@/lib/util/types";
 import { getAllBooks } from "@/lib/api/books";
+import { DateRange } from "react-day-picker";
 
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");
+  const [range, setRange] = useState<DateRange | undefined>(undefined);
   const [filter, setFilter] = useState<string>("");
   const filterText = filter ? filter : "all time";
   const [users, setUsers] = useState<User[]>([]);
@@ -27,7 +29,7 @@ export default function DataPage() {
         // promise.allSettled so they can fail independently.
         const [booksResult, requestsResult, usersResult, requestCountResult] =
           await Promise.allSettled([
-            getAllBooks(), // probably pass in the data range into these functions
+            getAllBooks(range?.from, range?.to), // probably pass in the data range into these functions
             getRequests(),
             getAllUsers(),
             getRequestCount(),
@@ -36,6 +38,7 @@ export default function DataPage() {
         // get all book information for book catalog
         if (booksResult.status === "fulfilled" && booksResult.value) {
           setBooks(booksResult.value);
+          console.log(books);
         } else if (booksResult.status === "rejected") {
           console.error("Failed to fetch books:", booksResult.reason);
         }
@@ -110,7 +113,7 @@ export default function DataPage() {
     };
 
     fetchData();
-  }, []);
+  }, [range]);
 
   return (
     <div>
@@ -146,6 +149,8 @@ export default function DataPage() {
               setFilter={setFilter}
             /> */}
             <DatePicker
+              range={range}
+              setRange={setRange}
               altButtonStyle="min-w-28"
               leftIcon={<CalendarMonthIcon />}
             />

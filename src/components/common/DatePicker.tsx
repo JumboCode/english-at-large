@@ -3,21 +3,30 @@ import { useState, useRef, useEffect } from "react";
 import { DayPicker, DateRange } from "react-day-picker";
 
 interface DropdownProps {
+  range: DateRange | undefined;
+  setRange: (range: DateRange | undefined) => void;
   altButtonStyle?: string;
   leftIcon?: React.ReactElement;
 }
 
-const DatePicker = ({ altButtonStyle, leftIcon }: DropdownProps) => {
-  const [range, setRange] = useState<DateRange | undefined>(undefined);
+const DatePicker = ({
+  range,
+  setRange,
+  altButtonStyle,
+  leftIcon,
+}: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const popupRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
+        popupRef.current &&
+        !buttonRef.current.contains(event.target as Node) &&
+        !popupRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -36,8 +45,9 @@ const DatePicker = ({ altButtonStyle, leftIcon }: DropdownProps) => {
   return (
     <div className={`relative inline-block text-left ${altButtonStyle}`}>
       <div>
-        {/* Date Picker Button */}
+        {/* button */}
         <button
+          ref={buttonRef}
           onClick={toggleCalendar}
           className="inline-flex min-w-12 w-full justify-center items-center gap-2 rounded-lg bg-white p-3 text-gray-900 hover:bg-gray-50 border border-dark-blue"
         >
@@ -51,9 +61,12 @@ const DatePicker = ({ altButtonStyle, leftIcon }: DropdownProps) => {
         </button>
       </div>
 
-      {/* DatePicker Calendar */}
+      {/* calendar */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-4 z-10">
+        <div
+          ref={popupRef}
+          className="absolute right-0 mt-2 w-80 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-4 z-10"
+        >
           <DayPicker
             mode="range"
             selected={range}
