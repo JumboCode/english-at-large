@@ -31,19 +31,34 @@ export const getOneRequest = async (
 /**
  * Utility function for fetching all requests
  *
- * @param none
+ * @param from
+ * @param to
  * @returns array of request (of type Requests)
  *
  * @remarks
  * - TODO: add filtering if needed
  */
-export const getRequests = async (): Promise<
-  (BookRequest & { user: User; book: Book })[] | undefined
-> => {
+export const getRequests = async (
+  from?: Date,
+  to?: Date
+): Promise<(BookRequest & { user: User; book: Book })[] | undefined> => {
   try {
     const response = await axios.get("/api/requests");
 
-    return response.data; //JSOn
+    const allRequests: (BookRequest & { user: User; book: Book })[] =
+      response.data;
+
+    if (from && to) {
+      const toEndOfDay = new Date(to);
+      toEndOfDay.setHours(23, 59, 59, 999); // set to the very end of the day
+
+      return allRequests.filter((request) => {
+        const requestedOn = new Date(request.requestedOn);
+        return requestedOn >= from && requestedOn <= toEndOfDay;
+      });
+    } else {
+      return allRequests;
+    }
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch requests: ${error.message}`);
@@ -56,17 +71,35 @@ export const getRequests = async (): Promise<
 /**
  * Utility function for fetching all requests
  *
- * @param none
+ * @param from
+ * @param to
  * @returns array of request (of type Requests)
  *
  * @remarks
  * - TODO: add filtering if needed
  */
-export const getRequestCount = async (): Promise<number> => {
+export const getRequestCount = async (
+  from?: Date,
+  to?: Date
+): Promise<number> => {
   try {
-    const response = await axios.get("/api/requests/count");
+    const response = await axios.get("/api/requests"); // changed from requests/count to just requests
 
-    return response.data; //JSOn
+    const allRequests: (BookRequest & { user: User; book: Book })[] =
+      response.data;
+
+    if (from && to) {
+      const toEndOfDay = new Date(to);
+      toEndOfDay.setHours(23, 59, 59, 999); // set to the very end of the day
+
+      const filteredRequests = allRequests.filter((request) => {
+        const requestedOn = new Date(request.requestedOn);
+        return requestedOn >= from && requestedOn <= toEndOfDay;
+      });
+      return filteredRequests.length;
+    } else {
+      return allRequests.length;
+    }
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch requests: ${error.message}`);

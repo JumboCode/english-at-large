@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import CalendarMonthIcon from "@/assets/icons/calendar_month";
 import DatePicker from "@/components/common/DatePicker";
 import BookCatalog from "@/components/common/tables/BookCatalog";
@@ -15,105 +15,106 @@ import { DateRange } from "react-day-picker";
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");
   const [range, setRange] = useState<DateRange | undefined>(undefined);
-  const [filter, setFilter] = useState<string>("");
-  const filterText = filter ? filter : "all time";
+  const filterText =
+    range?.from && range?.to
+      ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+      : "all time";
   const [users, setUsers] = useState<User[]>([]);
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // promise.allSettled so they can fail independently.
-        const [booksResult, requestsResult, usersResult, requestCountResult] =
-          await Promise.allSettled([
-            getAllBooks(range?.from, range?.to), // probably pass in the data range into these functions
-            getRequests(),
-            getAllUsers(),
-            getRequestCount(),
-          ]);
+  const fetchData = useCallback(async () => {
+    try {
+      // promise.allSettled so they can fail independently.
+      const [booksResult, requestsResult, usersResult, requestCountResult] =
+        await Promise.allSettled([
+          getAllBooks(range?.from, range?.to),
+          getRequests(range?.from, range?.to),
+          getAllUsers(), // no range needed since none of the dashboard tables require filtering by users by date
+          getRequestCount(range?.from, range?.to),
+        ]);
 
-        // get all book information for book catalog
-        if (booksResult.status === "fulfilled" && booksResult.value) {
-          setBooks(booksResult.value);
-          console.log(books);
-        } else if (booksResult.status === "rejected") {
-          console.error("Failed to fetch books:", booksResult.reason);
-        }
-
-        // calculate requets stats information for book catalog
-        if (requestsResult.status === "fulfilled" && requestsResult.value) {
-          // create temp record and stick users into a set
-          const stats: Record<
-            number,
-            { totalRequests: number; uniqueUsers: Set<string> }
-          > = {};
-
-          requestsResult.value.forEach(({ user, book }) => {
-            if (!stats[book.id]) {
-              stats[book.id] = { totalRequests: 0, uniqueUsers: new Set() };
-            }
-            stats[book.id].totalRequests += 1;
-            stats[book.id].uniqueUsers.add(user.id);
-          });
-
-          // Convert sets to counts
-          const processedStats: Record<number, BookStats> = {};
-          for (const [bookId, { totalRequests, uniqueUsers }] of Object.entries(
-            stats
-          )) {
-            processedStats[Number(bookId)] = {
-              totalRequests,
-              uniqueUsers: uniqueUsers.size,
-            };
-          }
-
-          setBookStats(processedStats);
-        } else if (requestsResult.status === "rejected") {
-          console.error("Failed to fetch requests:", requestsResult.reason);
-        }
-
-        // calculate the number of requests
-        if (
-          requestCountResult.status === "fulfilled" &&
-          requestCountResult.value !== undefined
-        ) {
-          setRequestCount(requestCountResult.value);
-        } else if (requestCountResult.status === "rejected") {
-          console.error(
-            "Failed to fetch request count:",
-            requestCountResult.reason
-          );
-        }
-
-        const allUsers =
-          usersResult.status === "fulfilled" && usersResult.value !== undefined
-            ? usersResult.value
-            : [];
-        // Handle the results of the requests request
-        const allRequests =
-          requestsResult.status === "fulfilled" &&
-          requestsResult.value !== undefined
-            ? requestsResult.value
-            : [];
-
-        // Filter users who have requests
-        const usersWithRequests = allUsers.filter((user) =>
-          allRequests.some((request) => request.userId === user.id)
-        );
-
-        // Update state
-        setUsers(usersWithRequests);
-        setRequests(allRequests);
-      } catch (err) {
-        console.error("Unexpected error in fetchData:", err);
+      // get all book information for book catalog
+      if (booksResult.status === "fulfilled" && booksResult.value) {
+        setBooks(booksResult.value);
+      } else if (booksResult.status === "rejected") {
+        console.error("Failed to fetch books:", booksResult.reason);
       }
-    };
 
-    fetchData();
+      // calculate requets stats information for book catalog
+      if (requestsResult.status === "fulfilled" && requestsResult.value) {
+        // create temp record and stick users into a set
+        const stats: Record<
+          number,
+          { totalRequests: number; uniqueUsers: Set<string> }
+        > = {};
+
+        requestsResult.value.forEach(({ user, book }) => {
+          if (!stats[book.id]) {
+            stats[book.id] = { totalRequests: 0, uniqueUsers: new Set() };
+          }
+          stats[book.id].totalRequests += 1;
+          stats[book.id].uniqueUsers.add(user.id);
+        });
+
+        // Convert sets to counts
+        const processedStats: Record<number, BookStats> = {};
+        for (const [bookId, { totalRequests, uniqueUsers }] of Object.entries(
+          stats
+        )) {
+          processedStats[Number(bookId)] = {
+            totalRequests,
+            uniqueUsers: uniqueUsers.size,
+          };
+        }
+
+        setBookStats(processedStats);
+      } else if (requestsResult.status === "rejected") {
+        console.error("Failed to fetch requests:", requestsResult.reason);
+      }
+
+      // calculate the number of requests
+      if (
+        requestCountResult.status === "fulfilled" &&
+        requestCountResult.value !== undefined
+      ) {
+        setRequestCount(requestCountResult.value);
+      } else if (requestCountResult.status === "rejected") {
+        console.error(
+          "Failed to fetch request count:",
+          requestCountResult.reason
+        );
+      }
+
+      const allUsers =
+        usersResult.status === "fulfilled" && usersResult.value !== undefined
+          ? usersResult.value
+          : [];
+      // Handle the results of the requests request
+      const allRequests =
+        requestsResult.status === "fulfilled" &&
+        requestsResult.value !== undefined
+          ? requestsResult.value
+          : [];
+
+      // Filter users who have requests
+      const usersWithRequests = allUsers.filter((user) =>
+        allRequests.some((request) => request.userId === user.id)
+      );
+
+      // Update state
+      setUsers(usersWithRequests);
+      setRequests(allRequests);
+    } catch (err) {
+      console.error("Unexpected error in fetchData:", err);
+    }
   }, [range]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
     <div>
@@ -141,13 +142,6 @@ export default function DataPage() {
           </div>
 
           <div className="flex">
-            {/* <CommonDropdown
-              items={["all time", "last 4 weeks", "last year"]}
-              buttonText={"All time"}
-              altButtonStyle="min-w-28"
-              leftIcon={<CalendarMonthIcon />}
-              setFilter={setFilter}
-            /> */}
             <DatePicker
               range={range}
               setRange={setRange}
