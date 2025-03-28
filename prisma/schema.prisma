@@ -39,6 +39,7 @@ model Book {
   copies      Int           @default(0)
   isbn        String[]
   createdAt   DateTime      @default(now()) @map("created_at")
+  extraInfo   String?
   requests    BookRequest[]
 
   @@map("Books")
