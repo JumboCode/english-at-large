@@ -105,8 +105,43 @@ export const postRequestController = async (
       throw new Error("Missing required request properties");
     }
 
-    const request = await prisma.bookRequest.create({
-      data: requestData,
+    const request = await prisma.$transaction(async (tx) => {
+      await tx.book.update({
+        where: { id: requestData.bookId },
+        data: { extraInfo: "" },
+      });
+
+      const book = await tx.book.findUnique({
+        where: { id: requestData.bookId },
+        include: {
+          requests: {
+            where: {
+              status: {
+                notIn: [RequestStatus.Returned, RequestStatus.Hold],
+              },
+            },
+          },
+        },
+      });
+
+      if (book != null) {
+        const activeRequestCount = book.requests.length;
+
+        //if a book has no available copies when it is being borrowed, send the User into holds.
+
+        if (book.copies - activeRequestCount < 0) {
+          console.warn(`Negative available copies for book ID ${book.id}`);
+          requestData.status = RequestStatus.Hold;
+        }
+
+        if (book.copies - activeRequestCount === 0) {
+          requestData.status = RequestStatus.Hold;
+        }
+        const newRequest = await tx.bookRequest.create({
+          data: requestData,
+        });
+        return newRequest;
+      }
     });
 
     // email logic
@@ -156,7 +191,11 @@ export const postRequestController = async (
       await Promise.all(admins);
     }
 
-    return request;
+    if (request) {
+      return request;
+    } else {
+      throw Error("Prisma transaction failed and request is undefined");
+    }
   } catch (error) {
     console.error("Error in postRequestController:", error);
     throw error;

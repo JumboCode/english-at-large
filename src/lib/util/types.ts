@@ -56,7 +56,9 @@ export function getAvailableCopies(book: BookWithRequests): number {
   const bookAndRequests = book as BookWithRequests;
 
   const filteredRequests = bookAndRequests.requests.filter((r) => {
-    return r.status !== RequestStatus.Returned && r.status != RequestStatus.Hold; // TODO: track the lost case
+    return (
+      r.status !== RequestStatus.Returned && r.status != RequestStatus.Hold
+    ); // TODO: track the lost case
   });
 
   return bookAndRequests.copies - filteredRequests.length;
@@ -82,6 +84,7 @@ export const emptyBook: Book = {
   coverURL: "",
   copies: 1,
   createdAt: new Date(),
+  extraInfo: null,
 };
 
 /**
@@ -103,6 +106,7 @@ export const newEmptyBook: Omit<Book, "id"> = {
   coverURL: "",
   copies: 1,
   createdAt: new Date(),
+  extraInfo: null,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
