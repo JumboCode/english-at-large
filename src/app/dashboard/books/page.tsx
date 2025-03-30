@@ -106,7 +106,7 @@ const BooksPage = () => {
       try {
         const allBooks = await getAllBooks();
         if (allBooks) {
-          setBooks(allBooks);
+          setBooks(allBooks.books);
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
@@ -226,6 +226,6 @@ const BooksPage = () => {
       </div>
     </div>
   );
-};
+ };
 
 export default BooksPage;

@@ -33,7 +33,10 @@ export async function GET(req: Request) {
       // if no id, fetch all users
       // const users: User[] = await getAllUsersController();
       // return NextResponse.json(users);
-      const { users, total, totalPages } = await getAllUsersController(page, limit); //new
+      const { users, total, totalPages } = await getAllUsersController(
+        page,
+        limit
+      ); //new
       return NextResponse.json({ users, total, totalPages, page }); //new
     }
   } catch (error) {

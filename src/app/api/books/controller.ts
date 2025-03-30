@@ -31,15 +31,49 @@ export const postBookController = async (
   }
 };
 
-export const getAllBooksController = async (): Promise<BookWithRequests[]> => {
-  try {
-    const Books = await prisma.book.findMany({
-      include: {
-        requests: true,
-      },
-    });
+//OLD
 
-    return Books;
+// export const getAllBooksController = async (): Promise<BookWithRequests[]> => {
+//   try {
+//     const Books = await prisma.book.findMany({
+//       include: {
+//         requests: true,
+//       },
+//     });
+
+//     return Books;
+//   } catch (error) {
+//     console.error("Error fetching books: ", error);
+//     throw error;
+//   }
+// };
+
+//NEW
+export const getAllBooksController = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<{ books: BookWithRequests[]; total: number; totalPages: number }> => {
+  try {
+    console.log("API Handler - Page:", page, "Limit:", limit);
+    // Calculate the offset (skip) for pagination
+    const skip = (page - 1) * limit;
+
+    // Fetch paginated books and total count
+    const [books, total] = await Promise.all([
+      prisma.book.findMany({
+        skip: skip,
+        take: limit,
+        include: {
+          requests: true, // Include related requests
+        },
+      }),
+      prisma.book.count(), // Get the total number of books
+    ]);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(total / limit);
+
+    return { books, total, totalPages };
   } catch (error) {
     console.error("Error fetching books: ", error);
     throw error;

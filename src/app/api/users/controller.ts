@@ -5,7 +5,7 @@ import clerkClient from "@/clerk";
 
 // export const getAllUsersController = async (): Promise<User[]> => {
 //   try {
-    
+
 //     const users = await prisma.user.findMany({
 //       include: {
 //         requests: true,

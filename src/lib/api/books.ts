@@ -10,12 +10,40 @@ import { Book } from "@prisma/client";
  *
  * @remarks
  */
-export const getAllBooks = async (): Promise<
-  BookWithRequests[] | undefined
-> => {
+
+//OLD
+// export const getAllBooks = async (): Promise<
+//   BookWithRequests[] | undefined
+// > => {
+//   try {
+//     const response = await axios.get("/api/books");
+//     return response.data; //JSOn
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw new Error(`Failed to fetch books: ${error.message}`);
+//     } else {
+//       throw new Error("Failed to fetch books: An unknown error occurred");
+//     }
+//   }
+// };
+
+export const getAllBooks = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<{ books: BookWithRequests[]; total: number; totalPages: number } | undefined> => {
   try {
-    const response = await axios.get("/api/books");
-    return response.data; //JSOn
+    console.log("Fetching books for page:", page); // Debugging log
+    
+
+    const response = await axios.get(`/api/books`, 
+      {
+        params: {
+          page: page,
+          limit: limit
+        }
+      }
+    );
+    return response.data; // The response should include books, total, and totalPages
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch books: ${error.message}`);
