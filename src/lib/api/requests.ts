@@ -1,6 +1,7 @@
 import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import axios from "axios";
 import {
+  RequestWithBookAndUser,
   validateBookData,
   validateRequestData,
   validateUserData,
@@ -38,7 +39,7 @@ export const getOneRequest = async (
  * - TODO: add filtering if needed
  */
 export const getRequests = async (): Promise<
-  (BookRequest & { user: User; book: Book })[] | undefined
+  RequestWithBookAndUser[] | undefined
 > => {
   try {
     const response = await axios.get("/api/requests");
