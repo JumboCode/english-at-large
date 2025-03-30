@@ -20,6 +20,8 @@ export default function DataPage() {
   const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); // new
+  const [totalPages, setTotalPages] = useState(0); // new
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +31,7 @@ export default function DataPage() {
           await Promise.allSettled([
             getAllBooks(), // probably pass in the data range into these functions
             getRequests(),
-            getAllUsers(),
+            getAllUsers(currentPage, 50),
             getRequestCount(),
           ]);
 
@@ -85,32 +87,56 @@ export default function DataPage() {
           );
         }
 
-        const allUsers =
-          usersResult.status === "fulfilled" && usersResult.value !== undefined
-            ? usersResult.value
-            : [];
-        // Handle the results of the requests request
-        const allRequests =
-          requestsResult.status === "fulfilled" &&
-          requestsResult.value !== undefined
-            ? requestsResult.value
-            : [];
+        // const allUsers =
+        //   usersResult.status === "fulfilled" && usersResult.value !== undefined
+        //     ? usersResult.value
+        //     : [];
+        // // Handle the results of the requests request
+        // const allRequests =
+        //   requestsResult.status === "fulfilled" &&
+        //   requestsResult.value !== undefined
+        //     ? requestsResult.value
+        //     : [];
 
-        // Filter users who have requests
-        const usersWithRequests = allUsers.filter((user) =>
-          allRequests.some((request) => request.userId === user.id)
-        );
+        // // Filter users who have requests
+        // const usersWithRequests = allUsers.filter((user) =>
+        //   allRequests.some((request) => request.userId === user.id)
+        // );
 
-        // Update state
-        setUsers(usersWithRequests);
-        setRequests(allRequests);
+        // // Update state
+        // setUsers(usersWithRequests);
+        // setRequests(allRequests);
+        // Handle users result for pagination
+        if (usersResult.status === "fulfilled" && usersResult.value) {
+          const { users: fetchedUsers, totalPages: fetchedTotalPages } =
+            usersResult.value;
+          // Extract all requests from fetched users
+          const allRequests = fetchedUsers.flatMap(
+            (user) => user.requests || []
+          );
+
+          // Filter users who have requests
+          const usersWithRequests = fetchedUsers.filter((user) =>
+            allRequests.some((request) => request.userId === user.id)
+          );
+
+          // Update state
+          setUsers(usersWithRequests); // Only users with requests
+          setRequests(allRequests); // All requests
+          setTotalPages(fetchedTotalPages); // Update total pages
+
+          // console.log("Filtered Users with Requests:", usersWithRequests);
+          // console.log("All Requests:", allRequests);
+        } else if (usersResult.status === "rejected") {
+          console.error("Failed to fetch users:", usersResult.reason);
+        }
       } catch (err) {
         console.error("Unexpected error in fetchData:", err);
       }
     };
 
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   return (
     <div>
@@ -157,7 +183,30 @@ export default function DataPage() {
         <BookCatalog books={books} bookStats={bookStats} />
       )}
       {activeTab === "User History" && (
-        <UserHistory users={users} requests={requests} />
+          <>
+          <UserHistory users={users} requests={requests} />
+          <div className="pagination-controls flex justify-center mt-4">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </>
+        
+        
       )}
     </div>
   );

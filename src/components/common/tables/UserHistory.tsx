@@ -19,6 +19,7 @@ const UserHistory = (props: UserHistoryProps) => {
   const user = useCurrentUser();
 
   const { users, requests } = props;
+  //console.log("Users in UserHistory:", users);
   const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const UserHistory = (props: UserHistoryProps) => {
     const grouped: Record<string, RequestWithBookAndUser[]> = {};
 
     requests.forEach((request) => {
-      const userId = request.user.id;
+      const userId = request.userId;
       if (!grouped[userId]) {
         grouped[userId] = [];
       }
@@ -59,6 +60,10 @@ const UserHistory = (props: UserHistoryProps) => {
     .filter(
       (user) => requestsByUser[user.id] && requestsByUser[user.id].length > 0
     ); // Filter users with requests
+
+    console.log("Subset Users:", subsetUsers);
+    console.log("Requests Prop:", requests);
+    console.log("Requests by User:", requestsByUser);
 
   return (
     <div className="bg-white">
@@ -117,7 +122,7 @@ const UserHistory = (props: UserHistoryProps) => {
                       {userRequests.map((request, reqIndex) => (
                         <React.Fragment key={reqIndex}>
                           <Link
-                            href={`books/${request.book.id}`}
+                            href={`books/${request.bookId}`}
                             className="underline text-[#202D74] pl-6"
                           >
                             {request.bookTitle}
@@ -149,6 +154,7 @@ const UserHistory = (props: UserHistoryProps) => {
       </div>
     </div>
   );
+  return (<></>)
 };
 
 export default UserHistory;

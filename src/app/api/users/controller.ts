@@ -3,14 +3,45 @@ import { prisma } from "@/lib/prisma";
 import { validateUserData } from "../../../lib/util/types";
 import clerkClient from "@/clerk";
 
-export const getAllUsersController = async (): Promise<User[]> => {
+// export const getAllUsersController = async (): Promise<User[]> => {
+//   try {
+    
+//     const users = await prisma.user.findMany({
+//       include: {
+//         requests: true,
+//       },
+//     });
+//     return users;
+//   } catch (error) {
+//     console.error("Error fetching users: ", error);
+//     throw error;
+//   }
+// };
+
+export const getAllUsersController = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<{ users: User[]; total: number; totalPages: number }> => {
   try {
-    const users = await prisma.user.findMany({
-      include: {
-        requests: true,
-      },
-    });
-    return users;
+    // Calculate the offset (skip) for pagination
+    const skip = (page - 1) * limit;
+
+    // Fetch paginated users and total count
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        skip: skip,
+        take: limit,
+        include: {
+          requests: true,
+        },
+      }),
+      prisma.user.count(),
+    ]);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(total / limit);
+
+    return { users, total, totalPages };
   } catch (error) {
     console.error("Error fetching users: ", error);
     throw error;
