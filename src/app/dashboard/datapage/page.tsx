@@ -21,7 +21,6 @@ export default function DataPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
 
-
   // const [currentPage, setCurrentPage] = useState(1); // new
   // const [totalPages, setTotalPages] = useState(0); // new
 
@@ -31,16 +30,16 @@ export default function DataPage() {
   const [currentUserPage, setCurrentUserPage] = useState(1); // For User History
   const [totalUserPages, setTotalUserPages] = useState(0); // Total pages for users
 
-
   useEffect(() => {
     if (activeTab === "Book Catalog") {
       const fetchBooks = async () => {
         try {
           console.log("Current Book Page:", currentBookPage); // Debugg
           const booksResult = await getAllBooks(currentBookPage, 10);
-          console.log("Books Result:", booksResult); 
+          console.log("Books Result:", booksResult);
           if (booksResult) {
-            const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult;
+            const { books: fetchedBooks, totalPages: fetchedTotalPages } =
+              booksResult;
             setBooks(fetchedBooks);
             setTotalBookPages(fetchedTotalPages);
           }
@@ -48,13 +47,11 @@ export default function DataPage() {
           console.error("Failed to fetch books:", err);
         }
       };
-      console.log("IN Book use Effect")
-     
-  
+      console.log("IN Book use Effect");
+
       fetchBooks();
     }
   }, [currentBookPage, activeTab]); // Refetch books when currentBookPage or activeTab changes
-
 
   useEffect(() => {
     if (activeTab === "User History") {
@@ -62,12 +59,15 @@ export default function DataPage() {
         try {
           const usersResult = await getAllUsers(currentUserPage, 10);
           if (usersResult) {
-            const { users: fetchedUsers, totalPages: fetchedTotalPages } = usersResult;
-            const allRequests = fetchedUsers.flatMap((user) => user.requests || []);
+            const { users: fetchedUsers, totalPages: fetchedTotalPages } =
+              usersResult;
+            const allRequests = fetchedUsers.flatMap(
+              (user) => user.requests || []
+            );
             const usersWithRequests = fetchedUsers.filter((user) =>
               allRequests.some((request) => request.userId === user.id)
             );
-  
+
             setUsers(usersWithRequests);
             setRequests(allRequests);
             setTotalUserPages(fetchedTotalPages);
@@ -76,136 +76,38 @@ export default function DataPage() {
           console.error("Failed to fetch users:", err);
         }
       };
-  
+
       fetchUsers();
     }
   }, [currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // promise.allSettled so they can fail independently.
-  //       const [booksResult, requestsResult, usersResult, requestCountResult] =
-  //         await Promise.allSettled([
-  //           getAllBooks(currentPage, 10), // probably pass in the data range into these functions
-  //           getRequests(),
-  //           getAllUsers(currentPage, 10),
-  //           getRequestCount(),
-  //         ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // promise.allSettled so they can fail independently.
+        const [requestCountResult] = await Promise.allSettled([
+          getRequestCount(),
+        ]);
 
-  //       // get all book information for book catalog
-  //       //OLD:
-  //       // if (booksResult.status === "fulfilled" && booksResult.value) {
-  //       //   setBooks(booksResult.value);
-  //       // } else if (booksResult.status === "rejected") {
-  //       //   console.error("Failed to fetch books:", booksResult.reason);
-  //       // }
+        // calculate the number of requests
+        if (
+          requestCountResult.status === "fulfilled" &&
+          requestCountResult.value !== undefined
+        ) {
+          setRequestCount(requestCountResult.value);
+        } else if (requestCountResult.status === "rejected") {
+          console.error(
+            "Failed to fetch request count:",
+            requestCountResult.reason
+          );
+        }
+      } catch (err) {
+        console.error("Unexpected error in fetchData:", err);
+      }
+    };
 
-  //       //NEW
-  //       if (booksResult.status === "fulfilled" && booksResult.value) {
-  //         const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult.value;
-        
-  //         setBooks(fetchedBooks); // Update books state
-  //         setTotalPages(fetchedTotalPages); // Update total pages for books
-  //       } else if (booksResult.status === "rejected") {
-  //         console.error("Failed to fetch books:", booksResult.reason);
-  //       }
-
-  //       // calculate requets stats information for book catalog
-  //       if (requestsResult.status === "fulfilled" && requestsResult.value) {
-  //         // create temp record and stick users into a set
-  //         const stats: Record<
-  //           number,
-  //           { totalRequests: number; uniqueUsers: Set<string> }
-  //         > = {};
-
-  //         requestsResult.value.forEach(({ user, book }) => {
-  //           if (!stats[book.id]) {
-  //             stats[book.id] = { totalRequests: 0, uniqueUsers: new Set() };
-  //           }
-  //           stats[book.id].totalRequests += 1;
-  //           stats[book.id].uniqueUsers.add(user.id);
-  //         });
-
-  //         // Convert sets to counts
-  //         const processedStats: Record<number, BookStats> = {};
-  //         for (const [bookId, { totalRequests, uniqueUsers }] of Object.entries(
-  //           stats
-  //         )) {
-  //           processedStats[Number(bookId)] = {
-  //             totalRequests,
-  //             uniqueUsers: uniqueUsers.size,
-  //           };
-  //         }
-
-  //         setBookStats(processedStats);
-  //       } else if (requestsResult.status === "rejected") {
-  //         console.error("Failed to fetch requests:", requestsResult.reason);
-  //       }
-
-  //       // calculate the number of requests
-  //       if (
-  //         requestCountResult.status === "fulfilled" &&
-  //         requestCountResult.value !== undefined
-  //       ) {
-  //         setRequestCount(requestCountResult.value);
-  //       } else if (requestCountResult.status === "rejected") {
-  //         console.error(
-  //           "Failed to fetch request count:",
-  //           requestCountResult.reason
-  //         );
-  //       }
-
-  //       // const allUsers =
-  //       //   usersResult.status === "fulfilled" && usersResult.value !== undefined
-  //       //     ? usersResult.value
-  //       //     : [];
-  //       // // Handle the results of the requests request
-  //       // const allRequests =
-  //       //   requestsResult.status === "fulfilled" &&
-  //       //   requestsResult.value !== undefined
-  //       //     ? requestsResult.value
-  //       //     : [];
-
-  //       // // Filter users who have requests
-  //       // const usersWithRequests = allUsers.filter((user) =>
-  //       //   allRequests.some((request) => request.userId === user.id)
-  //       // );
-
-  //       // // Update state
-  //       // setUsers(usersWithRequests);
-  //       // setRequests(allRequests);
-  //       // Handle users result for pagination
-  //       if (usersResult.status === "fulfilled" && usersResult.value) {
-  //         const { users: fetchedUsers, totalPages: fetchedTotalPages } =
-  //           usersResult.value;
-  //         // Extract all requests from fetched users
-  //         const allRequests = fetchedUsers.flatMap(
-  //           (user) => user.requests || []
-  //         );
-
-  //         // Filter users who have requests
-  //         const usersWithRequests = fetchedUsers.filter((user) =>
-  //           allRequests.some((request) => request.userId === user.id)
-  //         );
-
-  //         // Update state
-  //         setUsers(usersWithRequests); // Only users with requests
-  //         setRequests(allRequests); // All requests
-  //         setTotalPages(fetchedTotalPages); // Update total pages
-
-  //         // console.log("Filtered Users with Requests:", usersWithRequests);
-  //         // console.log("All Requests:", allRequests);
-  //       } else if (usersResult.status === "rejected") {
-  //         console.error("Failed to fetch users:", usersResult.reason);
-  //       }
-  //     } catch (err) {
-  //       console.error("Unexpected error in fetchData:", err);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [currentPage]);
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -249,11 +151,13 @@ export default function DataPage() {
         <TableOverview filterInfo={filterText} requestCount={requestCount} />
       )}
       {activeTab === "Book Catalog" && (
-          <>
+        <>
           <BookCatalog books={books} bookStats={bookStats} />
-           <div className="pagination-controls flex justify-center mt-4">
+          <div className="pagination-controls flex justify-center mt-4">
             <button
-              onClick={() =>setCurrentBookPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() =>
+                setCurrentBookPage((prev) => Math.max(prev - 1, 1))
+              }
               disabled={currentBookPage === 1}
               className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
             >
@@ -272,7 +176,6 @@ export default function DataPage() {
               Next
             </button>
           </div>
-         
         </>
       )}
       {activeTab === "User History" && (
@@ -280,7 +183,9 @@ export default function DataPage() {
           <UserHistory users={users} requests={requests} />
           <div className="pagination-controls flex justify-center mt-4">
             <button
-              onClick={() => setCurrentUserPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() =>
+                setCurrentUserPage((prev) => Math.max(prev - 1, 1))
+              }
               disabled={currentUserPage === 1}
               className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
             >

@@ -30,19 +30,18 @@ import { Book } from "@prisma/client";
 export const getAllBooks = async (
   page: number = 1,
   limit: number = 10
-): Promise<{ books: BookWithRequests[]; total: number; totalPages: number } | undefined> => {
+): Promise<
+  { books: BookWithRequests[]; total: number; totalPages: number } | undefined
+> => {
   try {
-    console.log("Fetching books for page:", page); // Debugging log
-    
+    //console.log("Fetching books for page:", page); // Debugging log
 
-    const response = await axios.get(`/api/books`, 
-      {
-        params: {
-          page: page,
-          limit: limit
-        }
-      }
-    );
+    const response = await axios.get(`/api/books`, {
+      params: {
+        page: page,
+        limit: limit,
+      },
+    });
     return response.data; // The response should include books, total, and totalPages
   } catch (error) {
     if (error instanceof Error) {

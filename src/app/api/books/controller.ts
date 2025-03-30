@@ -52,7 +52,11 @@ export const postBookController = async (
 export const getAllBooksController = async (
   page: number = 1,
   limit: number = 10
-): Promise<{ books: BookWithRequests[]; total: number; totalPages: number }> => {
+): Promise<{
+  books: BookWithRequests[];
+  total: number;
+  totalPages: number;
+}> => {
   try {
     console.log("API Handler - Page:", page, "Limit:", limit);
     // Calculate the offset (skip) for pagination

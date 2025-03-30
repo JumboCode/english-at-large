@@ -226,6 +226,6 @@ const BooksPage = () => {
       </div>
     </div>
   );
- };
+};
 
 export default BooksPage;
