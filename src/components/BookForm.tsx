@@ -126,7 +126,6 @@ const BookForm = (props: BookFormProps) => {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
     if (existingBook) {
       setEditBook(
         (prevBook) =>

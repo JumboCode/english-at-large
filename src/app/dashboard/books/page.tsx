@@ -35,7 +35,7 @@ const BooksPage = () => {
   // const books = use(booksPromise);
   const user = useCurrentUser();
   const [books, setBooks] = useState<Book[]>([]);
-  const [loadingBooks, setLoadingBooks] = useState(false);
+  const [loadingBooks, setLoadingBooks] = useState(true);
 
   const [formShown, setFormShown] = useState<formState>(formState.FORM_CLOSED);
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
@@ -102,7 +102,6 @@ const BooksPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoadingBooks(true);
       try {
         const allBooks = await getAllBooks();
         if (allBooks) {

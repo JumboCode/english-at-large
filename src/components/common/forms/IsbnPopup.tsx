@@ -13,16 +13,6 @@ interface IsbnPopupProps {
 const IsbnPopup = (props: IsbnPopupProps) => {
   const { isOpen, exit, submit } = props;
   const [isbnData, setIsbnData] = useState<string>("");
-  const [isbnError, setIsbnError] = useState(false);
-
-  const validateIsbn = (isbnVal: string) => {
-    if (isbnVal.length !== 10 && isbnVal.length !== 13) {
-      setIsbnError(true);
-    } else {
-      setIsbnError(false);
-    }
-    setIsbnData(isbnVal);
-  };
 
   return (
     <div>
@@ -48,37 +38,25 @@ const IsbnPopup = (props: IsbnPopupProps) => {
               </p>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-row gap-2 ">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row gap-4 ">
                 <input
                   type="text"
                   name="email"
-                  className={`text-black border p-2 rounded-lg w-full outline-none ${
-                    isbnError
-                      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                      : "border-medium-grey-border"
-                  }`}
+                  className="text-black border border-medium-grey-border p-2 rounded-lg  w-full"
                   onChange={(event) => {
-                    validateIsbn(event.target.value);
+                    setIsbnData(event.target.value);
                   }}
                 />
                 <CommonButton
-                  onClick={!isbnError ? () => submit(isbnData) : undefined}
+                  onClick={() => submit(isbnData)}
                   label="Search"
                   altTextStyle="text-white"
-                  disabled={isbnError}
-                  altStyle={`bg-dark-blue ${
-                    isbnError ? "opacity-50 cursor-not-allowed" : ""
-                  }`} // Gray out when disabled
+                  altStyle="bg-dark-blue"
                 ></CommonButton>{" "}
               </div>
-              <div className="flex flex-row justify-between items-center mt-0.5">
-                {isbnError && (
-                  <p className="text-red-500 text-sm">Invalid ISBN</p>
-                )}
-              </div>
               <Link
-                className="text-dark-blue text-sm font-medium"
+                className="text-dark-blue "
                 href="/dashboard/books"
                 onClick={() => submit(isbnData)}
               >
