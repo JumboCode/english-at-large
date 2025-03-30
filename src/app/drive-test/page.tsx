@@ -7,12 +7,16 @@ export default function DriveTest() {
   const [image, setImages] = useState<string>("");
 
   const getImage = async () => {
-    const response = await axios.get(
-      `https://www.googleapis.com/drive/v3/files?q='16Ip00DQ-FrNxqvOfyO_W71UfC2uvgeD8'+in+parents&key=${process.env.NEXT_PUBLIC_DRIVE_API_KEY}`
-    );
+    try {
+      const response = await axios.get(
+        `https://www.googleapis.com/drive/v3/files?q='16Ip00DQ-FrNxqvOfyO_W71UfC2uvgeD8'+in+parents&key=${process.env.NEXT_PUBLIC_DRIVE_API_KEY}`
+      );
 
-    console.log(response.data.files[0].id);
-    setImages(response.data.files[0].id);
+      console.log(response.data.files[0].id);
+      setImages(response.data.files[0].id);
+    } catch (error) {
+      console.error("aaaaaaaaa");
+    }
   };
 
   return (
