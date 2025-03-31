@@ -143,6 +143,8 @@ export const createQuickRequest = async (
     if (!validateBookData(book) || !validateUserData(user)) {
       throw new Error("Missing request fields");
     }
+    const returnDate = new Date();
+    returnDate.setMonth(returnDate.getMonth() + 2);
 
     const request: Omit<BookRequest, "id"> = {
       // id: 0, // or handle it as undefined
@@ -153,7 +155,8 @@ export const createQuickRequest = async (
       message: "",
       bookTitle: book.title,
       requestedOn: new Date(),
-      returnedBy: new Date(),
+      returnedBy:
+        newStatus == RequestStatus.Requested ? returnDate : new Date(),
     };
 
     const response = await axios.post("/api/requests", request);
