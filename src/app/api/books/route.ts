@@ -29,7 +29,10 @@ export async function GET(req: Request) {
       return NextResponse.json(book);
     } else {
       // If no ID is provided, fetch all books
-      const books = await getAllBooksController();
+      const page = Number(searchParams.get("page") || "1");
+      const limit = Number(searchParams.get("limit") || "10");
+      const books = await getAllBooksController(page, limit);
+      //const books = await getAllBooksController();
       return NextResponse.json(books);
     }
   } catch (error) {
