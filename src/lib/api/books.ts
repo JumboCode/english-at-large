@@ -5,17 +5,31 @@ import { Book } from "@prisma/client";
 /**
  * Utility function for fetching all books
  *
- * @param none
+ * @param from
+ * @param to
  * @returns array of books (of type Books)
  *
  * @remarks
  */
-export const getAllBooks = async (): Promise<
-  BookWithRequests[] | undefined
-> => {
+export const getAllBooks = async (
+  from?: Date,
+  to?: Date
+): Promise<BookWithRequests[] | undefined> => {
   try {
     const response = await axios.get("/api/books");
-    return response.data; //JSOn
+    const allBooks: BookWithRequests[] = response.data;
+
+    if (from && to) {
+      const toEndOfDay = new Date(to);
+      toEndOfDay.setHours(23, 59, 59, 999); // set to the very end of the day
+
+      return allBooks.filter((book) => {
+        const createdAt = new Date(book.createdAt);
+        return createdAt >= from && createdAt <= toEndOfDay;
+      });
+    } else {
+      return allBooks;
+    }
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch books: ${error.message}`);
