@@ -155,8 +155,8 @@ export const createQuickRequest = async (
       message: "",
       bookTitle: book.title,
       requestedOn: new Date(),
-      returnedBy:
-        newStatus == RequestStatus.Requested ? returnDate : new Date(),
+      returnedBy: null,
+      dueDate: newStatus == RequestStatus.Requested ? returnDate : null,
     };
 
     const response = await axios.post("/api/requests", request);

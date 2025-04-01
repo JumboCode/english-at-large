@@ -132,10 +132,12 @@ export const postRequestController = async (
         if (book.copies - activeRequestCount < 0) {
           console.warn(`Negative available copies for book ID ${book.id}`);
           requestData.status = RequestStatus.Hold;
+          requestData.returnedBy = null;
         }
 
         if (book.copies - activeRequestCount === 0) {
           requestData.status = RequestStatus.Hold;
+          requestData.returnedBy = null;
         }
         const newRequest = await tx.bookRequest.create({
           data: requestData,

@@ -131,6 +131,7 @@ export const emptyRequest: BookRequest = {
   bookTitle: "updated book",
   requestedOn: new Date(),
   returnedBy: new Date(),
+  dueDate: null,
 };
 
 export const newEmptyRequest: Omit<BookRequest, "id"> = {
@@ -142,6 +143,7 @@ export const newEmptyRequest: Omit<BookRequest, "id"> = {
   bookTitle: "updated book",
   requestedOn: new Date(),
   returnedBy: new Date(),
+  dueDate: null,
 };
 
 /**
