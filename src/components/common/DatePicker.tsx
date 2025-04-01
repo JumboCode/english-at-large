@@ -1,6 +1,8 @@
 import DropArrowIcon from "@/assets/icons/DropArrow";
 import { useState, useRef, useEffect } from "react";
 import { DayPicker, DateRange } from "react-day-picker";
+import CommonButton from "./button/CommonButton";
+import "react-day-picker/style.css";
 
 interface DropdownProps {
   range: DateRange | undefined;
@@ -65,29 +67,30 @@ const DatePicker = ({
       {isOpen && (
         <div
           ref={popupRef}
-          className="absolute right-0 mt-2 w-80 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-4 z-10"
+          className="absolute right-0 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-4 z-10 cursor-default"
         >
           <DayPicker
             mode="range"
+            disabled={{ after: new Date() }}
             selected={range}
             onSelect={(selectedRange) => {
               setRange(selectedRange || undefined);
             }}
             numberOfMonths={1}
             classNames={{
-              root: "rounded-lg border p-3",
-              month: "bg-gray-50 p-4 rounded-lg shadow-md",
-              nav: "flex justify-between items-center p-2 text-lg",
-              day: "text-center p-2 rounded-lg text-sm hover:bg-[#d3f0ff]",
-              selected: "bg-[#A0DEFF]",
-              outside: "bg-gray-50 hover:bg-transparent",
+              month: "bg-gray-50 px-4 py-2 rounded-lg shadow-md",
+              day: "text-center text-sm",
+              nav: "absolute right-2 py-3",
+              selected: ""
             }}
+            
           />
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-4 text-sm text-gray-600">
             {range?.from && range?.to
-              ? `Selected: ${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
-              : "Please select a date range"}
+              ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+              : "All time"}
           </p>
+          <CommonButton label={"Reset"} onClick={() => {setRange(undefined)}} altStyle={"h-4 mt-3"} />
         </div>
       )}
     </div>
