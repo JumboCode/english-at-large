@@ -84,13 +84,17 @@ const Loans = () => {
   };
 
   const markAsDone = async (request: RequestWithBookAndUser) => {
+    const currentDate = new Date();
+    const futureDate = new Date(currentDate);
+    futureDate.setDate(futureDate.getDate() + 60);
     try {
       await updateReq({
         ...request,
         status: RequestStatus.Borrowed,
+        returnedBy: futureDate,
       });
       setConfirmPopup({
-        type: ConfirmPopupTypes.RETURNED,
+        type: ConfirmPopupTypes.BORROWED,
         action: ConfirmPopupActions.MARK,
         success: true,
       });

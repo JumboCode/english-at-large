@@ -43,7 +43,7 @@ export const getRequests = async (): Promise<
 > => {
   try {
     const response = await axios.get("/api/requests");
-
+    
     return response.data; //JSOn
   } catch (error) {
     if (error instanceof Error) {
