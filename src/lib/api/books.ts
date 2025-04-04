@@ -42,6 +42,7 @@ export const getAllBooks = async (
         limit: limit,
       },
     });
+    
     return response.data; // The response should include books, total, and totalPages
   } catch (error) {
     if (error instanceof Error) {

@@ -34,20 +34,31 @@ export default function DataPage() {
     if (activeTab === "Book Catalog") {
       const fetchBooks = async () => {
         try {
-          console.log("Current Book Page:", currentBookPage); // Debugg
+          //console.log("Current Book Page:", currentBookPage); // Debugg
           const booksResult = await getAllBooks(currentBookPage, 10);
-          console.log("Books Result:", booksResult);
+          //console.log("Books Result:", booksResult);
           if (booksResult) {
-            const { books: fetchedBooks, totalPages: fetchedTotalPages } =
-              booksResult;
+            const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult;
+            const bookStats: Record<number, BookStats> = {};
+            for (const book of fetchedBooks) {
+              bookStats[book.id] = {
+                totalRequests: book.requests ? book.requests.length : 0,
+                uniqueUsers: book.uniqueUsers || 0,
+              };
+            }
+
+            
+            //console.log("HEEEre")
+            //console.log(booksResult)
             setBooks(fetchedBooks);
             setTotalBookPages(fetchedTotalPages);
+            setBookStats(bookStats);
           }
         } catch (err) {
           console.error("Failed to fetch books:", err);
         }
       };
-      console.log("IN Book use Effect");
+      //console.log("IN Book use Effect");
 
       fetchBooks();
     }

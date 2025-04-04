@@ -74,10 +74,21 @@ export const getAllBooksController = async (
       prisma.book.count(), // Get the total number of books
     ]);
 
+    const booksWithStats = books.map((book) => {
+      const totalRequests = book.requests.length; // Total number of requests
+      const uniqueUsers = new Set(book.requests.map((req) => req.userId)).size; // Unique user IDs
+      return {
+        ...book,
+        totalRequests,
+        uniqueUsers,
+      };
+    });
+
     // Calculate total pages
     const totalPages = Math.ceil(total / limit);
+    console.log("THE STATS", booksWithStats)
 
-    return { books, total, totalPages };
+    return { books: booksWithStats, total, totalPages };
   } catch (error) {
     console.error("Error fetching books: ", error);
     throw error;
