@@ -19,7 +19,6 @@ const UserHistory = (props: UserHistoryProps) => {
   const user = useCurrentUser();
 
   const { users, requests } = props;
-  //console.log("Users in UserHistory:", users);
   const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
@@ -60,10 +59,6 @@ const UserHistory = (props: UserHistoryProps) => {
     .filter(
       (user) => requestsByUser[user.id] && requestsByUser[user.id].length > 0
     ); // Filter users with requests
-
-  // console.log("Subset Users:", subsetUsers);
-  // console.log("Requests Prop:", requests);
-  // console.log("Requests by User:", requestsByUser);
 
   return (
     <div className="bg-white">
