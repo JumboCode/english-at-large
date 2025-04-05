@@ -62,8 +62,8 @@ export const getAllBooks = async (options?: {
         page: page,
         limit: limit,
         withStats: withStats,
-        fromDate: fromDate,
-        endDate: endDate,
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
       },
     });
 

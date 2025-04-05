@@ -1,6 +1,7 @@
 import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import axios from "axios";
 import {
+  RequestWithBookAndUser,
   validateBookData,
   validateRequestData,
   validateUserData,
@@ -39,26 +40,17 @@ export const getOneRequest = async (
  * - TODO: add filtering if needed
  */
 export const getRequests = async (
-  from?: Date,
-  to?: Date
-): Promise<(BookRequest & { user: User; book: Book })[] | undefined> => {
+  fromDate?: Date,
+  endDate?: Date
+): Promise<RequestWithBookAndUser[] | undefined> => {
   try {
-    const response = await axios.get("/api/requests");
-
-    const allRequests: (BookRequest & { user: User; book: Book })[] =
-      response.data;
-
-    if (from && to) {
-      const toEndOfDay = new Date(to);
-      toEndOfDay.setHours(23, 59, 59, 999); // set to the very end of the day
-
-      return allRequests.filter((request) => {
-        const requestedOn = new Date(request.requestedOn);
-        return requestedOn >= from && requestedOn <= toEndOfDay;
-      });
-    } else {
-      return allRequests;
-    }
+    const response = await axios.get("/api/requests", {
+      params: {
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      },
+    });
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch requests: ${error.message}`);
@@ -79,27 +71,19 @@ export const getRequests = async (
  * - TODO: add filtering if needed
  */
 export const getRequestCount = async (
-  from?: Date,
-  to?: Date
+  fromDate?: Date,
+  endDate?: Date
 ): Promise<number> => {
   try {
-    const response = await axios.get("/api/requests"); // changed from requests/count to just requests
+    // changed back to requests/count because it's more efficient to use prisma count than to return the entire array
+    const response = await axios.get("/api/requests/count", {
+      params: {
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      },
+    });
 
-    const allRequests: (BookRequest & { user: User; book: Book })[] =
-      response.data;
-
-    if (from && to) {
-      const toEndOfDay = new Date(to);
-      toEndOfDay.setHours(23, 59, 59, 999); // set to the very end of the day
-
-      const filteredRequests = allRequests.filter((request) => {
-        const requestedOn = new Date(request.requestedOn);
-        return requestedOn >= from && requestedOn <= toEndOfDay;
-      });
-      return filteredRequests.length;
-    } else {
-      return allRequests.length;
-    }
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch requests: ${error.message}`);

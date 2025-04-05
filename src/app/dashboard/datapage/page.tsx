@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import CalendarMonthIcon from "@/assets/icons/calendar_month";
 import DatePicker from "@/components/common/DatePicker";
 import BookCatalog from "@/components/common/tables/BookCatalog";
@@ -25,7 +25,6 @@ export default function DataPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
 
-
   const [currentBookPage, setCurrentBookPage] = useState(1); // For Book Catalog
   const [totalBookPages, setTotalBookPages] = useState(0); // Total pages for books
 
@@ -38,14 +37,16 @@ export default function DataPage() {
         try {
           const booksResult = await getAllBooks({
             page: currentBookPage,
-            withStats: true
+            withStats: true,
+            fromDate: range?.from,
+            endDate: range?.to,
           });
           if (booksResult) {
-
-            const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult as {
-              books: (BookWithRequests & BookStats)[];
-              totalPages: number;
-            };
+            const { books: fetchedBooks, totalPages: fetchedTotalPages } =
+              booksResult as {
+                books: (BookWithRequests & BookStats)[];
+                totalPages: number;
+              };
 
             const bookStats: Record<number, BookStats> = {};
             for (const book of fetchedBooks) {
@@ -65,7 +66,7 @@ export default function DataPage() {
 
       fetchBooks();
     }
-  }, [currentBookPage, activeTab]); // Refetch books when currentBookPage or activeTab changes
+  }, [currentBookPage, activeTab, range]); // Refetch books when currentBookPage or activeTab changes
 
   useEffect(() => {
     if (activeTab === "User History") {
@@ -94,6 +95,33 @@ export default function DataPage() {
       fetchUsers();
     }
   }, [currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // promise.allSettled so they can fail independently.
+        const [requestCountResult] = await Promise.allSettled([
+          getRequestCount(range?.from, range?.to),
+        ]);
+
+        // calculate the number of requests
+        if (
+          requestCountResult.status === "fulfilled" &&
+          requestCountResult.value !== undefined
+        ) {
+          setRequestCount(requestCountResult.value);
+        } else if (requestCountResult.status === "rejected") {
+          console.error(
+            "Failed to fetch request count:",
+            requestCountResult.reason
+          );
+        }
+      } catch (err) {
+        console.error("Unexpected error in fetchData:", err);
+      }
+    };
+    fetchData();
+  }, [range]);
 
   return (
     <div>
@@ -149,7 +177,8 @@ export default function DataPage() {
               Previous
             </button>
             <span className="px-4 py-2">
-              Page {currentBookPage} of {totalBookPages}
+              Page {totalBookPages > 0 ? currentBookPage : 0} of{" "}
+              {totalBookPages}
             </span>
             <button
               onClick={() =>

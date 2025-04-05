@@ -21,7 +21,7 @@ const TableOverview = (props: TableOverviewProps) => {
                 requestCount ? "text-4xl" : "text-2xl h-10"
               } font-medium`}
             >
-              {requestCount ? requestCount : "loading..."}
+              {requestCount !== undefined && requestCount !== null ? requestCount : "loading..."}
             </p>
           </div>
           <div>

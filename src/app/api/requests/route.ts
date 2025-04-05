@@ -12,8 +12,10 @@ import {
 // GET - Fetch all requests
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+
   const id = searchParams.get("id");
   const userId = searchParams.get("userId");
+
   try {
     if (id) {
       // if id, fetch the specific user
@@ -25,7 +27,30 @@ export async function GET(req: Request) {
       return NextResponse.json(request);
     } else {
       // if no id, fetch all users
-      const requests: BookRequest[] = await getAllRequestsController();
+
+      const fromDateStr = searchParams.get("fromDate");
+      const endDateStr = searchParams.get("endDate");
+
+      const fromDate = fromDateStr ? new Date(fromDateStr) : undefined;
+      const endDate = endDateStr ? new Date(endDateStr) : undefined;
+
+      if (
+        (fromDate && isNaN(fromDate.getTime())) ||
+        (endDate && isNaN(endDate.getTime()))
+      ) {
+        return NextResponse.json(
+          { error: "Invalid date format" },
+          { status: 400 }
+        );
+      }
+
+      const effectiveFromDate = fromDate ?? new Date(0);
+      const effectiveEndDate = endDate ?? new Date();
+
+      const requests = await getAllRequestsController(
+        effectiveFromDate,
+        effectiveEndDate
+      );
       return NextResponse.json(requests);
     }
   } catch (error) {
