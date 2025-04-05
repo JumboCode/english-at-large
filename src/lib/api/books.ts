@@ -1,5 +1,10 @@
 import axios from "axios";
-import { BookWithRequests } from "../util/types";
+import {
+  BookStats,
+  BookWithRequests,
+  DEFAULT_PAGINATION_LIMIT,
+  DEFAULT_PAGINATION_START_PAGE,
+} from "../util/types";
 import { Book } from "@prisma/client";
 
 /**
@@ -11,25 +16,57 @@ import { Book } from "@prisma/client";
  *
  * @remarks
  */
-export const getAllBooks = async (
-  from?: Date,
-  to?: Date
-): Promise<BookWithRequests[] | undefined> => {
-  try {
-    const response = await axios.get("/api/books");
-    const allBooks: BookWithRequests[] = response.data;
 
-    if (from && to) {
-      const toEndOfDay = new Date(to);
-      toEndOfDay.setHours(23, 59, 59, 999); // set to the very end of the day
+//OLD
+// export const getAllBooks = async (): Promise<
+//   BookWithRequests[] | undefined
+// > => {
+//   try {
+//     const response = await axios.get("/api/books");
+//     return response.data; //JSOn
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw new Error(`Failed to fetch books: ${error.message}`);
+//     } else {
+//       throw new Error("Failed to fetch books: An unknown error occurred");
+//     }
+//   }
+// };
 
-      return allBooks.filter((book) => {
-        const createdAt = new Date(book.createdAt);
-        return createdAt >= from && createdAt <= toEndOfDay;
-      });
-    } else {
-      return allBooks;
+export const getAllBooks = async (options?: {
+  page?: number;
+  limit?: number;
+  withStats?: boolean;
+  fromDate?: Date;
+  endDate?: Date;
+}): Promise<
+  | {
+      books: (BookWithRequests | (BookWithRequests & BookStats))[];
+      total: number;
+      totalPages: number;
     }
+  | undefined
+> => {
+  try {
+    const {
+      page = DEFAULT_PAGINATION_START_PAGE,
+      limit = DEFAULT_PAGINATION_LIMIT,
+      withStats = false,
+      fromDate,
+      endDate,
+    } = options || {};
+
+    const response = await axios.get(`/api/books`, {
+      params: {
+        page: page,
+        limit: limit,
+        withStats: withStats,
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      },
+    });
+
+    return response.data; // The response should include books, total, and totalPages
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch books: ${error.message}`);

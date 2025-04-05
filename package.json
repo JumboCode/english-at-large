@@ -7,7 +7,7 @@
     "dev-no-schema": "prisma generate && next dev --turbopack",
     "build": "prisma db pull && prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint && tsc --noEmit"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.3.4",
@@ -30,6 +30,8 @@
     "@types/node": "^20",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.1.7",
     "postcss": "^8",

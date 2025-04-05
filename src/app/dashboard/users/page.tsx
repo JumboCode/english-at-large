@@ -51,10 +51,9 @@ export default function Manage() {
   useEffect(() => {
     const getUsers = async () => {
       const allUsers = await getAllUsers();
-      setUsers(allUsers ?? []);
+      setUsers(allUsers?.users ?? []);
     };
     getUsers();
-    console.log(filter);
   }, [filter]);
 
   const roleFilter = (user: User) => {

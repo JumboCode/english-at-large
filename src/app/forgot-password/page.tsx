@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
   const checkUserEmail = async (email: string) => {
     const users = await getAllUsers();
-    return users ? !users.some((user) => user.email === email) : false;
+    return users ? !users.users.some((user) => user.email === email) : false;
   };
 
   async function handleReset(e: React.FormEvent) {
