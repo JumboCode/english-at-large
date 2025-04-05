@@ -10,7 +10,8 @@ import { Book } from "@prisma/client";
 /**
  * Utility function for fetching all books
  *
- * @param none
+ * @param from
+ * @param to
  * @returns array of books (of type Books)
  *
  * @remarks
@@ -36,6 +37,8 @@ export const getAllBooks = async (options?: {
   page?: number;
   limit?: number;
   withStats?: boolean;
+  fromDate?: Date;
+  endDate?: Date;
 }): Promise<
   | {
       books: (BookWithRequests | (BookWithRequests & BookStats))[];
@@ -49,7 +52,9 @@ export const getAllBooks = async (options?: {
     const {
       page = DEFAULT_PAGINATION_START_PAGE,
       limit = DEFAULT_PAGINATION_LIMIT,
-      withStats,
+      withStats = false,
+      fromDate,
+      endDate,
     } = options || {};
 
     const response = await axios.get(`/api/books`, {
@@ -57,6 +62,8 @@ export const getAllBooks = async (options?: {
         page: page,
         limit: limit,
         withStats: withStats,
+        fromDate: fromDate,
+        endDate: endDate,
       },
     });
 

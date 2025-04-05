@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import CommonDropdown from "@/components/common/forms/Dropdown";
+import React, { useEffect, useState, useCallback } from "react";
 import CalendarMonthIcon from "@/assets/icons/calendar_month";
+import DatePicker from "@/components/common/DatePicker";
 import BookCatalog from "@/components/common/tables/BookCatalog";
 import UserHistory from "@/components/common/tables/UserHistory";
 import TableOverview from "@/components/common/tables/TableOverview";
@@ -10,19 +10,21 @@ import { getAllUsers } from "@/lib/api/users";
 import { getRequestCount } from "@/lib/api/requests";
 import { BookStats, BookWithRequests } from "@/lib/util/types";
 import { getAllBooks } from "@/lib/api/books";
+import { DateRange } from "react-day-picker";
 
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");
-  const [filter, setFilter] = useState<string>("");
-  const filterText = filter ? filter : "all time";
+  const [range, setRange] = useState<DateRange | undefined>(undefined);
+  const filterText =
+    range?.from && range?.to
+      ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+      : "all time";
   const [users, setUsers] = useState<User[]>([]);
   const [requests, setRequests] = useState<BookRequest[]>([]);
   const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
 
-  // const [currentPage, setCurrentPage] = useState(1); // new
-  // const [totalPages, setTotalPages] = useState(0); // new
 
   const [currentBookPage, setCurrentBookPage] = useState(1); // For Book Catalog
   const [totalBookPages, setTotalBookPages] = useState(0); // Total pages for books
@@ -34,12 +36,10 @@ export default function DataPage() {
     if (activeTab === "Book Catalog") {
       const fetchBooks = async () => {
         try {
-          //console.log("Current Book Page:", currentBookPage); // Debugg
           const booksResult = await getAllBooks({
             page: currentBookPage,
             withStats: true
           });
-          //console.log("Books Result:", booksResult);
           if (booksResult) {
 
             const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult as {
@@ -47,7 +47,6 @@ export default function DataPage() {
               totalPages: number;
             };
 
-            // const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult;
             const bookStats: Record<number, BookStats> = {};
             for (const book of fetchedBooks) {
               bookStats[book.id] = {
@@ -55,10 +54,6 @@ export default function DataPage() {
                 uniqueUsers: book.uniqueUsers || 0,
               };
             }
-
-            
-            //console.log("HEEEre")
-            //console.log(booksResult)
             setBooks(fetchedBooks);
             setTotalBookPages(fetchedTotalPages);
             setBookStats(bookStats);
@@ -67,7 +62,6 @@ export default function DataPage() {
           console.error("Failed to fetch books:", err);
         }
       };
-      //console.log("IN Book use Effect");
 
       fetchBooks();
     }
@@ -101,34 +95,6 @@ export default function DataPage() {
     }
   }, [currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // promise.allSettled so they can fail independently.
-        const [requestCountResult] = await Promise.allSettled([
-          getRequestCount(),
-        ]);
-
-        // calculate the number of requests
-        if (
-          requestCountResult.status === "fulfilled" &&
-          requestCountResult.value !== undefined
-        ) {
-          setRequestCount(requestCountResult.value);
-        } else if (requestCountResult.status === "rejected") {
-          console.error(
-            "Failed to fetch request count:",
-            requestCountResult.reason
-          );
-        }
-      } catch (err) {
-        console.error("Unexpected error in fetchData:", err);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
     <div>
       <div className="bg-white px-16 pt-12">
@@ -155,12 +121,11 @@ export default function DataPage() {
           </div>
 
           <div className="flex">
-            <CommonDropdown
-              items={["all time", "last 4 weeks", "last year"]}
-              buttonText={"All time"}
+            <DatePicker
+              range={range}
+              setRange={setRange}
               altButtonStyle="min-w-28"
               leftIcon={<CalendarMonthIcon />}
-              setFilter={setFilter}
             />
           </div>
         </div>

@@ -133,7 +133,9 @@ const UserHistory = (props: UserHistoryProps) => {
                           </div>
 
                           <div className="pl-16">
-                            {request.returnedBy ? dateToTimeString(request.returnedBy) : "Not Returned Yet"}
+                            {request.returnedBy
+                              ? dateToTimeString(request.returnedBy)
+                              : "Not Returned Yet"}
                           </div>
 
                           <div>
