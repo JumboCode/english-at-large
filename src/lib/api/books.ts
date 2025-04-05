@@ -1,11 +1,17 @@
 import axios from "axios";
-import { BookWithRequests } from "../util/types";
+import {
+  BookStats,
+  BookWithRequests,
+  DEFAULT_PAGINATION_LIMIT,
+  DEFAULT_PAGINATION_START_PAGE,
+} from "../util/types";
 import { Book } from "@prisma/client";
 
 /**
  * Utility function for fetching all books
  *
- * @param none
+ * @param from
+ * @param to
  * @returns array of books (of type Books)
  *
  * @remarks
@@ -27,21 +33,39 @@ import { Book } from "@prisma/client";
 //   }
 // };
 
-export const getAllBooks = async (
-  page: number = 1,
-  limit: number = 10
-): Promise<
-  { books: BookWithRequests[]; total: number; totalPages: number } | undefined
+export const getAllBooks = async (options?: {
+  page?: number;
+  limit?: number;
+  withStats?: boolean;
+  fromDate?: Date;
+  endDate?: Date;
+}): Promise<
+  | {
+      books: (BookWithRequests | (BookWithRequests & BookStats))[];
+      total: number;
+      totalPages: number;
+    }
+  | undefined
 > => {
   try {
-    //console.log("Fetching books for page:", page); // Debugging log
+    const {
+      page = DEFAULT_PAGINATION_START_PAGE,
+      limit = DEFAULT_PAGINATION_LIMIT,
+      withStats = false,
+      fromDate,
+      endDate,
+    } = options || {};
 
     const response = await axios.get(`/api/books`, {
       params: {
         page: page,
         limit: limit,
+        withStats: withStats,
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
       },
     });
+
     return response.data; // The response should include books, total, and totalPages
   } catch (error) {
     if (error instanceof Error) {

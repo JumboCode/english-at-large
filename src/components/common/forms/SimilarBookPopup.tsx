@@ -22,7 +22,6 @@ const SimilarBookPopup = (props: SimilarBookPopupProps) => {
   const [updatingBook, setUpdatingBook] = useState<number>(-1);
 
   const updateSimilar = async (index: number) => {
-    console.log("IN update similar")
     if (!bookList[index].isbn.includes(originalBook.isbn[0])) {
       bookList[index].isbn.push(originalBook.isbn[0]);
     }
@@ -60,26 +59,21 @@ const SimilarBookPopup = (props: SimilarBookPopupProps) => {
           >
             <XIcon />
           </button>
-          <p className="text-2xl font-semibold">
-            Similar Book Found
-          </p>
+          <p className="text-2xl font-semibold">Similar Book Found</p>
           <p className="text-sm font-normal text-gray-500">
-            We&apos;ve found a book in your catalog with a similar title. Would you like to update the existing entry or add this as a new book?
+            We&apos;ve found a book in your catalog with a similar title. Would
+            you like to update the existing entry or add this as a new book?
           </p>
 
           <div className="flex justify-start gap-4">
-            <p className="text-sm font-normal w-1/5">
-              You are adding:
-            </p>
+            <p className="text-sm font-normal w-1/5">You are adding:</p>
             <p className="text-sm text-dark-blue font-normal w-full">
               {originalBook.title} by {originalBook.author}
             </p>
           </div>
 
           <div className="flex justify-start gap-4">
-            <p className="text-sm font-normal w-1/5">
-              Existing book(s): 
-            </p>
+            <p className="text-sm font-normal w-1/5">Existing book(s):</p>
 
             <select
               id="level"
@@ -98,7 +92,7 @@ const SimilarBookPopup = (props: SimilarBookPopupProps) => {
           </div>
 
           <div className="flex justify-end gap-4">
-          <CommonButton
+            <CommonButton
               label="Continue to add as new book"
               onClick={() => newBook()}
             />

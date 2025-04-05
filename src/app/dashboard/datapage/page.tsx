@@ -1,28 +1,29 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import CommonDropdown from "@/components/common/forms/Dropdown";
 import CalendarMonthIcon from "@/assets/icons/calendar_month";
+import DatePicker from "@/components/common/DatePicker";
 import BookCatalog from "@/components/common/tables/BookCatalog";
 import UserHistory from "@/components/common/tables/UserHistory";
 import TableOverview from "@/components/common/tables/TableOverview";
-import { Book, User } from "@prisma/client";
+import { Book, BookRequest, User } from "@prisma/client";
 import { getAllUsers } from "@/lib/api/users";
-import { getRequestCount, getRequests } from "@/lib/api/requests";
-import { BookStats, RequestWithBookAndUser } from "@/lib/util/types";
+import { getRequestCount } from "@/lib/api/requests";
+import { BookStats, BookWithRequests } from "@/lib/util/types";
 import { getAllBooks } from "@/lib/api/books";
+import { DateRange } from "react-day-picker";
 
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");
-  const [filter, setFilter] = useState<string>("");
-  const filterText = filter ? filter : "all time";
+  const [range, setRange] = useState<DateRange | undefined>(undefined);
+  const filterText =
+    range?.from && range?.to
+      ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+      : "all time";
   const [users, setUsers] = useState<User[]>([]);
-  const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
+  const [requests, setRequests] = useState<BookRequest[]>([]);
   const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
-
-  // const [currentPage, setCurrentPage] = useState(1); // new
-  // const [totalPages, setTotalPages] = useState(0); // new
 
   const [currentBookPage, setCurrentBookPage] = useState(1); // For Book Catalog
   const [totalBookPages, setTotalBookPages] = useState(0); // Total pages for books
@@ -34,24 +35,38 @@ export default function DataPage() {
     if (activeTab === "Book Catalog") {
       const fetchBooks = async () => {
         try {
-          console.log("Current Book Page:", currentBookPage); // Debugg
-          const booksResult = await getAllBooks(currentBookPage, 10);
-          console.log("Books Result:", booksResult);
+          const booksResult = await getAllBooks({
+            page: currentBookPage,
+            withStats: true,
+            fromDate: range?.from,
+            endDate: range?.to,
+          });
           if (booksResult) {
             const { books: fetchedBooks, totalPages: fetchedTotalPages } =
-              booksResult;
+              booksResult as {
+                books: (BookWithRequests & BookStats)[];
+                totalPages: number;
+              };
+
+            const bookStats: Record<number, BookStats> = {};
+            for (const book of fetchedBooks) {
+              bookStats[book.id] = {
+                totalRequests: book.requests ? book.requests.length : 0,
+                uniqueUsers: book.uniqueUsers || 0,
+              };
+            }
             setBooks(fetchedBooks);
             setTotalBookPages(fetchedTotalPages);
+            setBookStats(bookStats);
           }
         } catch (err) {
           console.error("Failed to fetch books:", err);
         }
       };
-      console.log("IN Book use Effect");
 
       fetchBooks();
     }
-  }, [currentBookPage, activeTab]); // Refetch books when currentBookPage or activeTab changes
+  }, [currentBookPage, activeTab, range]); // Refetch books when currentBookPage or activeTab changes
 
   useEffect(() => {
     if (activeTab === "User History") {
@@ -86,7 +101,7 @@ export default function DataPage() {
       try {
         // promise.allSettled so they can fail independently.
         const [requestCountResult] = await Promise.allSettled([
-          getRequestCount(),
+          getRequestCount(range?.from, range?.to),
         ]);
 
         // calculate the number of requests
@@ -105,9 +120,8 @@ export default function DataPage() {
         console.error("Unexpected error in fetchData:", err);
       }
     };
-
     fetchData();
-  }, []);
+  }, [range]);
 
   return (
     <div>
@@ -135,12 +149,11 @@ export default function DataPage() {
           </div>
 
           <div className="flex">
-            <CommonDropdown
-              items={["all time", "last 4 weeks", "last year"]}
-              buttonText={"All time"}
+            <DatePicker
+              range={range}
+              setRange={setRange}
               altButtonStyle="min-w-28"
               leftIcon={<CalendarMonthIcon />}
-              setFilter={setFilter}
             />
           </div>
         </div>
@@ -164,7 +177,8 @@ export default function DataPage() {
               Previous
             </button>
             <span className="px-4 py-2">
-              Page {currentBookPage} of {totalBookPages}
+              Page {totalBookPages > 0 ? currentBookPage : 0} of{" "}
+              {totalBookPages}
             </span>
             <button
               onClick={() =>

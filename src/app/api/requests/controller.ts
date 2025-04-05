@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Book, BookRequest, User, RequestStatus } from "@prisma/client";
+import { Book, BookRequest, User, RequestStatus, Prisma } from "@prisma/client";
 import { RequestWithBookAndUser, validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
@@ -14,23 +14,37 @@ import { checkSendGridLimits } from "@/lib/api/requests";
  * @remarks
  *  - This controller can later be modified to call other backend functions as needed.
  */
-export const getAllRequestsController = async (): Promise<
-  RequestWithBookAndUser[]
-> => {
+export const getAllRequestsController = async (
+  fromDate?: Date,
+  endDate?: Date
+): Promise<RequestWithBookAndUser[]> => {
   try {
+    const where: Prisma.BookRequestWhereInput = {};
+
+    if (fromDate || endDate) {
+      where.requestedOn = {};
+      if (fromDate) where.requestedOn.gte = fromDate;
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        where.requestedOn.lte = end;
+      }
+    }
+
     const requests = await prisma.bookRequest.findMany({
+      where,
       include: {
-        user: true, // Fetch the related User
-        book: true, // Fetch the related Book
+        user: true,
+        book: true,
       },
     });
+
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
     throw error;
   }
 };
-
 /**
  * Utility controller that gets one Request in the backend.
  *
@@ -132,10 +146,12 @@ export const postRequestController = async (
         if (book.copies - activeRequestCount < 0) {
           console.warn(`Negative available copies for book ID ${book.id}`);
           requestData.status = RequestStatus.Hold;
+          requestData.returnedBy = null;
         }
 
         if (book.copies - activeRequestCount === 0) {
           requestData.status = RequestStatus.Hold;
+          requestData.returnedBy = null;
         }
         const newRequest = await tx.bookRequest.create({
           data: requestData,

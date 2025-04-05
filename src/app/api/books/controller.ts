@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { BookWithRequests, validateBookData } from "@/lib/util/types";
-import { Book, BookRequest } from "@prisma/client";
+import {
+  BookStats,
+  BookWithRequests,
+  validateBookData,
+} from "@/lib/util/types";
+import { Book, BookRequest, Prisma } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
  *
@@ -50,34 +54,65 @@ export const postBookController = async (
 
 //NEW
 export const getAllBooksController = async (
-  page: number = 1,
-  limit: number = 10
+  page: number = 0,
+  limit: number = 0,
+  withStats: boolean = false,
+  fromDate?: Date,
+  endDate?: Date
 ): Promise<{
-  books: BookWithRequests[];
+  books: (BookWithRequests | (BookWithRequests & BookStats))[];
   total: number;
   totalPages: number;
 }> => {
   try {
-    console.log("API Handler - Page:", page, "Limit:", limit);
     // Calculate the offset (skip) for pagination
-    const skip = (page - 1) * limit;
+    const skip = page > 0 && limit > 0 ? (page - 1) * limit : undefined;
 
+    // create the date filter
+    const where: Prisma.BookWhereInput = {};
+
+    if (fromDate && endDate) {
+      const toEndOfDay = new Date(endDate);
+      toEndOfDay.setHours(23, 59, 59, 999);
+
+      where.createdAt = {
+        gte: fromDate,
+        lte: toEndOfDay,
+      };
+    }
     // Fetch paginated books and total count
     const [books, total] = await Promise.all([
       prisma.book.findMany({
-        skip: skip,
-        take: limit,
+        where,
+        skip,
+        take: limit > 0 ? limit : undefined,
         include: {
           requests: true, // Include related requests
         },
       }),
-      prisma.book.count(), // Get the total number of books
+      prisma.book.count({ where }), // Get the total number of books
     ]);
 
-    // Calculate total pages
+    const booksWithStats = withStats
+      ? books.map((book) => {
+          const totalRequests = book.requests.length;
+          const uniqueUsers = new Set(book.requests.map((req) => req.userId))
+            .size;
+          return {
+            ...book,
+            totalRequests,
+            uniqueUsers,
+          };
+        })
+      : books;
+
     const totalPages = Math.ceil(total / limit);
 
-    return { books, total, totalPages };
+    return {
+      books: booksWithStats,
+      total,
+      totalPages,
+    };
   } catch (error) {
     console.error("Error fetching books: ", error);
     throw error;

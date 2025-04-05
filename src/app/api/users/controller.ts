@@ -1,6 +1,6 @@
 import { User, BookRequest } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { validateUserData } from "../../../lib/util/types";
+import { UserWithRequests, validateUserData } from "@/lib/util/types";
 import clerkClient from "@/clerk";
 
 // export const getAllUsersController = async (): Promise<User[]> => {
@@ -21,7 +21,11 @@ import clerkClient from "@/clerk";
 export const getAllUsersController = async (
   page: number = 1,
   limit: number = 10
-): Promise<{ users: User[]; total: number; totalPages: number }> => {
+): Promise<{
+  users: UserWithRequests[];
+  total: number;
+  totalPages: number;
+}> => {
   try {
     // Calculate the offset (skip) for pagination
     const skip = (page - 1) * limit;
@@ -154,8 +158,6 @@ export const deleteUserController = async (id: string): Promise<User> => {
       } else if (user.inviteID) {
         await clerkClient.invitations.revokeInvitation(user.inviteID);
       }
-
-      console.log(user);
 
       return await prisma.user.delete({
         where: { id: id },

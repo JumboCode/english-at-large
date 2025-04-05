@@ -1,6 +1,7 @@
 import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import axios from "axios";
 import {
+  RequestWithBookAndUser,
   validateBookData,
   validateRequestData,
   validateUserData,
@@ -31,19 +32,25 @@ export const getOneRequest = async (
 /**
  * Utility function for fetching all requests
  *
- * @param none
+ * @param from
+ * @param to
  * @returns array of request (of type Requests)
  *
  * @remarks
  * - TODO: add filtering if needed
  */
-export const getRequests = async (): Promise<
-  (BookRequest & { user: User; book: Book })[] | undefined
-> => {
+export const getRequests = async (
+  fromDate?: Date,
+  endDate?: Date
+): Promise<RequestWithBookAndUser[] | undefined> => {
   try {
-    const response = await axios.get("/api/requests");
-
-    return response.data; //JSOn
+    const response = await axios.get("/api/requests", {
+      params: {
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      },
+    });
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch requests: ${error.message}`);
@@ -56,17 +63,27 @@ export const getRequests = async (): Promise<
 /**
  * Utility function for fetching all requests
  *
- * @param none
+ * @param from
+ * @param to
  * @returns array of request (of type Requests)
  *
  * @remarks
  * - TODO: add filtering if needed
  */
-export const getRequestCount = async (): Promise<number> => {
+export const getRequestCount = async (
+  fromDate?: Date,
+  endDate?: Date
+): Promise<number> => {
   try {
-    const response = await axios.get("/api/requests/count");
+    // changed back to requests/count because it's more efficient to use prisma count than to return the entire array
+    const response = await axios.get("/api/requests/count", {
+      params: {
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      },
+    });
 
-    return response.data; //JSOn
+    return response.data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch requests: ${error.message}`);
@@ -143,6 +160,8 @@ export const createQuickRequest = async (
     if (!validateBookData(book) || !validateUserData(user)) {
       throw new Error("Missing request fields");
     }
+    const returnDate = new Date();
+    returnDate.setMonth(returnDate.getMonth() + 2);
 
     const request: Omit<BookRequest, "id"> = {
       // id: 0, // or handle it as undefined
@@ -153,7 +172,8 @@ export const createQuickRequest = async (
       message: "",
       bookTitle: book.title,
       requestedOn: new Date(),
-      returnedBy: new Date(),
+      returnedBy: null,
+      dueDate: newStatus == RequestStatus.Requested ? returnDate : null,
     };
 
     const response = await axios.post("/api/requests", request);
@@ -224,7 +244,6 @@ export const checkSendGridLimits = async () => {
     }
 
     const data = await response.json();
-    console.log("SendGrid Email Credits:", data);
     return data.remain || 0; // Remaining emails allowed
   } catch (error) {
     console.error("Error checking SendGrid limits:", error);
