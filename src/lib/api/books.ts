@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  BookStats,
-  BookWithRequests,
-  DEFAULT_PAGINATION_LIMIT,
-  DEFAULT_PAGINATION_START_PAGE,
-} from "../util/types";
+import { BookStats, BookWithRequests } from "../util/types";
 import { Book } from "@prisma/client";
 
 /**
