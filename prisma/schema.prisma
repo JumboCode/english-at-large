@@ -49,11 +49,11 @@ model BookRequest {
   id          Int           @id @default(autoincrement())
   userId      String
   bookId      Int
+  status      RequestStatus
   createdAt   DateTime
   message     String
   bookTitle   String
   requestedOn DateTime
-  status      RequestStatus
   returnedBy  DateTime?
   dueDate     DateTime?
   book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)

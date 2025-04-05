@@ -97,6 +97,7 @@ export default function DataPage() {
   }, [currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
 
   useEffect(() => {
+    // console.log(range);
     const fetchData = async () => {
       try {
         // promise.allSettled so they can fail independently.
@@ -161,7 +162,11 @@ export default function DataPage() {
         {/* Tab Content */}
       </div>
       {activeTab === "Overview" && (
-        <TableOverview filterInfo={filterText} requestCount={requestCount} />
+        <TableOverview
+          filterInfo={filterText}
+          requestCount={requestCount}
+          range={range}
+        />
       )}
       {activeTab === "Book Catalog" && (
         <>

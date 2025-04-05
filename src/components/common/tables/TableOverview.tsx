@@ -1,20 +1,28 @@
 "use client";
 import { getAllBooks } from "@/lib/api/books";
 import React, { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
 import { Chart } from "react-google-charts";
 
 interface TableOverviewProps {
   filterInfo: string; // TODO: change this prop as needed
   requestCount: number;
+  range: DateRange | undefined;
 }
 const TableOverview = (props: TableOverviewProps) => {
-  const { filterInfo, requestCount } = props;
+  const { filterInfo, requestCount, range } = props;
   const [mapLevel, setMapLevel] = useState<Map<string, number> | null>(null);
   const [mapSkills, setMapSkills] = useState<Map<string, number> | null>(null);
 
   useEffect(() => {
+    console.log("table overview", range);
     const fetchBooks = async () => {
-      const books = await getAllBooks();
+      const books = await getAllBooks({
+        fromDate: range?.to,
+        endDate: range?.from,
+      });
+
+      console.log("table overview", range);
 
       const levels = new Map<string, number>([
         ["Beginner", 0],
@@ -36,7 +44,7 @@ const TableOverview = (props: TableOverviewProps) => {
       ]);
 
       if (books) {
-        books.map((book) => {
+        books.books.map((book) => {
           if (book.level) {
             levels.set(book.level, (levels.get(book.level) ?? 0) + 1);
           }
@@ -49,11 +57,13 @@ const TableOverview = (props: TableOverviewProps) => {
 
         setMapLevel(levels);
         setMapSkills(skills);
+      } else {
+        return;
       }
     };
 
     fetchBooks();
-  }, []);
+  }, [range]);
 
   return (
     <div className="flex flex-col mt-6 mx-16 text-xl font-medium text-center gap-6">
@@ -68,7 +78,9 @@ const TableOverview = (props: TableOverviewProps) => {
                 requestCount ? "text-4xl" : "text-2xl h-10"
               } font-medium`}
             >
-              {requestCount !== undefined && requestCount !== null ? requestCount : "loading..."}
+              {requestCount !== undefined && requestCount !== null
+                ? requestCount
+                : "loading..."}
             </p>
           </div>
           <div>
