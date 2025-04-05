@@ -26,8 +26,8 @@ import { Invitation } from "@clerk/backend";
 
 //NEW
 export const getAllUsers = async (
-  page: number = 1,
-  limit: number = 10
+  page: number = 0,
+  limit: number = 0
 ): Promise<
   { users: UserWithRequests[]; total: number; totalPages: number } | undefined
 > => {
