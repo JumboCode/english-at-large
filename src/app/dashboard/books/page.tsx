@@ -52,6 +52,10 @@ const BooksPage = () => {
   const [foundBookList, setFoundBookList] = useState<Book[]>([]);
   const [originalBook, setOriginalBook] = useState<Omit<Book, "id">>(emptyBook);
 
+  // book pagination
+  const [currentBookPage, setCurrentBookPage] = useState(1);
+  const [totalBookPages, setTotalBookPages] = useState(0);
+
   const toggleFilterPopup = () => {
     setIsFilterOpen(!isFilterOpen);
   };
@@ -101,22 +105,29 @@ const BooksPage = () => {
     .filter((book) => filterBooks(book));
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchBooks = async () => {
       setLoadingBooks(true);
       try {
-        const allBooks = await getAllBooks();
-        if (allBooks) {
-          setBooks(allBooks.books);
+        // change second arg to alter number of books displayed on 1 page
+        // 20 is limit of how many books to load
+        const booksResult = await getAllBooks({
+          page: currentBookPage,
+          limit: 20,
+        });
+        if (booksResult) {
+          const { books: fetchedBooks, totalPages: fetchedTotalPages } =
+            booksResult;
+          setBooks(fetchedBooks);
+          setTotalBookPages(fetchedTotalPages);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        console.error("Failed to get all books", err);
+        console.error("Failed to fetch books:", err);
       } finally {
         setLoadingBooks(false);
       }
     };
-    fetchData();
-  }, []);
+    fetchBooks();
+  }, [currentBookPage]); // Refetch books when currentBookPage or activeTab changes
 
   const bookFormExit = (listLen: boolean) => {
     setFormShown(
@@ -223,6 +234,28 @@ const BooksPage = () => {
                 </li>
               ))}
         </ul>
+
+        <div className="pagination-controls flex justify-center mt-4">
+          <button
+            onClick={() => setCurrentBookPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentBookPage === 1}
+            className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2">
+            Page {currentBookPage} of {totalBookPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentBookPage((prev) => Math.min(prev + 1, totalBookPages))
+            }
+            disabled={currentBookPage === totalBookPages}
+            className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
