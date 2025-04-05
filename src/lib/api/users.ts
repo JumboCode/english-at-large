@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 import axios from "axios";
-import { validateUserData } from "../util/types";
+import { UserWithRequests, validateUserData } from "../util/types";
 import { UserResource } from "@clerk/types";
 import { Invitation } from "@clerk/backend";
 
@@ -13,12 +13,29 @@ import { Invitation } from "@clerk/backend";
  * @remarks
  * - TODO: add filtering if needed
  */
-export const getAllUsers = async (): Promise<User[] | undefined> => {
+
+//OLD:
+// export const getAllUsers = async (): Promise<User[] | undefined> => {
+//   try {
+//     const response = await axios.get("/api/users");
+//     return response.data;
+//   } catch (error) {
+//     console.error("Failed to get user: ", error);
+//   }
+// };
+
+//NEW
+export const getAllUsers = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<
+  { users: UserWithRequests[]; total: number; totalPages: number } | undefined
+> => {
   try {
-    const response = await axios.get("/api/users");
+    const response = await axios.get(`/api/users?page=${page}&limit=${limit}`);
     return response.data;
   } catch (error) {
-    console.error("Failed to get user: ", error);
+    console.error("Failed to get users: ", error);
   }
 };
 
@@ -47,7 +64,9 @@ export const getOneUser = async (id: string): Promise<User | undefined> => {
  *
  * @remarks
  */
-export async function getOneUserByClerkid(clerkId: string): Promise<User | null> {
+export async function getOneUserByClerkid(
+  clerkId: string
+): Promise<User | null> {
   try {
     const response = await axios.get<User>(`/api/users?clerkId=${clerkId}`);
     return response.data;
@@ -128,7 +147,7 @@ export const inviteUser = async (
     if (!name || !email || !role || !id) {
       throw new Error("Missing user fields");
     }
-    
+
     const response = await axios.post("/api/invite", {
       name: name,
       email: email,
@@ -137,7 +156,7 @@ export const inviteUser = async (
     });
 
     const invite: Invitation = response.data;
-    
+
     return invite;
   } catch (error) {
     console.error("Failed to invite user: ", error);

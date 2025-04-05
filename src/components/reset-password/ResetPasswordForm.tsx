@@ -48,7 +48,6 @@ const ResetPasswordForm = () => {
       });
 
       if (result.status === "complete") {
-        console.log("Password reset successful!");
         setSuccess(true);
         await setActive({ session: result.createdSessionId });
         router.push("/login");
