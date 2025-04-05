@@ -110,7 +110,10 @@ const BooksPage = () => {
       try {
         // change second arg to alter number of books displayed on 1 page
         // 20 is limit of how many books to load
-        const booksResult = await getAllBooks(currentBookPage, 20);
+        const booksResult = await getAllBooks({
+          page: currentBookPage,
+          limit: 20,
+        });
         if (booksResult) {
           const { books: fetchedBooks, totalPages: fetchedTotalPages } =
             booksResult;
