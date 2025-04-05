@@ -18,8 +18,6 @@ const ResourceDashboard = (props: ResourceDProps) => {
     groupedResources[item.format].push(item); // has the resources divided into arrays (divided by OnlineResource Format)
   });
 
-  //   console.log("GROUP ARRAY", groupedResources)
-
   return (
     <div>
       {Object.keys(groupedResources).map((format) => (

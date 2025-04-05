@@ -57,8 +57,11 @@ const Loans = () => {
     switch (selectedValue) {
       case "Request Date":
         return a.requestedOn > b.requestedOn ? 1 : -1;
-      case "Return Date":
-        return a.returnedBy > b.returnedBy ? 1 : -1;
+      case "Return Date": {
+        const dateA = a.returnedBy ? new Date(a.returnedBy) : new Date();
+        const dateB = b.returnedBy ? new Date(b.returnedBy) : new Date();
+        return dateB.getTime() - dateA.getTime(); // most recent first
+      }
       default:
         return a.requestedOn > b.requestedOn ? 1 : -1;
     }
@@ -72,6 +75,7 @@ const Loans = () => {
       await updateRequest({
         ...request,
         status: RequestStatus.Returned,
+        returnedBy: new Date(),
       });
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
@@ -182,7 +186,9 @@ const Loans = () => {
                   </td>
 
                   <td className="text-black">
-                    {dateToTimeString(request.returnedBy)}
+                    {request.returnedBy
+                      ? dateToTimeString(request.returnedBy)
+                      : "Not Returned Yet"}
                   </td>
 
                   <td className="text-black">

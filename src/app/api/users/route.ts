@@ -15,6 +15,10 @@ export async function GET(req: Request) {
   const id = searchParams.get("id");
   const clerkId = searchParams.get("clerkId");
 
+  // Extract pagination parameters
+  const page = parseInt(searchParams.get("page") || "1", 10); //new
+  const limit = parseInt(searchParams.get("limit") || "10", 10); //new
+
   try {
     if (id) {
       // if id, fetch the specific user
@@ -27,8 +31,13 @@ export async function GET(req: Request) {
       return NextResponse.json(user);
     } else {
       // if no id, fetch all users
-      const users: User[] = await getAllUsersController();
-      return NextResponse.json(users);
+      // const users: User[] = await getAllUsersController();
+      // return NextResponse.json(users);
+      const { users, total, totalPages } = await getAllUsersController(
+        page,
+        limit
+      ); //new
+      return NextResponse.json({ users, total, totalPages, page }); //new
     }
   } catch (error) {
     if (error instanceof Error) {

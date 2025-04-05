@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Book, BookRequest, User, RequestStatus } from "@prisma/client";
+import { Book, BookRequest, User, RequestStatus, Prisma } from "@prisma/client";
 import { RequestWithBookAndUser, validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
@@ -14,11 +14,25 @@ import { checkSendGridLimits } from "@/lib/api/requests";
  * @remarks
  *  - This controller can later be modified to call other backend functions as needed.
  */
-export const getAllRequestsController = async (): Promise<
-  RequestWithBookAndUser[]
-> => {
+export const getAllRequestsController = async (
+  fromDate?: Date,
+  endDate?: Date
+): Promise<RequestWithBookAndUser[]> => {
   try {
+    const where: Prisma.BookRequestWhereInput = {};
+
+    if (fromDate || endDate) {
+      where.requestedOn = {};
+      if (fromDate) where.requestedOn.gte = fromDate;
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        where.requestedOn.lte = end;
+      }
+    }
+
     const requests = await prisma.bookRequest.findMany({
+      where,
       include: {
         user: true, // Fetch the related User
         book: {
@@ -28,13 +42,13 @@ export const getAllRequestsController = async (): Promise<
         }, // Fetch the related Book
       },
     });
+
     return requests;
   } catch (error) {
     console.error("Error fetching requests: ", error);
     throw error;
   }
 };
-
 /**
  * Utility controller that gets one Request in the backend.
  *
@@ -113,8 +127,45 @@ export const postRequestController = async (
       throw new Error("Missing required request properties");
     }
 
-    const request = await prisma.bookRequest.create({
-      data: requestData,
+    const request = await prisma.$transaction(async (tx) => {
+      await tx.book.update({
+        where: { id: requestData.bookId },
+        data: { extraInfo: "" },
+      });
+
+      const book = await tx.book.findUnique({
+        where: { id: requestData.bookId },
+        include: {
+          requests: {
+            where: {
+              status: {
+                notIn: [RequestStatus.Returned, RequestStatus.Hold],
+              },
+            },
+          },
+        },
+      });
+
+      if (book != null) {
+        const activeRequestCount = book.requests.length;
+
+        //if a book has no available copies when it is being borrowed, send the User into holds.
+
+        if (book.copies - activeRequestCount < 0) {
+          console.warn(`Negative available copies for book ID ${book.id}`);
+          requestData.status = RequestStatus.Hold;
+          requestData.returnedBy = null;
+        }
+
+        if (book.copies - activeRequestCount === 0) {
+          requestData.status = RequestStatus.Hold;
+          requestData.returnedBy = null;
+        }
+        const newRequest = await tx.bookRequest.create({
+          data: requestData,
+        });
+        return newRequest;
+      }
     });
 
     // email logic
@@ -164,7 +215,11 @@ export const postRequestController = async (
       await Promise.all(admins);
     }
 
-    return request;
+    if (request) {
+      return request;
+    } else {
+      throw Error("Prisma transaction failed and request is undefined");
+    }
   } catch (error) {
     console.error("Error in postRequestController:", error);
     throw error;

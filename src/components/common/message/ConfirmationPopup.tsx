@@ -38,10 +38,12 @@ const ConfirmationPopup = (props: SuccessProps) => {
             {success ? <CheckCircleIcon /> : <FailCircleIcon />}
           </div>
           <div className="text-black">
-          {custom
-            ? custom
-            : success
-              ? `Successfully ${action}${action.endsWith("e") ? "d" : "ed"} ${type}.`
+            {custom
+              ? custom
+              : success
+              ? `Successfully ${action}${
+                  action.endsWith("e") ? "d" : "ed"
+                } ${type}.`
               : `Couldn't ${action} ${type}. Check your connection and try again.`}
           </div>
         </div>

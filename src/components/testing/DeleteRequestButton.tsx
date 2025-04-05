@@ -15,7 +15,6 @@ const DeleteRequestButton = () => {
 
       alert("Request deleted successfully!");
     } catch (err) {
-      console.log("error");
       setError("Failed to delete request");
       console.error(err);
     } finally {

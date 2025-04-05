@@ -29,7 +29,39 @@ export async function GET(req: Request) {
       return NextResponse.json(book);
     } else {
       // If no ID is provided, fetch all books
-      const books = await getAllBooksController();
+      const page = Number(searchParams.get("page") || "1");
+      const limit = Number(searchParams.get("limit") || "10");
+      const withStats = searchParams.get("withStats") === "true";
+      // grab the date filter parameters - if none are specified then don't worry about it
+      const fromDateStr = searchParams.get("fromDate");
+      const endDateStr = searchParams.get("endDate");
+
+      const fromDate = fromDateStr ? new Date(fromDateStr) : undefined;
+      const endDate = endDateStr ? new Date(endDateStr) : undefined;
+
+      // Optional: validate dates
+      if (
+        (fromDate && isNaN(fromDate.getTime())) ||
+        (endDate && isNaN(endDate.getTime()))
+      ) {
+        return NextResponse.json(
+          { error: "Invalid date format" },
+          { status: 400 }
+        );
+      }
+
+      // Default ranges:
+      const effectiveFromDate = fromDate ?? new Date(0); // Jan 1, 1970
+      const effectiveEndDate = endDate ?? new Date();
+
+      const books = await getAllBooksController(
+        page,
+        limit,
+        withStats,
+        effectiveFromDate,
+        effectiveEndDate
+      );
+      //const books = await getAllBooksController();
       return NextResponse.json(books);
     }
   } catch (error) {

@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { BookWithRequests, validateBookData } from "@/lib/util/types";
-import { Book, BookRequest } from "@prisma/client";
+import {
+  BookStats,
+  BookWithRequests,
+  validateBookData,
+} from "@/lib/util/types";
+import { Book, BookRequest, Prisma } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
  *
@@ -31,15 +35,84 @@ export const postBookController = async (
   }
 };
 
-export const getAllBooksController = async (): Promise<BookWithRequests[]> => {
-  try {
-    const Books = await prisma.book.findMany({
-      include: {
-        requests: true,
-      },
-    });
+//OLD
 
-    return Books;
+// export const getAllBooksController = async (): Promise<BookWithRequests[]> => {
+//   try {
+//     const Books = await prisma.book.findMany({
+//       include: {
+//         requests: true,
+//       },
+//     });
+
+//     return Books;
+//   } catch (error) {
+//     console.error("Error fetching books: ", error);
+//     throw error;
+//   }
+// };
+
+//NEW
+export const getAllBooksController = async (
+  page: number = 1,
+  limit: number = 10,
+  withStats: boolean = false,
+  fromDate?: Date,
+  endDate?: Date
+): Promise<{
+  books: (BookWithRequests | (BookWithRequests & BookStats))[];
+  total: number;
+  totalPages: number;
+}> => {
+  try {
+    // Calculate the offset (skip) for pagination
+    const skip = (page - 1) * limit;
+
+    // create the date filter
+    const where: Prisma.BookWhereInput = {};
+
+    if (fromDate && endDate) {
+      const toEndOfDay = new Date(endDate);
+      toEndOfDay.setHours(23, 59, 59, 999);
+
+      where.createdAt = {
+        gte: fromDate,
+        lte: toEndOfDay,
+      };
+    }
+    // Fetch paginated books and total count
+    const [books, total] = await Promise.all([
+      prisma.book.findMany({
+        where,
+        skip: skip,
+        take: limit,
+        include: {
+          requests: true, // Include related requests
+        },
+      }),
+      prisma.book.count({ where }), // Get the total number of books
+    ]);
+
+    const booksWithStats = withStats
+      ? books.map((book) => {
+          const totalRequests = book.requests.length;
+          const uniqueUsers = new Set(book.requests.map((req) => req.userId))
+            .size;
+          return {
+            ...book,
+            totalRequests,
+            uniqueUsers,
+          };
+        })
+      : books;
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      books: booksWithStats,
+      total,
+      totalPages,
+    };
   } catch (error) {
     console.error("Error fetching books: ", error);
     throw error;

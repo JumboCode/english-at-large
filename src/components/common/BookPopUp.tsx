@@ -29,6 +29,9 @@ const BookPopup = (props: BookPopupProps) => {
   const { setConfirmPopup } = usePopup();
   const [success, setSuccess] = useState<boolean>(true);
   const [limitExceeded, setLimitExceeded] = useState(false);
+
+  const [localBorrow, setLocalBorrow] = useState(borrow);
+
   const exit = () => {
     toggleOpen();
   };
@@ -55,8 +58,8 @@ const BookPopup = (props: BookPopupProps) => {
       if (requests && userRequested.some((req) => req.bookId === book.id)) {
         isSuccess = false;
       } else if (
-        (borrow && borrowed.length > MAX_REQUESTS) ||
-        (!borrow && holds.length > MAX_REQUESTS)
+        (localBorrow && borrowed.length > MAX_REQUESTS) ||
+        (!localBorrow && holds.length > MAX_REQUESTS)
       ) {
         isSuccess = false;
         setLimitExceeded(true);
@@ -66,11 +69,14 @@ const BookPopup = (props: BookPopupProps) => {
         const request = await createQuickRequest(
           book,
           user,
-          borrow ? RequestStatus.Requested : RequestStatus.Hold
+          localBorrow ? RequestStatus.Requested : RequestStatus.Hold
         );
+        if (borrow && request && request.status === RequestStatus.Hold){
+          setLocalBorrow(!localBorrow)
+        }
         setConfirmPopup({
-          type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
-          action: borrow
+          type: localBorrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
+          action: localBorrow
             ? ConfirmPopupActions.BORROW
             : ConfirmPopupActions.PLACE,
           success: !!request,
@@ -78,8 +84,8 @@ const BookPopup = (props: BookPopupProps) => {
         setSuccess(isSuccess);
       } else {
         setConfirmPopup({
-          type: borrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
-          action: borrow
+          type: localBorrow ? ConfirmPopupTypes.BOOK : ConfirmPopupTypes.HOLD,
+          action: localBorrow
             ? ConfirmPopupActions.BORROW
             : ConfirmPopupActions.PLACE,
           success: false,
@@ -97,10 +103,10 @@ const BookPopup = (props: BookPopupProps) => {
           <div className="bg-white rounded-lg shadow-lg p-8 w-5/12">
             <div className="flex justify-end items-center h-full"></div>
             <h1 className="font-[family-name:var(--font-rubik)] font-semibold text-2xl">
-              {borrow ? "Borrow" : "Place hold"}
+              {localBorrow ? "Borrow" : "Place hold"}
             </h1>
             <div className="text-[#757575] text-sm">
-              You are {borrow ? "borrowing" : "placing a hold for"}:
+              You are {localBorrow ? "borrowing" : "placing a hold for"}:
             </div>
             <hr className="h-px bg-[#D4D4D4] border-0 mt-5"></hr>
             <div className="flex grid-cols-2 gap-4 mt-4 ">
@@ -150,7 +156,7 @@ const BookPopup = (props: BookPopupProps) => {
           <ConfirmBookRequestPopup
             toggle={toggleOpen}
             success={success}
-            borrow={borrow}
+            borrow={localBorrow}
             limitExceeded={limitExceeded}
           />
         </div>

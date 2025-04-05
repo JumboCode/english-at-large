@@ -12,16 +12,13 @@ const CreateRequestButton = () => {
     setError(null);
 
     try {
-      console.log("request");
       await createRequest(newEmptyRequest);
 
       alert("Request created successfully!");
     } catch (err) {
-      console.log("error");
       setError("Failed to create request");
       console.error(err);
     } finally {
-      console.log("finally");
       setLoading(false);
     }
   };
