@@ -18,8 +18,8 @@ const TableOverview = (props: TableOverviewProps) => {
     console.log("table overview", range);
     const fetchBooks = async () => {
       const books = await getAllBooks({
-        fromDate: range?.to,
-        endDate: range?.from,
+        fromDate: range?.from,
+        endDate: range?.to,
       });
 
       console.log("table overview", range);
