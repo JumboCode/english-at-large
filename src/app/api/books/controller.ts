@@ -54,8 +54,8 @@ export const postBookController = async (
 
 //NEW
 export const getAllBooksController = async (
-  page: number = 1,
-  limit: number = 10,
+  page: number = 0,
+  limit: number = 0,
   withStats: boolean = false,
   fromDate?: Date,
   endDate?: Date
@@ -66,7 +66,7 @@ export const getAllBooksController = async (
 }> => {
   try {
     // Calculate the offset (skip) for pagination
-    const skip = (page - 1) * limit;
+    const skip = page > 0 && limit > 0 ? (page - 1) * limit : undefined;
 
     // create the date filter
     const where: Prisma.BookWhereInput = {};
@@ -84,8 +84,8 @@ export const getAllBooksController = async (
     const [books, total] = await Promise.all([
       prisma.book.findMany({
         where,
-        skip: skip,
-        take: limit,
+        skip,
+        take: limit > 0 ? limit : undefined,
         include: {
           requests: true, // Include related requests
         },
