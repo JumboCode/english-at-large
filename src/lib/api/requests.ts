@@ -244,7 +244,6 @@ export const checkSendGridLimits = async () => {
     }
 
     const data = await response.json();
-    console.log("SendGrid Email Credits:", data);
     return data.remain || 0; // Remaining emails allowed
   } catch (error) {
     console.error("Error checking SendGrid limits:", error);

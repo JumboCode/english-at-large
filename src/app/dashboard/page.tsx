@@ -1,12 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuth } from "@clerk/nextjs"; 
+import { useAuth } from "@clerk/nextjs";
 
 export default function Home() {
   const router = useRouter();
   const { userId, isLoaded } = useAuth();
-
+  console.log(123);
   useEffect(() => {
     if (isLoaded) {
       if (!userId) {

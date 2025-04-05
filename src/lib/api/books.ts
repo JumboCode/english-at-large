@@ -48,7 +48,6 @@ export const getAllBooks = async (options?: {
   | undefined
 > => {
   try {
-    //console.log("Fetching books for page:", page); // Debugging log
     const {
       page = DEFAULT_PAGINATION_START_PAGE,
       limit = DEFAULT_PAGINATION_LIMIT,

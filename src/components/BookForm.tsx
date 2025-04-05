@@ -95,7 +95,6 @@ const BookForm = (props: BookFormProps) => {
       });
       // Book cover retrieval
       const coverUrl = await getBookCover(isbn ?? newBook.isbn[0]);
-      console.log(coverUrl);
       setNewBook((prevBook) => ({
         ...prevBook,
         coverURL:
@@ -169,9 +168,6 @@ const BookForm = (props: BookFormProps) => {
   };
 
   useEffect(() => {
-    console.log("num:", numCopies);
-    console.log("available:", availableCopies);
-
     if (existingBook) {
       setEditBook(
         (prevBook) =>
@@ -216,9 +212,10 @@ const BookForm = (props: BookFormProps) => {
           onSave(editedBook);
         }
       } else if (newBook) {
-        const allBooks = await getAllBooks();
+        const booksResult = await getAllBooks({ withStats: false });
+        const allBooks = booksResult?.books ?? [];
         //checks if any similar books are returned, but should also ask the user
-        similarBooks = findSimilar(allBooks!, newBook.title);
+        similarBooks = findSimilar(allBooks, newBook.title);
         if (setBookList) setBookList(similarBooks);
         if (setOriginalBook) setOriginalBook(newBook);
 
