@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { BookWithRequests, validateBookData } from "@/lib/util/types";
+import {
+  BookStats,
+  BookWithRequests,
+  validateBookData,
+} from "@/lib/util/types";
 import { Book, BookRequest } from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
@@ -51,14 +55,15 @@ export const postBookController = async (
 //NEW
 export const getAllBooksController = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  withStats: boolean = false
 ): Promise<{
-  books: BookWithRequests[];
+  books: (BookWithRequests | (BookWithRequests & BookStats))[];
   total: number;
   totalPages: number;
 }> => {
   try {
-    console.log("API Handler - Page:", page, "Limit:", limit);
+    // console.log("API Handler - Page:", page, "Limit:", limit);
     // Calculate the offset (skip) for pagination
     const skip = (page - 1) * limit;
 
@@ -74,21 +79,26 @@ export const getAllBooksController = async (
       prisma.book.count(), // Get the total number of books
     ]);
 
-    const booksWithStats = books.map((book) => {
-      const totalRequests = book.requests.length; // Total number of requests
-      const uniqueUsers = new Set(book.requests.map((req) => req.userId)).size; // Unique user IDs
-      return {
-        ...book,
-        totalRequests,
-        uniqueUsers,
-      };
-    });
+    const booksWithStats = withStats
+      ? books.map((book) => {
+          const totalRequests = book.requests.length;
+          const uniqueUsers = new Set(book.requests.map((req) => req.userId))
+            .size;
+          return {
+            ...book,
+            totalRequests,
+            uniqueUsers,
+          };
+        })
+      : books;
 
-    // Calculate total pages
     const totalPages = Math.ceil(total / limit);
-    console.log("THE STATS", booksWithStats)
 
-    return { books: booksWithStats, total, totalPages };
+    return {
+      books: booksWithStats,
+      total,
+      totalPages,
+    };
   } catch (error) {
     console.error("Error fetching books: ", error);
     throw error;

@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 import axios from "axios";
-import { validateUserData } from "../util/types";
+import { UserWithRequests, validateUserData } from "../util/types";
 import { UserResource } from "@clerk/types";
 import { Invitation } from "@clerk/backend";
 
@@ -29,7 +29,7 @@ export const getAllUsers = async (
   page: number = 1,
   limit: number = 10
 ): Promise<
-  { users: User[]; total: number; totalPages: number } | undefined
+  { users: UserWithRequests[]; total: number; totalPages: number } | undefined
 > => {
   try {
     const response = await axios.get(`/api/users?page=${page}&limit=${limit}`);

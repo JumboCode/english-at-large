@@ -8,11 +8,11 @@ import { User, BookRequest } from "@prisma/client";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import LoanDropdown from "../forms/LoanDropdown";
-import { emptyRequest, RequestWithBookAndUser } from "@/lib/util/types";
+import { emptyRequest } from "@/lib/util/types";
 
 interface UserHistoryProps {
   users: User[];
-  requests: RequestWithBookAndUser[];
+  requests: BookRequest[];
 }
 
 const UserHistory = (props: UserHistoryProps) => {
@@ -38,7 +38,7 @@ const UserHistory = (props: UserHistoryProps) => {
   // use of structured clone creates new subset of search target users
   // allows filter to act on subset of searched users
   const requestsByUser = useMemo(() => {
-    const grouped: Record<string, RequestWithBookAndUser[]> = {};
+    const grouped: Record<string, BookRequest[]> = {};
 
     requests.forEach((request) => {
       const userId = request.userId;
@@ -133,7 +133,7 @@ const UserHistory = (props: UserHistoryProps) => {
                           </div>
 
                           <div className="pl-16">
-                            {dateToTimeString(request.returnedBy)}
+                            {request.returnedBy ? dateToTimeString(request.returnedBy) : "Not Returned Yet"}
                           </div>
 
                           <div>

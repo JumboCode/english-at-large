@@ -5,10 +5,10 @@ import CalendarMonthIcon from "@/assets/icons/calendar_month";
 import BookCatalog from "@/components/common/tables/BookCatalog";
 import UserHistory from "@/components/common/tables/UserHistory";
 import TableOverview from "@/components/common/tables/TableOverview";
-import { Book, User } from "@prisma/client";
+import { Book, BookRequest, User } from "@prisma/client";
 import { getAllUsers } from "@/lib/api/users";
-import { getRequestCount, getRequests } from "@/lib/api/requests";
-import { BookStats, RequestWithBookAndUser } from "@/lib/util/types";
+import { getRequestCount } from "@/lib/api/requests";
+import { BookStats, BookWithRequests } from "@/lib/util/types";
 import { getAllBooks } from "@/lib/api/books";
 
 export default function DataPage() {
@@ -16,7 +16,7 @@ export default function DataPage() {
   const [filter, setFilter] = useState<string>("");
   const filterText = filter ? filter : "all time";
   const [users, setUsers] = useState<User[]>([]);
-  const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
+  const [requests, setRequests] = useState<BookRequest[]>([]);
   const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
@@ -35,10 +35,19 @@ export default function DataPage() {
       const fetchBooks = async () => {
         try {
           //console.log("Current Book Page:", currentBookPage); // Debugg
-          const booksResult = await getAllBooks(currentBookPage, 10);
+          const booksResult = await getAllBooks({
+            page: currentBookPage,
+            withStats: true
+          });
           //console.log("Books Result:", booksResult);
           if (booksResult) {
-            const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult;
+
+            const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult as {
+              books: (BookWithRequests & BookStats)[];
+              totalPages: number;
+            };
+
+            // const { books: fetchedBooks, totalPages: fetchedTotalPages } = booksResult;
             const bookStats: Record<number, BookStats> = {};
             for (const book of fetchedBooks) {
               bookStats[book.id] = {

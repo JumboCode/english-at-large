@@ -17,7 +17,8 @@ import { BookRequest } from "@prisma/client";
 /////                                 BOOKS                                /////
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
-
+export const DEFAULT_PAGINATION_START_PAGE = 1;
+export const DEFAULT_PAGINATION_LIMIT = 10;
 export const MAX_REQUESTS = 5;
 
 export type BookWithRequests = Prisma.BookGetPayload<{
@@ -131,6 +132,7 @@ export const emptyRequest: BookRequest = {
   bookTitle: "updated book",
   requestedOn: new Date(),
   returnedBy: new Date(),
+  dueDate: null,
 };
 
 export const newEmptyRequest: Omit<BookRequest, "id"> = {
@@ -142,6 +144,7 @@ export const newEmptyRequest: Omit<BookRequest, "id"> = {
   bookTitle: "updated book",
   requestedOn: new Date(),
   returnedBy: new Date(),
+  dueDate: null,
 };
 
 /**
@@ -170,6 +173,9 @@ export function validateRequestData(
 /////                                 USERS                                /////
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
+export type UserWithRequests = Prisma.UserGetPayload<{
+  include: { requests: true };
+}>;
 
 export const emptyUser: Omit<User, "id" | "createdAt" | "updatedAt"> = {
   name: "Bob",
