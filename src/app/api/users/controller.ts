@@ -28,13 +28,13 @@ export const getAllUsersController = async (
 }> => {
   try {
     // Calculate the offset (skip) for pagination
-    const skip = (page - 1) * limit;
+    const skip = page > 0 && limit > 0 ? (page - 1) * limit : undefined;
 
     // Fetch paginated users and total count
     const [users, total] = await Promise.all([
       prisma.user.findMany({
         skip: skip,
-        take: limit,
+        take: limit > 0 ? limit : undefined,
         include: {
           requests: true,
         },

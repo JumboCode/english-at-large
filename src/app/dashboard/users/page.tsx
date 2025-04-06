@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SendInvite from "../../../components/manage/sendInvite";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
@@ -42,11 +42,14 @@ export default function Manage() {
 
   // use of structured clone creates new subset of search target users
   // allows filter to act on subset of searched users
-  const subsetUsers = structuredClone<User[]>(users).filter(
-    (user) =>
-      user.name?.toLowerCase().includes(searchData) ||
-      user.email?.toLowerCase().includes(searchData)
-  );
+  const subsetUsers = useMemo(() => {
+    const lowerSearch = searchData.toLowerCase();
+    return structuredClone(users).filter(
+      (user) =>
+        user.name?.toLowerCase().includes(lowerSearch) ||
+        user.email?.toLowerCase().includes(lowerSearch)
+    );
+  }, [users, searchData]);
 
   useEffect(() => {
     const getUsers = async () => {
