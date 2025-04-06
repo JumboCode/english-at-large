@@ -255,6 +255,10 @@ const BookForm = (props: BookFormProps) => {
         }
       }
       exit(similarBooks.length != 0);
+
+      if (similarBooks.length === 0) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error(error);
     }
