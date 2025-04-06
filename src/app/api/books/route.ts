@@ -29,8 +29,8 @@ export async function GET(req: Request) {
       return NextResponse.json(book);
     } else {
       // If no ID is provided, fetch all books
-      const page = Number(searchParams.get("page") || "1");
-      const limit = Number(searchParams.get("limit") || "10");
+      const page = Number(searchParams.get("page"));
+      const limit = Number(searchParams.get("limit"));
       const withStats = searchParams.get("withStats") === "true";
       // grab the date filter parameters - if none are specified then don't worry about it
       const fromDateStr = searchParams.get("fromDate");

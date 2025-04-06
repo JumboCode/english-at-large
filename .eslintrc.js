@@ -9,6 +9,10 @@ module.exports = {
   },
   plugins: ["@typescript-eslint"],
   extends: [
-    "next/core-web-vitals", // ✅ Next.js rules
+    "next/core-web-vitals",
+    "next/typescript", // ✅ Next.js rules
   ],
+  rules: {
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }], // ✅ Turn it on
+  },
 };

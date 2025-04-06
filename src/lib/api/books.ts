@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  BookStats,
-  BookWithRequests,
-  DEFAULT_PAGINATION_LIMIT,
-  DEFAULT_PAGINATION_START_PAGE,
-} from "../util/types";
+import { BookStats, BookWithRequests } from "../util/types";
 import { Book } from "@prisma/client";
 
 /**
@@ -48,13 +43,7 @@ export const getAllBooks = async (options?: {
   | undefined
 > => {
   try {
-    const {
-      page = DEFAULT_PAGINATION_START_PAGE,
-      limit = DEFAULT_PAGINATION_LIMIT,
-      withStats = false,
-      fromDate,
-      endDate,
-    } = options || {};
+    const { page, limit, withStats = false, fromDate, endDate } = options || {};
 
     const response = await axios.get(`/api/books`, {
       params: {
