@@ -1,5 +1,6 @@
 "use client";
-import { getAllBooks } from "@/lib/api/books";
+import { getRequests } from "@/lib/api/requests";
+
 import React, { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { Chart } from "react-google-charts";
@@ -17,11 +18,8 @@ const TableOverview = (props: TableOverviewProps) => {
   useEffect(() => {
     console.log("table overview", range);
     const fetchBooks = async () => {
-      const books = await getAllBooks({
-        fromDate: range?.from,
-        endDate: range?.to,
-      });
-
+      const reqs = await getRequests(range?.from, range?.to);
+      const books = reqs?.map((req) => req.book);
       console.log("table overview", range);
 
       const levels = new Map<string, number>([
@@ -44,7 +42,7 @@ const TableOverview = (props: TableOverviewProps) => {
       ]);
 
       if (books) {
-        books.books.map((book) => {
+        books.map((book) => {
           if (book.level) {
             levels.set(book.level, (levels.get(book.level) ?? 0) + 1);
           }
