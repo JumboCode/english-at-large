@@ -37,6 +37,7 @@ export default function DataPage() {
         try {
           const booksResult = await getAllBooks({
             page: currentBookPage,
+            limit: 10,
             withStats: true,
             fromDate: range?.from,
             endDate: range?.to,
