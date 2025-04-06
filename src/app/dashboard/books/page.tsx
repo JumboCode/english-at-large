@@ -136,7 +136,7 @@ const BooksPage = () => {
     <div>
       <IsbnPopup
         isOpen={formShown == formState.ISBN_FORM_OPEN}
-        exit={() => setFormShown(formState.BOOK_FORM_OPEN)}
+        exit={() => setFormShown(formState.FORM_CLOSED)}
         submit={(isbn: string) => {
           setFormShown(formState.BOOK_FORM_OPEN);
           setISBN(isbn);
