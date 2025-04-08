@@ -16,11 +16,9 @@ const TableOverview = (props: TableOverviewProps) => {
   const [mapSkills, setMapSkills] = useState<Map<string, number> | null>(null);
 
   useEffect(() => {
-    console.log("table overview", range);
     const fetchBooks = async () => {
       const reqs = await getRequests(range?.from, range?.to);
       const books = reqs?.map((req) => req.book);
-      console.log("table overview", range);
 
       const levels = new Map<string, number>([
         ["Beginner", 0],

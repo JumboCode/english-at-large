@@ -73,7 +73,12 @@ export default function DataPage() {
     if (activeTab === "User History") {
       const fetchUsers = async () => {
         try {
-          const usersResult = await getAllUsers(currentUserPage, 10);
+          const usersResult = await getAllUsers(
+            currentUserPage,
+            10,
+            range?.from,
+            range?.to
+          );
           if (usersResult) {
             const { users: fetchedUsers, totalPages: fetchedTotalPages } =
               usersResult;
@@ -95,7 +100,7 @@ export default function DataPage() {
 
       fetchUsers();
     }
-  }, [currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
+  }, [range, currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
 
   useEffect(() => {
     // console.log(range);
