@@ -6,7 +6,7 @@ import imageToAdd from "../../assets/images/harry_potter.jpg";
 import ExportIcn from "../../assets/icons/ExportOnlineResource.svg";
 import SaveIcn from "@/assets/icons/SaveOnlineResource.svg";
 
-interface ResourceProps {
+interface FolderProps {
   resource: OnlineResource;
 }
 
@@ -17,7 +17,7 @@ interface ResourceProps {
  * @returns a React Components.
  * @TODO: add in loading components
  */
-const ResourceInfo = (props: ResourceProps) => {
+const DisplayFolder = (props: FolderProps) => {
   const { resource } = props;
 
   return (
@@ -67,4 +67,4 @@ const ResourceInfo = (props: ResourceProps) => {
   );
 };
 
-export default ResourceInfo;
+export default DisplayFolder;
