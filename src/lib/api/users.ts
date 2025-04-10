@@ -14,7 +14,7 @@ import { Invitation } from "@clerk/backend";
  * - TODO: add filtering if needed
  */
 
-//OLD:
+// OLD:
 // export const getAllUsers = async (): Promise<User[] | undefined> => {
 //   try {
 //     const response = await axios.get("/api/users");
@@ -24,15 +24,21 @@ import { Invitation } from "@clerk/backend";
 //   }
 // };
 
-//NEW
 export const getAllUsers = async (
   page: number = 0,
-  limit: number = 0
+  limit: number = 0,
+  fromDate?: Date,
+  endDate?: Date
 ): Promise<
   { users: UserWithRequests[]; total: number; totalPages: number } | undefined
 > => {
   try {
-    const response = await axios.get(`/api/users?page=${page}&limit=${limit}`);
+    const response = await axios.get(`/api/users?page=${page}&limit=${limit}`, {
+      params: {
+        fromDate: fromDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Failed to get users: ", error);

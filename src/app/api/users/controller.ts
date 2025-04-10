@@ -3,24 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { UserWithRequests, validateUserData } from "@/lib/util/types";
 import clerkClient from "@/clerk";
 
-// export const getAllUsersController = async (): Promise<User[]> => {
-//   try {
-
-//     const users = await prisma.user.findMany({
-//       include: {
-//         requests: true,
-//       },
-//     });
-//     return users;
-//   } catch (error) {
-//     console.error("Error fetching users: ", error);
-//     throw error;
-//   }
-// };
-
+// added date filtering on requests for each user
 export const getAllUsersController = async (
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  fromDate?: Date,
+  endDate?: Date
 ): Promise<{
   users: UserWithRequests[];
   total: number;
@@ -29,23 +17,45 @@ export const getAllUsersController = async (
   try {
     // Calculate the offset (skip) for pagination
     const skip = page > 0 && limit > 0 ? (page - 1) * limit : undefined;
-
     // Fetch paginated users and total count
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        skip: skip,
-        take: limit > 0 ? limit : undefined,
-        include: {
-          requests: true,
-        },
-      }),
-      prisma.user.count(),
-    ]);
+    if (fromDate && endDate) {
+      const [users, total] = await Promise.all([
+        prisma.user.findMany({
+          skip: skip,
+          take: limit > 0 ? limit : undefined,
+          include: {
+            requests: {
+              where: {
+                requestedOn: {
+                  gte: fromDate,
+                  lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                },
+              },
+            },
+          },
+        }),
+        prisma.user.count(),
+      ]);
+      // Calculate total pages
+      const totalPages = Math.ceil(total / limit);
 
-    // Calculate total pages
-    const totalPages = Math.ceil(total / limit);
+      return { users, total, totalPages };
+    } else {
+      const [users, total] = await Promise.all([
+        prisma.user.findMany({
+          skip: skip,
+          take: limit > 0 ? limit : undefined,
+          include: {
+            requests: true,
+          },
+        }),
+        prisma.user.count(),
+      ]);
+      // Calculate total pages
+      const totalPages = Math.ceil(total / limit);
 
-    return { users, total, totalPages };
+      return { users, total, totalPages };
+    }
   } catch (error) {
     console.error("Error fetching users: ", error);
     throw error;
