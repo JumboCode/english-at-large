@@ -46,6 +46,9 @@ const BookForm = (props: BookFormProps) => {
   const [numCopies, setNumCopies] = useState<number>(
     existingBook ? existingBook.copies : 1
   );
+  const [numPages, setNumpages] = useState<string>(
+    existingBook && existingBook.numPages ? String(existingBook.numPages) : "0"
+  );
   const [availableCopies, setAvailableCopies] = useState<number>(
     existingBook ? getAvailableCopies(existingBook) : 1
   );
@@ -125,23 +128,41 @@ const BookForm = (props: BookFormProps) => {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
+  
+    if (name === "numPages") {
+      // Allow empty string while typing
+      setNumpages(value);
+  
+      const parsed = value === "" ? 0 : Number(value);
+      
+      if (existingBook) {
+        setEditBook((prevBook) => ({
+          ...prevBook,
+          [name]: parsed,
+        }) as BookWithRequests);
+      } else if (newBook) {
+        setNewBook((prevBook) => ({
+          ...prevBook,
+          [name]: parsed,
+        }) as Omit<Book, "id">);
+      }
+  
+      return;
+    }
+  
+    // default case for other fields
+    const updatedValue = value;
+  
     if (existingBook) {
-      setEditBook(
-        (prevBook) =>
-          ({
-            ...prevBook,
-            [name]: value,
-          } as BookWithRequests)
-      );
+      setEditBook((prevBook) => ({
+        ...prevBook,
+        [name]: updatedValue,
+      }) as BookWithRequests);
     } else if (newBook) {
-      setNewBook(
-        (prevBook) =>
-          ({
-            ...prevBook,
-            [name]: value,
-          } as Omit<Book, "id">)
-      );
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        [name]: updatedValue,
+      }) as Omit<Book, "id">);
     }
   };
 
@@ -234,6 +255,10 @@ const BookForm = (props: BookFormProps) => {
         }
       }
       exit(similarBooks.length != 0);
+
+      if (similarBooks.length === 0) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error(error);
     }
@@ -369,11 +394,7 @@ const BookForm = (props: BookFormProps) => {
                 (newBook.numPages ? "bg-blue-100" : null)
               }
               onChange={bookChangeHandler}
-              value={
-                editBook && editBook.numPages
-                  ? editBook.numPages
-                  : newBook.numPages ?? 1
-              }
+              value={numPages}
             />
           </div>
         </div>
@@ -482,31 +503,25 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div>
-          <p className="block text-lg ml-[5%] mb-2">Skills</p>
-          <div className="flex space-x-4 mx-[5%] ">
-            {skills.map((bookSkill, index) => {
-              return (
-                <MultiSelectTagButton<BookSkills>
-                  key={index}
-                  label={bookSkill}
-                  value={
-                    editBook ? editBook.skills : newBook ? newBook.skills : []
-                  }
-                  onSelect={bookSkillsChangeHandler}
-                  name={"skills"}
-                />
-              );
-            })}
+          <div className = "mb-4"> 
+            <p className="block text-lg ml-[5%] mb-2">Skills</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-4 ml-[5%] mr-[5%] items-center">
+              {skills.map((bookSkill, index) => {
+                return (
+                  <MultiSelectTagButton<BookSkills>
+                    key={index}
+                    label={bookSkill}
+                    value={
+                      editBook ? editBook.skills : newBook ? newBook.skills : []
+                    }
+                    onSelect={bookSkillsChangeHandler}
+                    name={"skills"}
+                  />
+                );
+              })}
+            </div>
           </div>
-
-          {/* {!existingBook ? (
-            <CommonButton
-              label={"ISBN Click"}
-              onClick={() => {
-                pullISBN();
-              }}
-            />
-          ) : null} */}
+          
         </div>
       </form>
     </div>

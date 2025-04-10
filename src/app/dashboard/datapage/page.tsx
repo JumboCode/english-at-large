@@ -37,6 +37,7 @@ export default function DataPage() {
         try {
           const booksResult = await getAllBooks({
             page: currentBookPage,
+            limit: 10,
             withStats: true,
             fromDate: range?.from,
             endDate: range?.to,
@@ -72,7 +73,12 @@ export default function DataPage() {
     if (activeTab === "User History") {
       const fetchUsers = async () => {
         try {
-          const usersResult = await getAllUsers(currentUserPage, 10);
+          const usersResult = await getAllUsers(
+            currentUserPage,
+            10,
+            range?.from,
+            range?.to
+          );
           if (usersResult) {
             const { users: fetchedUsers, totalPages: fetchedTotalPages } =
               usersResult;
@@ -94,9 +100,10 @@ export default function DataPage() {
 
       fetchUsers();
     }
-  }, [currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
+  }, [range, currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
 
   useEffect(() => {
+    // console.log(range);
     const fetchData = async () => {
       try {
         // promise.allSettled so they can fail independently.
@@ -161,7 +168,11 @@ export default function DataPage() {
         {/* Tab Content */}
       </div>
       {activeTab === "Overview" && (
-        <TableOverview filterInfo={filterText} requestCount={requestCount} />
+        <TableOverview
+          filterInfo={filterText}
+          requestCount={requestCount}
+          range={range}
+        />
       )}
       {activeTab === "Book Catalog" && (
         <>

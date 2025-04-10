@@ -33,11 +33,32 @@ export async function GET(req: Request) {
       // if no id, fetch all users
       // const users: User[] = await getAllUsersController();
       // return NextResponse.json(users);
+      const fromDateStr = searchParams.get("fromDate");
+      const endDateStr = searchParams.get("endDate");
+
+      const fromDate = fromDateStr ? new Date(fromDateStr) : undefined;
+      const endDate = endDateStr ? new Date(endDateStr) : undefined;
+
+      if (
+        (fromDate && isNaN(fromDate.getTime())) ||
+        (endDate && isNaN(endDate.getTime()))
+      ) {
+        return NextResponse.json(
+          { error: "Invalid date format" },
+          { status: 400 }
+        );
+      }
+
+      const effectiveFromDate = fromDate ?? new Date(0);
+      const effectiveEndDate = endDate ?? new Date();
+
       const { users, total, totalPages } = await getAllUsersController(
         page,
-        limit
-      ); //new
-      return NextResponse.json({ users, total, totalPages, page }); //new
+        limit,
+        effectiveFromDate,
+        effectiveEndDate
+      ); // new
+      return NextResponse.json({ users, total, totalPages, page }); // new
     }
   } catch (error) {
     if (error instanceof Error) {

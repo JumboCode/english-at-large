@@ -67,9 +67,13 @@ const DatePicker = ({
       {isOpen && (
         <div
           ref={popupRef}
-          className="absolute right-0 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-4 z-10 cursor-default"
+          className="flex flex-col absolute right-0 mt-2 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 p-4 z-10 cursor-default"
         >
           <DayPicker
+            captionLayout="dropdown"
+            startMonth={new Date(2000, 1)}
+            endMonth={new Date()}
+            defaultMonth={new Date(range?.to || new Date())}
             mode="range"
             disabled={{ after: new Date() }}
             selected={range}
@@ -80,17 +84,29 @@ const DatePicker = ({
             classNames={{
               month: "bg-gray-50 px-4 py-2 rounded-lg shadow-md",
               day: "text-center text-sm",
-              nav: "absolute right-2 py-3",
-              selected: ""
+              selected: "text-black",
+              chevron: "fill-[#202D74] ml-1",
+              nav: "flex flex-row absolute right-5 top-3",
+              range_start: "bg-[#202D74] text-white rounded-s-xl",
+              range_end: "bg-[#202D74] text-white rounded-e-xl",
+              today: "text-black",
             }}
-            
           />
-          <p className="mt-4 text-sm text-gray-600">
-            {range?.from && range?.to
-              ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
-              : "All time"}
-          </p>
-          <CommonButton label={"Reset"} onClick={() => {setRange(undefined)}} altStyle={"h-4 mt-3"} />
+          <div className="flex flex-row justify-between right-0">
+            <p className="mt-6 text-sm text-gray-600">
+              {range?.from && range?.to
+                ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+                : "All time"}
+            </p>
+            <CommonButton
+              label={"Reset"}
+              onClick={() => {
+                setRange(undefined);
+              }}
+              altStyle={"h-9 w-1/4 mt-3 bg-dark-blue border-color-white"}
+              altTextStyle="text-white"
+            />
+          </div>
         </div>
       )}
     </div>
