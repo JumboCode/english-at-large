@@ -3,6 +3,7 @@ import { Book, BookRequest, User, RequestStatus, Prisma } from "@prisma/client";
 import { RequestWithBookAndUser, validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
+import { MAX_REQUESTS } from "@/lib/util/types";
 import { checkSendGridLimits } from "@/lib/api/requests";
 
 /**
