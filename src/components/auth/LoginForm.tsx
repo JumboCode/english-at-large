@@ -11,7 +11,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { isLoaded, signIn } = useSignIn();
+  const { signIn } = useSignIn();
   const { isSignedIn } = useAuth();
   const router = useRouter();
 
@@ -27,10 +27,6 @@ const LoginForm = () => {
   };
 
   const handleLogin = async () => {
-    if (isLoading) {
-      return;
-    }
-
     try {
       setIsLoading(true);
 
@@ -57,10 +53,6 @@ const LoginForm = () => {
     }
   };
 
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  }
-  
   return (
     <>
       <div className="flex flex-col gap-y-4">
@@ -81,7 +73,9 @@ const LoginForm = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
+
       {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+
       <div className="flex flex-row justify-between pt-10 text-sm font-bold">
         <div className="flex gap-1 items-center">
           <input
@@ -93,14 +87,14 @@ const LoginForm = () => {
             Remember for 7 days
           </label>
         </div>
-
         <Link href="/forgot-password">Forgot password?</Link>
       </div>
+
       <CommonButton
         onClick={handleLogin}
         label={isLoading ? "Logging in..." : "Login"}
         altTextStyle="text-white"
-        altStyle={`${"bg-dark-blue"} mt-10 w-full`}
+        altStyle="bg-dark-blue mt-10 w-full"
         disabled={isLoading}
         type="submit"
       />
