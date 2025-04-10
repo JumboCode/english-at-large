@@ -3,7 +3,6 @@ import { Book, BookRequest, User, RequestStatus, Prisma } from "@prisma/client";
 import { RequestWithBookAndUser, validateRequestData } from "@/lib/util/types";
 import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
-import { MAX_REQUESTS } from "@/lib/util/types";
 import { checkSendGridLimits } from "@/lib/api/requests";
 
 /**
@@ -276,103 +275,103 @@ export const putRequestController = async (
           request.status !== RequestStatus.Hold
       );
 
-      // // check if user has exceeded limit
-      // const exceededLimit: boolean = borrowed && borrowed.length > MAX_REQUESTS;
+      // check if user has exceeded limit
+      const exceededLimit: boolean = borrowed && borrowed.length > MAX_REQUESTS;
 
-      // const tutorMsg = {
-      //   to: user.email,
-      //   from: "englishatlarge427@gmail.com",
-      //   subject: `Book Request Moved to Pickup: ${book.title}`,
-      //   text: `The following hold for: \n
-      //     Book Title: ${book.title} \n
-      //     Book ID: ${book.id} \n
-      //     which was placed on ${
-      //       requestData.requestedOn
-      //     } has been moved from hold to pickup.
-      //     Please ensure you arrive to retrieve it. \n\n
-      //     ${
-      //       exceededLimit
-      //         ? "However, you are currently at the max number of borrowed books. \
-      //       Please return a book before picking up this one. </strong>"
-      //         : ""
-      //     }`,
+      const tutorMsg = {
+        to: user.email,
+        from: "englishatlarge427@gmail.com",
+        subject: `Book Request Moved to Pickup: ${book.title}`,
+        text: `The following hold for: \n
+            Book Title: ${book.title} \n
+            Book ID: ${book.id} \n
+            which was placed on ${
+              requestData.requestedOn
+            } has been moved from hold to pickup.
+            Please ensure you arrive to retrieve it. \n\n
+            ${
+              exceededLimit
+                ? "However, you are currently at the max number of borrowed books. \
+              Please return a book before picking up this one. </strong>"
+                : ""
+            }`,
 
-      //   html: `<p> The following hold for: <br>
-      //     <strong> Book Title: </strong>  ${book.title} <br>
-      //     <strong> Book ID: </strong> ${book.id}  <br>
-      //     which was placed on <strong> ${
-      //       requestData.requestedOn
-      //     } </strong> has been moved
-      //     from hold to pickup. Please ensure you arrive to retrieve it. <br> <br>
-      //     ${
-      //       exceededLimit
-      //         ? "<strong> However, you are currently at the max number of borrowed books. \
-      //       Please return a book before picking up this one. </strong>"
-      //         : ""
-      //     } </p>`,
-      // };
+        html: `<p> The following hold for: <br>
+            <strong> Book Title: </strong>  ${book.title} <br>
+            <strong> Book ID: </strong> ${book.id}  <br>
+            which was placed on <strong> ${
+              requestData.requestedOn
+            } </strong> has been moved
+            from hold to pickup. Please ensure you arrive to retrieve it. <br> <br>
+            ${
+              exceededLimit
+                ? "<strong> However, you are currently at the max number of borrowed books. \
+              Please return a book before picking up this one. </strong>"
+                : ""
+            } </p>`,
+      };
 
-      // await sgMail.send(tutorMsg).catch((error: unknown) => {
-      //   console.error(error);
-      // });
+      await sgMail.send(tutorMsg).catch((error: unknown) => {
+        console.error(error);
+      });
 
-      // // Notify admins
-      // const admins = await prisma.user.findMany({
-      //   where: { role: UserRole.Admin },
-      // });
+      // Notify admins
+      const admins = await prisma.user.findMany({
+        where: { role: UserRole.Admin },
+      });
 
-      // if (admins) {
-      //   admins.map(async (user) => {
-      //     const email = user.email;
-      //     if (email) {
-      //       const adminMsg = {
-      //         to: email,
-      //         from: "englishatlarge427@gmail.com",
-      //         subject: `Request by ${
-      //           user.name ?? "[No Username]"
-      //         }: Hold to Pickup`,
+      if (admins) {
+        admins.map(async (user) => {
+          const email = user.email;
+          if (email) {
+            const adminMsg = {
+              to: email,
+              from: "englishatlarge427@gmail.com",
+              subject: `Request by ${
+                user.name ?? "[No Username]"
+              }: Hold to Pickup`,
 
-      //         text: `Holder Name: ${user.name ?? "[No Username]"} \n
-      //           Holder Email: ${user.email} \n
-      //           Holder ID: ${requestData.userId} \n
-      //           Book Held: ${requestData.bookTitle} \n
-      //           Book ID: ${requestData.bookId} \n
-      //           Hold Placed On: ${requestData.requestedOn} \n\n
-      //           The status of this request has been changed from Hold to Pickup.\n
-      //           Please ensure proper handling of request.`,
+              text: `Holder Name: ${user.name ?? "[No Username]"} \n
+                  Holder Email: ${user.email} \n
+                  Holder ID: ${requestData.userId} \n
+                  Book Held: ${requestData.bookTitle} \n
+                  Book ID: ${requestData.bookId} \n
+                  Hold Placed On: ${requestData.requestedOn} \n\n
+                  The status of this request has been changed from Hold to Pickup.\n
+                  Please ensure proper handling of request.`,
 
-      //         html: `<p>
-      //           <strong> Holder Name:</strong> ${
-      //             user.name ?? "[No Username]"
-      //           } <br>
-      //           <strong> Holder ID:</strong> ${requestData.userId} <br>
-      //           <strong>Book Held:</strong> ${requestData.bookTitle} <br>
-      //           <strong>Book ID: </strong>${requestData.bookId} <br>
-      //           <strong>Hold Placed On:</strong> ${
-      //             requestData.requestedOn
-      //           } <br><br>
-      //           The status of this request has been changed from <strong> Hold </strong>
-      //           to <strong> Pickup </strong>. <br>
-      //           Please ensure proper handling of request.
+              html: `<p>
+                  <strong> Holder Name:</strong> ${
+                    user.name ?? "[No Username]"
+                  } <br>
+                  <strong> Holder ID:</strong> ${requestData.userId} <br>
+                  <strong>Book Held:</strong> ${requestData.bookTitle} <br>
+                  <strong>Book ID: </strong>${requestData.bookId} <br>
+                  <strong>Hold Placed On:</strong> ${
+                    requestData.requestedOn
+                  } <br><br>
+                  The status of this request has been changed from <strong> Hold </strong>
+                  to <strong> Pickup </strong>. <br>
+                  Please ensure proper handling of request.
 
-      //           ${
-      //             exceededLimit
-      //               ? "<br> <br> <strong> This user has exceeded the maximum \
-      //                  number of requests. Please ensure that they return a \
-      //                  book before loaning this out. </strong>"
-      //               : ""
-      //           }
-      //           </p>`,
-      //       };
+                  ${
+                    exceededLimit
+                      ? "<br> <br> <strong> This user has exceeded the maximum \
+                         number of requests. Please ensure that they return a \
+                         book before loaning this out. </strong>"
+                      : ""
+                  }
+                  </p>`,
+            };
 
-      //       await sgMail.send(adminMsg).catch((error: unknown) => {
-      //         console.error(error);
-      //       });
-      //     }
-      //   });
+            await sgMail.send(adminMsg).catch((error: unknown) => {
+              console.error(error);
+            });
+          }
+        });
 
-      //   await Promise.all(admins);
-      // }
+        await Promise.all(admins);
+      }
     }
 
     return updatedRequest;

@@ -50,7 +50,9 @@ const Loans = () => {
 
   const positionFinder = (req: RequestWithBookAndUser) => {
     return req.book.requests.filter(
-      (currRequest) => currRequest.requestedOn < req.requestedOn && currRequest.status === RequestStatus.Hold
+      (currRequest) =>
+        currRequest.requestedOn < req.requestedOn &&
+        currRequest.status === RequestStatus.Hold
     ).length;
   };
 
@@ -76,8 +78,12 @@ const Loans = () => {
     switch (selectedValue) {
       case "Request Date":
         return a.requestedOn > b.requestedOn ? 1 : -1;
-      case "Return Date":
-        return a.returnedBy > b.returnedBy ? 1 : -1;
+      case "Due Date":
+      case "Due Date":
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1; // nulls go last
+        if (!b.dueDate) return -1;
+        return a.dueDate > b.dueDate ? 1 : -1;
       default:
         return a.requestedOn > b.requestedOn ? 1 : -1;
     }
@@ -113,6 +119,7 @@ const Loans = () => {
   ) => {
     try {
       await deleteReq(request);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
@@ -202,9 +209,7 @@ const Loans = () => {
                     {getAvailableCopies(request.book)} of {request.book?.copies}
                   </td>
 
-                  <td className="text-black">
-                    {positionFinder(request) + 1}
-                  </td>
+                  <td className="text-black">{positionFinder(request) + 1}</td>
 
                   <td className="text-black">
                     {dateToTimeString(request.requestedOn)}
