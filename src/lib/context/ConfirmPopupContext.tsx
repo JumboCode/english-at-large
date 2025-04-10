@@ -41,6 +41,7 @@ export enum ConfirmPopupTypes {
   USER = "user",
   RESOURCE = "resource",
   RETURNED = "as returned",
+  BORROWED = "as borrowed",
   HOLD = "a hold",
   ISBN_ERROR = "ISBN information could not be found",
 }

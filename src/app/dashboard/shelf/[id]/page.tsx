@@ -29,12 +29,15 @@ const Shelf = (props: { params: Promise<Params> }) => {
     const fetchRequests = async () => {
       const allUserRequests = await getUserRequests(user.id);
       const userLoans = allUserRequests?.filter(
-        (request) => request.status === RequestStatus.Requested
+        (request) =>
+          request.status === RequestStatus.Requested ||
+          request.status === RequestStatus.Borrowed ||
+          request.status === RequestStatus.Pickup
       );
       const userHolds = allUserRequests?.filter(
         (request) => request.status === RequestStatus.Hold
       );
-
+      console.log(userLoans);
       setLoans(userLoans ?? []);
       setHolds(userHolds ?? []);
     };

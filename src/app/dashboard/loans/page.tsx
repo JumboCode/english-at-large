@@ -44,7 +44,10 @@ const Loans = () => {
         case "Borrowed":
           return request.status === RequestStatus.Borrowed;
         default:
-          return request.status !== RequestStatus.Returned;
+          return (
+            request.status !== RequestStatus.Returned &&
+            request.status !== RequestStatus.Hold
+          );
       }
     },
     [selectedValue]

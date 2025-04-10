@@ -103,7 +103,7 @@ export const getRequestCount = async (
  */
 export const getUserRequests = async (
   userId: string
-): Promise<(BookRequest & { user: User; book: Book })[] | undefined> => {
+): Promise<RequestWithBookAndUser[] | undefined> => {
   try {
     const response = await axios.get(`/api/requests?userId=${userId}`);
     return response.data;

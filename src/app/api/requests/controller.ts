@@ -34,8 +34,12 @@ export const getAllRequestsController = async (
     const requests = await prisma.bookRequest.findMany({
       where,
       include: {
-        user: true,
-        book: true,
+        user: true, // Fetch the related User
+        book: {
+          include: {
+            requests: true,
+          },
+        }, // Fetch the related Book
       },
     });
 
@@ -61,7 +65,11 @@ export const getOneRequestController = async (
       where: { id: id },
       include: {
         user: true, // Fetch the related User
-        book: true, // Fetch the related Book
+        book: {
+          include: {
+            requests: true,
+          },
+        }, // Fetch the related Book
       },
     });
 
@@ -276,32 +284,32 @@ export const putRequestController = async (
         from: "englishatlarge427@gmail.com",
         subject: `Book Request Moved to Pickup: ${book.title}`,
         text: `The following hold for: \n
-          Book Title: ${book.title} \n
-          Book ID: ${book.id} \n
-          which was placed on ${
-            requestData.requestedOn
-          } has been moved from hold to pickup. 
-          Please ensure you arrive to retrieve it. \n\n
-          ${
-            exceededLimit
-              ? "However, you are currently at the max number of borrowed books. \
-            Please return a book before picking up this one. </strong>"
-              : ""
-          }`,
+            Book Title: ${book.title} \n
+            Book ID: ${book.id} \n
+            which was placed on ${
+              requestData.requestedOn
+            } has been moved from hold to pickup.
+            Please ensure you arrive to retrieve it. \n\n
+            ${
+              exceededLimit
+                ? "However, you are currently at the max number of borrowed books. \
+              Please return a book before picking up this one. </strong>"
+                : ""
+            }`,
 
         html: `<p> The following hold for: <br>
-          <strong> Book Title: </strong>  ${book.title} <br> 
-          <strong> Book ID: </strong> ${book.id}  <br>
-          which was placed on <strong> ${
-            requestData.requestedOn
-          } </strong> has been moved 
-          from hold to pickup. Please ensure you arrive to retrieve it. <br> <br>
-          ${
-            exceededLimit
-              ? "<strong> However, you are currently at the max number of borrowed books. \
-            Please return a book before picking up this one. </strong>"
-              : ""
-          } </p>`,
+            <strong> Book Title: </strong>  ${book.title} <br>
+            <strong> Book ID: </strong> ${book.id}  <br>
+            which was placed on <strong> ${
+              requestData.requestedOn
+            } </strong> has been moved
+            from hold to pickup. Please ensure you arrive to retrieve it. <br> <br>
+            ${
+              exceededLimit
+                ? "<strong> However, you are currently at the max number of borrowed books. \
+              Please return a book before picking up this one. </strong>"
+                : ""
+            } </p>`,
       };
 
       await sgMail.send(tutorMsg).catch((error: unknown) => {
@@ -325,36 +333,36 @@ export const putRequestController = async (
               }: Hold to Pickup`,
 
               text: `Holder Name: ${user.name ?? "[No Username]"} \n
-                Holder Email: ${user.email} \n
-                Holder ID: ${requestData.userId} \n
-                Book Held: ${requestData.bookTitle} \n
-                Book ID: ${requestData.bookId} \n
-                Hold Placed On: ${requestData.requestedOn} \n\n
-                The status of this request has been changed from Hold to Pickup.\n
-                Please ensure proper handling of request.`,
+                  Holder Email: ${user.email} \n
+                  Holder ID: ${requestData.userId} \n
+                  Book Held: ${requestData.bookTitle} \n
+                  Book ID: ${requestData.bookId} \n
+                  Hold Placed On: ${requestData.requestedOn} \n\n
+                  The status of this request has been changed from Hold to Pickup.\n
+                  Please ensure proper handling of request.`,
 
               html: `<p>
-                <strong> Holder Name:</strong> ${
-                  user.name ?? "[No Username]"
-                } <br>
-                <strong> Holder ID:</strong> ${requestData.userId} <br>
-                <strong>Book Held:</strong> ${requestData.bookTitle} <br>
-                <strong>Book ID: </strong>${requestData.bookId} <br>
-                <strong>Hold Placed On:</strong> ${
-                  requestData.requestedOn
-                } <br><br>
-                The status of this request has been changed from <strong> Hold </strong> 
-                to <strong> Pickup </strong>. <br>
-                Please ensure proper handling of request. 
-                
-                ${
-                  exceededLimit
-                    ? "<br> <br> <strong> This user has exceeded the maximum \
-                       number of requests. Please ensure that they return a \
-                       book before loaning this out. </strong>"
-                    : ""
-                }
-                </p>`,
+                  <strong> Holder Name:</strong> ${
+                    user.name ?? "[No Username]"
+                  } <br>
+                  <strong> Holder ID:</strong> ${requestData.userId} <br>
+                  <strong>Book Held:</strong> ${requestData.bookTitle} <br>
+                  <strong>Book ID: </strong>${requestData.bookId} <br>
+                  <strong>Hold Placed On:</strong> ${
+                    requestData.requestedOn
+                  } <br><br>
+                  The status of this request has been changed from <strong> Hold </strong>
+                  to <strong> Pickup </strong>. <br>
+                  Please ensure proper handling of request.
+
+                  ${
+                    exceededLimit
+                      ? "<br> <br> <strong> This user has exceeded the maximum \
+                         number of requests. Please ensure that they return a \
+                         book before loaning this out. </strong>"
+                      : ""
+                  }
+                  </p>`,
             };
 
             await sgMail.send(adminMsg).catch((error: unknown) => {
