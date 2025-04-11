@@ -63,15 +63,11 @@ const Loans = () => {
     }
   };
 
-  const requestFilter = (request: BookRequest) => {
-    switch (selectedValue) {
-      case "Pick-up":
-        return request.status === RequestStatus.Pickup;
-      case "Borrowed":
-        return request.status === RequestStatus.Borrowed;
-      default:
-        return request.status !== RequestStatus.Returned;
+  const requestFilter = (request: RequestWithBookAndUser) => {
+    if(getAvailableCopies(request.book)) {
+      markAsDone(request);
     }
+    return request;
   };
 
   const sortByDate = (a: BookRequest, b: BookRequest) => {
@@ -218,16 +214,6 @@ const Loans = () => {
                   <td>
                     <div className="flex justify-center items-center">
                       {/* Add in the functionality for waitlist position when it becomes available */}
-                      {getAvailableCopies(request.book) ? (
-                        <CommonButton
-                          label="Done"
-                          onClick={async () => {
-                            await markAsDone(request);
-                          }}
-                          altTextStyle="text-white"
-                          altStyle="bg-dark-blue"
-                        />
-                      ) : (
                         <CommonButton
                           label="Remove Hold"
                           onClick={async () => {
@@ -236,7 +222,6 @@ const Loans = () => {
                           altTextStyle="text-white"
                           altStyle="bg-[#C00F0C]"
                         />
-                      )}
                     </div>
                   </td>
                 </tr>
