@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import DisplayFolder from "@/components/common/DisplayFolder";
-import axios from "axios";
+import { getAllSubFolders, getFolderResources } from "@/lib/api/drive";
 
 const OnlineResourcesPage = () => {
   const [resourceFolders, setResourceFolders] = useState<
@@ -43,14 +43,17 @@ const OnlineResourcesPage = () => {
 
   useEffect(() => {
     const fetchSubFolders = async () => {
+      console.log("Wee im in the useeffect");
+
+      const folders = await getAllSubFolders(
+        "1K6S8q9I9Qk0O0Dikf3sME9K_sHEwXSTs"
+      );
       const counted = await Promise.all(
-        resourceFolders.map(async (folder) => {
+        folders.map(async (folder) => {
           if (folder.id) {
-            const response = await axios.get(
-              `https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents&key=${process.env.NEXT_PUBLIC_DRIVE_API_KEY}`
-            );
+            const response = await getFolderResources(folder.id);
             if (response) {
-              folder.count = response.data.files.length;
+              folder.count = response;
             }
           }
           return folder;
@@ -60,7 +63,7 @@ const OnlineResourcesPage = () => {
     };
 
     fetchSubFolders();
-  });
+  }, []);
 
   return (
     <div>

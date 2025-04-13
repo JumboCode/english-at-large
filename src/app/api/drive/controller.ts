@@ -1,22 +1,39 @@
-// import { prisma } from "@/lib/prisma";
+import axios from "axios";
 
-// export const getDriveController = async (string: folderId): Promise<number> => {
-//   try {
-// //     if (bookId === undefined || bookId === null) {
-// //       throw new Error("Missing book id");
-// //     }
+export const getCountController = async (folderId: string): Promise<number> => {
+  try {
+    if (folderId === undefined) {
+      throw new Error("Missing folder id");
+    }
+    const response = await axios.get(
+      `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${process.env.DRIVE_API_KEY}`
+    );
 
-// //     const findBook = await prisma.book.findUnique({
-// //       where: { id: bookId },
-// //       include: {
-// //         requests: true,
-// //       },
-// //     });
+    if (response) {
+      return response.data.files.length;
+    } else throw new Error("folder not found!");
+  } catch (error) {
+    console.error("Error fetching book: ", error);
+    throw error;
+  }
+};
 
-// //     if (findBook) return findBook;
-// //     else throw new Error("Book not found!");
-// //   } catch (error) {
-// //     console.error("Error fetching book: ", error);
-// //     throw error;
-// //   }
-// };
+export const getSubFoldersController = async (
+  folderId: string
+): Promise<number> => {
+  try {
+    if (folderId === undefined) {
+      throw new Error("Missing folder id");
+    }
+    const response = await axios.get(
+      `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${process.env.DRIVE_API_KEY}`
+    );
+
+    if (response) {
+      return response.data.files.length;
+    } else throw new Error("folder not found!");
+  } catch (error) {
+    console.error("Error fetching book: ", error);
+    throw error;
+  }
+};
