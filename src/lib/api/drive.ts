@@ -3,7 +3,7 @@ import { DriveFolderType } from "../util/types";
 
 export const getFolderResources = async (folderId: string): Promise<number> => {
   try {
-    const response = await axios.get(`/api/drive/?id=${folderId}`); // Using template literals for cleaner URL construction
+    const response = await axios.get(`/api/drive/?id=${folderId}&type=count`); // Using template literals for cleaner URL construction
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -18,7 +18,7 @@ export const getAllSubFolders = async (
   folderId: string
 ): Promise<DriveFolderType[]> => {
   try {
-    const response = await axios.get(`/api/drive/?id=${folderId}`); // Using template literals for cleaner URL construction
+    const response = await axios.get(`/api/drive/?id=${folderId}&type=sub`); // Using template literals for cleaner URL construction
     return response.data;
   } catch (error) {
     if (error instanceof Error) {

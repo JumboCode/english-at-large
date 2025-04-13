@@ -7,59 +7,36 @@ import { getAllSubFolders, getFolderResources } from "@/lib/api/drive";
 const OnlineResourcesPage = () => {
   const [resourceFolders, setResourceFolders] = useState<
     { name: string; id: string; count: number }[]
-  >([
-    {
-      id: "",
-      name: "Beginner",
-      count: 0,
-    },
-    {
-      id: "",
-      name: "High Beginner",
-      count: 0,
-    },
-    {
-      id: "",
-      name: "Low Intermediate",
-      count: 0,
-    },
-    {
-      id: "15n8IHcAu7yYQa1HBmyJRTjfLP3aBUK0S",
-      name: "Intermediate",
-      count: 0,
-    },
-    {
-      id: "",
-      name: "High Intermediate",
-      count: 0,
-    },
-    { id: "", name: "Advanced", count: 0 },
-    {
-      id: "1K6S8q9I9Qk0O0Dikf3sME9K_sHEwXSTs",
-      name: "Other",
-      count: 0,
-    },
-  ]);
+  >([]);
 
   useEffect(() => {
     const fetchSubFolders = async () => {
-      console.log("Wee im in the useeffect");
-
       const folders = await getAllSubFolders(
         "1K6S8q9I9Qk0O0Dikf3sME9K_sHEwXSTs"
       );
-      const counted = await Promise.all(
-        folders.map(async (folder) => {
-          if (folder.id) {
-            const response = await getFolderResources(folder.id);
-            if (response) {
-              folder.count = response;
+      const resources: { name: string; id: string; count: number }[] = [];
+
+      await Promise.all(
+        folders
+          .filter(
+            (folder) => folder.mimeType === "application/vnd.google-apps.folder"
+          )
+          .map(async (folder) => {
+            if (folder.id) {
+              const response = await getFolderResources(folder.id);
+              if (response) {
+                const resource = {
+                  name: folder.name,
+                  id: folder.id,
+                  count: response,
+                };
+                resources.push(resource);
+              }
             }
-          }
-          return folder;
-        })
+            return folder;
+          })
       );
-      setResourceFolders(counted);
+      setResourceFolders(resources);
     };
 
     fetchSubFolders();

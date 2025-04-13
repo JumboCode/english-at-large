@@ -6,9 +6,16 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const type = searchParams.get("type");
+
     if (id) {
-      const user = await getCountController(id);
-      return NextResponse.json(user);
+      let response;
+      if (type === "count") {
+        response = await getCountController(id);
+      } else if (type === "sub") {
+        response = await getSubFoldersController(id);
+      }
+      return NextResponse.json(response);
     } else {
       throw new Error("No folderID provided");
     }

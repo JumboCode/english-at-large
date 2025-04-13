@@ -1,3 +1,4 @@
+import { DriveFolderType } from "@/lib/util/types";
 import axios from "axios";
 
 export const getCountController = async (folderId: string): Promise<number> => {
@@ -20,7 +21,7 @@ export const getCountController = async (folderId: string): Promise<number> => {
 
 export const getSubFoldersController = async (
   folderId: string
-): Promise<number> => {
+): Promise<DriveFolderType> => {
   try {
     if (folderId === undefined) {
       throw new Error("Missing folder id");
@@ -30,7 +31,7 @@ export const getSubFoldersController = async (
     );
 
     if (response) {
-      return response.data.files.length;
+      return response.data.files;
     } else throw new Error("folder not found!");
   } catch (error) {
     console.error("Error fetching book: ", error);
