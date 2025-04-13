@@ -47,7 +47,7 @@ const OnlineResourcesPage = () => {
         resourceFolders.map(async (folder) => {
           if (folder.id) {
             const response = await axios.get(
-              `https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents&key=${process.env.DRIVE_API_KEY}`
+              `https://www.googleapis.com/drive/v3/files?q='${folder.id}'+in+parents&key=${process.env.NEXT_PUBLIC_DRIVE_API_KEY}`
             );
             if (response) {
               folder.count = response.data.files.length;

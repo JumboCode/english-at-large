@@ -19,7 +19,7 @@ interface SimilarBookPopupProps {
 const SimilarBookPopup = (props: SimilarBookPopupProps) => {
   const { originalBook, bookList, isOpen, exit } = props;
   const { setConfirmPopup } = usePopup();
-  const [updatingBook, setUpdatingBook] = useState<number>(-1);
+  const [updatingBook, setUpdatingBook] = useState<number>(0);
 
   const updateSimilar = async (index: number) => {
     if (!bookList[index].isbn.includes(originalBook.isbn[0])) {
