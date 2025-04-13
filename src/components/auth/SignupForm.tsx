@@ -176,6 +176,7 @@ const SignupForm = () => {
   };
 
   if (!inviteToken || !formData.email) {
+    {/*TODO: add page for when there is no invite token or form data has no email */}
     return <div></div>;
   } else {
     return (
