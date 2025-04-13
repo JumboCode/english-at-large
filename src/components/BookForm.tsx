@@ -55,6 +55,7 @@ const BookForm = (props: BookFormProps) => {
   const [isInvalidCopies, setisInvalidCopies] = useState<boolean>(false);
 
   const { setConfirmPopup } = usePopup();
+  const [isInvalidDate, setIsInvalidDate] = useState<boolean>(false);
 
   const addToISBN = (isbn: string, updateBook: Omit<Book, "id">) => {
     if (updateBook.isbn.length === 0) {
@@ -129,6 +130,7 @@ const BookForm = (props: BookFormProps) => {
   ) => {
     const { name, value } = e.target;
   
+    
     if (name === "numPages") {
       // Allow empty string while typing
       setNumpages(value);
@@ -149,6 +151,16 @@ const BookForm = (props: BookFormProps) => {
   
       return;
     }
+
+    // if(name === "releaseDate"){
+    //   const today = new Date();
+    //   const theDate = 
+    //   today.setHours(0, 0, 0, 0); // strip time portion
+    //   const curr_value = new Date(value);
+    //   if(curr_value > today){
+
+    //   }
+    // }
   
     // default case for other fields
     const updatedValue = value;
@@ -222,6 +234,9 @@ const BookForm = (props: BookFormProps) => {
     try {
       let similarBooks = [];
       if (editBook) {
+        editBook.title = truncate(editBook.title, 58)
+        editBook.description = truncate(editBook.description, 140)
+        editBook.author = truncate(editBook.author, 58)
         const editedBook = await updateBook(editBook);
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
@@ -233,6 +248,9 @@ const BookForm = (props: BookFormProps) => {
           onSave(editedBook);
         }
       } else if (newBook) {
+        newBook.title = truncate(newBook.title, 58)
+        newBook.description = truncate(newBook.description, 140)
+        newBook.author = truncate(newBook.author, 58)
         const booksResult = await getAllBooks({ withStats: false });
         const allBooks = booksResult?.books ?? [];
         //checks if any similar books are returned, but should also ask the user
@@ -263,6 +281,27 @@ const BookForm = (props: BookFormProps) => {
       console.error(error);
     }
   };
+
+  const truncate = (description: string, max_val: number) => {
+    let new_description = description.split(" ")
+    let final_description = ""
+    for(let i = 0; i < new_description.length; i++){
+      
+      if (new_description[i].length > max_val){
+        for(let j = 0; j < new_description[i].length; j++){
+          final_description += new_description[i][j]
+          if (j % max_val === 0){
+            final_description += " "
+          }
+        }
+      } else{
+        final_description += new_description[i] + " "
+      }
+    }
+    return final_description
+  }
+
+  
 
   return (
     <div className="bg-white text-black absolute left-0 top-0 w-full h-full overflow-scroll block text-sm font-medium">
