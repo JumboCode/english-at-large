@@ -3,11 +3,8 @@ import {
   BookLevel,
   // BookSkills,
   BookType,
-  OnlineResource,
   Prisma,
   RequestStatus,
-  ResourceFormat,
-  ResourceTopic,
   User,
 } from "@prisma/client";
 import { BookRequest } from "@prisma/client";
@@ -256,38 +253,12 @@ export interface CustomChangeEvent<T> {
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
 
-export const newEmptyResource: Omit<OnlineResource, "id"> = {
-  createdAt: new Date(),
-  name: "",
-  link: "Hello",
-  level: BookLevel.Beginner,
-  topic: ResourceTopic.Culture,
-  skills: [],
-  format: ResourceFormat.Video,
+export type DriveFolderType = {
+  name: string;
+  id: string;
+  mimeType: string;
+  kind: string;
 };
-
-export function validateResourceData(
-  resourceData: Partial<OnlineResource>
-): boolean {
-  // Don't validate ID since sometimes you'll need to have
-  const requiredFields = [
-    "createdAt",
-    "name",
-    "link",
-    "level",
-    "topic",
-    "skills",
-    "format",
-  ] as const;
-
-  for (const field of requiredFields) {
-    if (!resourceData[field]) {
-      return false;
-    }
-  }
-
-  return true; // No errors
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////
