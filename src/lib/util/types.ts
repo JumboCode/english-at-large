@@ -75,7 +75,6 @@ export function getAvailableCopies(book: BookWithRequests): number {
       request.status === RequestStatus.Lost ||
       request.status === RequestStatus.Pickup
 
-      // Requested, Hold, Pickup and Returned don't make the book unavailable
     );
   }).length;
 
