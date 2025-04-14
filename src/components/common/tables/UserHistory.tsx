@@ -74,23 +74,26 @@ const UserHistory = (props: UserHistoryProps) => {
         placeholderText="Search by user name"
         setSearchData={setSearchData}
       />
-      <div className="px-16">
-        <table className="table-auto bg-white w-full">
+      {/* CHANGE 2: Update the px-16 to be responsive and add overflow handling */}
+      <div className="px-4 md:px-8 lg:px-16 overflow-x-auto">
+        {/* CHANGE 3: Make the table more stable with min-w-full */}
+        <table className="min-w-full table-auto bg-white">
           <thead>
             <tr className="bg-gray-100 h-[50px]">
-              <th className="text-left text-text-default-secondary px-3 w-[20%]">
+              {/* CHANGE 4: Remove percentage widths and use fixed widths or flexible ones */}
+              <th className="text-left text-text-default-secondary px-4 w-64">
                 Name
               </th>
-              <th className="text-left text-text-default-secondary w-[30%] pl-6">
+              <th className="text-left text-text-default-secondary px-4">
                 Book title
               </th>
-              <th className="text-left text-text-default-secondary w-[15%] pl-8">
+              <th className="text-left text-text-default-secondary px-4 w-40">
                 Requested on
               </th>
-              <th className="text-left text-text-default-secondary w-[10%] pl-2">
-                Return by
+              <th className="text-left text-text-default-secondary px-4 w-40">
+                Return on
               </th>
-              <th className="text-left text-text-default-secondary w-[15%] pl-6">
+              <th className="text-left text-text-default-secondary px-4 w-40">
                 Status
               </th>
             </tr>
@@ -99,52 +102,59 @@ const UserHistory = (props: UserHistoryProps) => {
             {subsetUsers.map((user, index) => {
               const userRequests = requestsByUser[user.id];
 
-              return (
-                <tr key={index} className="bg-white h-16">
-                  <td className="pl-3 w-[20%] align-top py-3">
-                    <div className="flex flex-col">
-                      <span style={{ color: "black" }}>{user.name}</span>
-                      <Link
-                        href={"mailto:" + user.email}
-                        className="text-text-default-secondary underline"
-                      >
-                        {user.email}
-                      </Link>
-                    </div>
+              // CHANGE 5: Restructure how requests are displayed
+              // Instead of using a grid inside a cell, create a row for each request
+              return userRequests.map((request, reqIndex) => (
+                <tr key={`${index}-${reqIndex}`} className="bg-white h-16">
+                  {/* Show user info only in the first row for this user */}
+                  {reqIndex === 0 ? (
+                    <td
+                      className="px-4 align-top py-4"
+                      rowSpan={userRequests.length}
+                    >
+                      <div className="flex flex-col">
+                        <span style={{ color: "black" }}>{user.name}</span>
+                        <Link
+                          href={"mailto:" + user.email}
+                          className="text-text-default-secondary underline"
+                        >
+                          {user.email}
+                        </Link>
+                      </div>
+                    </td>
+                  ) : null}
+
+                  {/* Book title */}
+                  <td className="px-4 py-4">
+                    <Link
+                      href={`books/${request.bookId}`}
+                      className="underline text-[#202D74]"
+                    >
+                      {request.bookTitle}
+                    </Link>
                   </td>
-                  <td colSpan={4} className="w-[80%] py-3">
-                    <div className="grid grid-cols-[40%_15%_20%_15%] gap-5">
-                      {userRequests.map((request, reqIndex) => (
-                        <React.Fragment key={reqIndex}>
-                          <Link
-                            href={`books/${request.bookId}`}
-                            className="underline text-[#202D74] pl-6"
-                          >
-                            {request.bookTitle}
-                          </Link>
 
-                          <div className="pl-10">
-                            {dateToTimeString(request.requestedOn)}
-                          </div>
+                  {/* Requested date */}
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    {dateToTimeString(request.requestedOn)}
+                  </td>
 
-                          <div className="pl-16">
-                            {request.returnedBy
-                              ? dateToTimeString(request.returnedBy)
-                              : "Not Returned Yet"}
-                          </div>
+                  {/* Return date */}
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    {request.returnedBy
+                      ? dateToTimeString(request.returnedBy)
+                      : "Not Returned Yet"}
+                  </td>
 
-                          <div>
-                            <LoanDropdown
-                              report={request}
-                              selectedValue={selectedValue}
-                            />
-                          </div>
-                        </React.Fragment>
-                      ))}
-                    </div>
+                  {/* Status dropdown */}
+                  <td className="px-4 py-4">
+                    <LoanDropdown
+                      report={request}
+                      selectedValue={selectedValue}
+                    />
                   </td>
                 </tr>
-              );
+              ));
             })}
           </tbody>
         </table>
