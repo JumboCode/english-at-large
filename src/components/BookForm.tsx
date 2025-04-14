@@ -60,8 +60,7 @@ const BookForm = (props: BookFormProps) => {
   const addToISBN = (isbn: string, updateBook: Omit<Book, "id">) => {
     if (updateBook.isbn.length === 0) {
       updateBook.isbn = [isbn];
-    }
-     else {
+    } else {
       if (!updateBook.isbn.includes(isbn)) {
         updateBook.isbn.push(isbn);
       }
@@ -123,15 +122,24 @@ const BookForm = (props: BookFormProps) => {
   }, [isbn, pullISBN]);
 
   useEffect(() => {
-    let bookToSave = null
-    if(existingBook){
-      bookToSave = editBook
+    let bookToSave = null;
+    if (existingBook) {
+      bookToSave = editBook;
     } else {
-      bookToSave = newBook
+      bookToSave = newBook;
     }
-    setRequiredFields(bookToSave!.author.length != 0 && bookToSave!.title.length != 0 && bookToSave!.isbn.length != 0)
-    console.log(requiredFields, bookToSave!.author.length != 0, bookToSave!.title.length != 0, bookToSave!.isbn.length != 0)
-  }, [newBook, editBook])
+    setRequiredFields(
+      bookToSave!.author.length != 0 &&
+        bookToSave!.title.length != 0 &&
+        bookToSave!.isbn.length != 0
+    );
+    console.log(
+      requiredFields,
+      bookToSave!.author.length != 0,
+      bookToSave!.title.length != 0,
+      bookToSave!.isbn.length != 0
+    );
+  }, [newBook, editBook]);
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -141,42 +149,53 @@ const BookForm = (props: BookFormProps) => {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-  
-    
+
     if (name === "numPages") {
       // Allow empty string while typing
       setNumpages(value);
-  
+
       const parsed = value === "" ? 0 : Number(value);
-      
+
       if (existingBook) {
-        setEditBook((prevBook) => ({
-          ...prevBook,
-          [name]: parsed,
-        }) as BookWithRequests);
+        setEditBook(
+          (prevBook) =>
+            ({
+              ...prevBook,
+              [name]: parsed,
+            } as BookWithRequests)
+        );
       } else if (newBook) {
-        setNewBook((prevBook) => ({
-          ...prevBook,
-          [name]: parsed,
-        }) as Omit<Book, "id">);
+        setNewBook(
+          (prevBook) =>
+            ({
+              ...prevBook,
+              [name]: parsed,
+            } as Omit<Book, "id">)
+        );
       }
-  
+
       return;
     }
-    
+
     // default case for other fields
     const updatedValue = value;
-  
+
     if (existingBook) {
-      setEditBook((prevBook) => ({
-        ...prevBook,
-        [name]: updatedValue,
-      }) as BookWithRequests);
+      setEditBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: updatedValue,
+          } as BookWithRequests)
+      );
     } else if (newBook) {
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        [name]: updatedValue,
-      }) as Omit<Book, "id">);
+      setNewBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: updatedValue,
+          } as Omit<Book, "id">)
+      );
     }
   };
 
@@ -278,8 +297,6 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
-  
-
   return (
     <div className="bg-white text-black absolute left-0 top-0 w-full h-full overflow-scroll block text-sm font-medium">
       <form
@@ -303,9 +320,13 @@ const BookForm = (props: BookFormProps) => {
               />
               <CommonButton
                 label={existingBook ? "Save" : "Add Book"}
-                onClick= {requiredFields ? handleSave : () => {} }
+                onClick={requiredFields ? handleSave : () => {}}
                 altTextStyle="text-white"
-                altStyle= {requiredFields ? "bg-dark-blue" : "bg-dark-blue opacity-50 cursor-not-allowed"}
+                altStyle={
+                  requiredFields
+                    ? "bg-dark-blue"
+                    : "bg-dark-blue opacity-50 cursor-not-allowed"
+                }
               />
             </div>
           </div>
@@ -396,7 +417,6 @@ const BookForm = (props: BookFormProps) => {
               defaultValue={
                 editBook && editBook.releaseDate ? editBook.releaseDate : ""
               }
-              
             />
           </div>
           <div className="flex flex-col w-[50%] break-words">
@@ -417,7 +437,10 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div>
-          <label htmlFor="description" className="block text-lg ml-[5%] mb-2 max-w-[75vw]">
+          <label
+            htmlFor="description"
+            className="block text-lg ml-[5%] mb-2 max-w-[75vw]"
+          >
             Description
           </label>
           <textarea
@@ -521,7 +544,7 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div>
-          <div className = "mb-4"> 
+          <div className="mb-4">
             <p className="block text-lg ml-[5%] mb-2">Skills</p>
             <div className="flex flex-wrap gap-x-4 gap-y-4 ml-[5%] mr-[5%] items-center">
               {skills.map((bookSkill, index) => {
@@ -539,7 +562,6 @@ const BookForm = (props: BookFormProps) => {
               })}
             </div>
           </div>
-          
         </div>
       </form>
     </div>
