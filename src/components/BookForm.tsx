@@ -55,12 +55,13 @@ const BookForm = (props: BookFormProps) => {
   const [isInvalidCopies, setisInvalidCopies] = useState<boolean>(false);
 
   const { setConfirmPopup } = usePopup();
-  const [isInvalidDate, setIsInvalidDate] = useState<boolean>(false);
+  const [requiredFields, setRequiredFields] = useState<boolean>(false);
 
   const addToISBN = (isbn: string, updateBook: Omit<Book, "id">) => {
     if (updateBook.isbn.length === 0) {
       updateBook.isbn = [isbn];
-    } else {
+    }
+     else {
       if (!updateBook.isbn.includes(isbn)) {
         updateBook.isbn.push(isbn);
       }
@@ -121,6 +122,17 @@ const BookForm = (props: BookFormProps) => {
     }
   }, [isbn, pullISBN]);
 
+  useEffect(() => {
+    let bookToSave = null
+    if(existingBook){
+      bookToSave = editBook
+    } else {
+      bookToSave = newBook
+    }
+    setRequiredFields(bookToSave!.author.length != 0 && bookToSave!.title.length != 0 && bookToSave!.isbn.length != 0)
+    console.log(requiredFields, bookToSave!.author.length != 0, bookToSave!.title.length != 0, bookToSave!.isbn.length != 0)
+  }, [newBook, editBook])
+
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
     e:
@@ -151,17 +163,7 @@ const BookForm = (props: BookFormProps) => {
   
       return;
     }
-
-    // if(name === "releaseDate"){
-    //   const today = new Date();
-    //   const theDate = 
-    //   today.setHours(0, 0, 0, 0); // strip time portion
-    //   const curr_value = new Date(value);
-    //   if(curr_value > today){
-
-    //   }
-    // }
-  
+    
     // default case for other fields
     const updatedValue = value;
   
@@ -234,9 +236,6 @@ const BookForm = (props: BookFormProps) => {
     try {
       let similarBooks = [];
       if (editBook) {
-        editBook.title = truncate(editBook.title, 58)
-        editBook.description = truncate(editBook.description, 140)
-        editBook.author = truncate(editBook.author, 58)
         const editedBook = await updateBook(editBook);
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
@@ -248,9 +247,6 @@ const BookForm = (props: BookFormProps) => {
           onSave(editedBook);
         }
       } else if (newBook) {
-        newBook.title = truncate(newBook.title, 58)
-        newBook.description = truncate(newBook.description, 140)
-        newBook.author = truncate(newBook.author, 58)
         const booksResult = await getAllBooks({ withStats: false });
         const allBooks = booksResult?.books ?? [];
         //checks if any similar books are returned, but should also ask the user
@@ -282,25 +278,6 @@ const BookForm = (props: BookFormProps) => {
     }
   };
 
-  const truncate = (description: string, max_val: number) => {
-    let new_description = description.split(" ")
-    let final_description = ""
-    for(let i = 0; i < new_description.length; i++){
-      
-      if (new_description[i].length > max_val){
-        for(let j = 0; j < new_description[i].length; j++){
-          final_description += new_description[i][j]
-          if (j % max_val === 0){
-            final_description += " "
-          }
-        }
-      } else{
-        final_description += new_description[i] + " "
-      }
-    }
-    return final_description
-  }
-
   
 
   return (
@@ -326,9 +303,9 @@ const BookForm = (props: BookFormProps) => {
               />
               <CommonButton
                 label={existingBook ? "Save" : "Add Book"}
-                onClick={handleSave}
+                onClick= {requiredFields ? handleSave : () => {} }
                 altTextStyle="text-white"
-                altStyle="bg-dark-blue"
+                altStyle= {requiredFields ? "bg-dark-blue" : "bg-dark-blue opacity-50 cursor-not-allowed"}
               />
             </div>
           </div>
@@ -371,7 +348,7 @@ const BookForm = (props: BookFormProps) => {
           />
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="author" className="text-lg mb-2">
               Author(s)
             </label>
@@ -379,6 +356,7 @@ const BookForm = (props: BookFormProps) => {
               type="text"
               id="author"
               name="author"
+              required
               className={
                 "text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " +
                 (newBook.author ? "bg-blue-100" : null)
@@ -387,7 +365,7 @@ const BookForm = (props: BookFormProps) => {
               value={editBook ? editBook.author : newBook.author}
             />
           </div>
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="publisher" className="text-lg mb-2">
               Publisher(s)
             </label>
@@ -405,7 +383,7 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="releaseDate" className="text-lg mb-2">
               Release Date
             </label>
@@ -418,9 +396,10 @@ const BookForm = (props: BookFormProps) => {
               defaultValue={
                 editBook && editBook.releaseDate ? editBook.releaseDate : ""
               }
+              
             />
           </div>
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="pages" className="text-lg mb-2">
               No. of pages
             </label>
@@ -438,14 +417,14 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div>
-          <label htmlFor="description" className="block text-lg ml-[5%] mb-2">
+          <label htmlFor="description" className="block text-lg ml-[5%] mb-2 max-w-[75vw]">
             Description
           </label>
           <textarea
             id="description"
             name="description"
             className={
-              "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-15 font-normal " +
+              "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-15 font-normal" +
               (newBook.description ? "bg-blue-100" : null)
             }
             onChange={bookChangeHandler}
@@ -453,7 +432,7 @@ const BookForm = (props: BookFormProps) => {
           ></textarea>
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="level" className="text-lg mb-2">
               Level
             </label>
@@ -474,7 +453,7 @@ const BookForm = (props: BookFormProps) => {
               })}
             </select>
           </div>
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="bookType" className="text-lg mb-2">
               Type
             </label>
