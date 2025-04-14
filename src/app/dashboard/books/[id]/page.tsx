@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, use, useMemo } from "react";
+import React, { useEffect, useState, use, useMemo} from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
@@ -17,6 +17,8 @@ import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import { useRouter } from "next/navigation";
+
 type Params = Promise<{ id: string }>;
 
 /**
@@ -38,10 +40,14 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
 
+  const router = useRouter();
   useEffect(() => {
     const fetchBook = async () => {
       const book = await getOneBook(+(await params).id);
-      setBook(book || null);
+      if (!book){
+        router.replace("/dashboard");
+      }
+      setBook(book || null); 
     };
     fetchBook();
   }, [params]);
