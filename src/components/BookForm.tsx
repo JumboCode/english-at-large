@@ -335,7 +335,7 @@ const BookForm = (props: BookFormProps) => {
         {isbn ? (
           <div>
             <label htmlFor="isbn" className="block text-lg ml-[5%] mb-2">
-              ISBN Number
+              ISBN Number<span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="text"
@@ -353,7 +353,7 @@ const BookForm = (props: BookFormProps) => {
         ) : null}
         <div className="mt-4">
           <label htmlFor="title" className="block text-lg ml-[5%] mb-2">
-            Title
+            Title<span className="text-red-500 ml-1">*</span>
           </label>
           <input
             type="text"
@@ -371,7 +371,7 @@ const BookForm = (props: BookFormProps) => {
         <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="author" className="text-lg mb-2">
-              Author(s)
+              Author(s)<span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="text"
