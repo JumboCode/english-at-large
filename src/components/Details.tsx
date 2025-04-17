@@ -29,6 +29,7 @@ const BookDetail = (props: DetailProps) => {
     altStyle,
     altWidth,
   } = props;
+
   return (
     <div className={`flex row-span-2 my-5 ${altStyle}`}>
       <div className={`font-medium ${lineSpacing} ${fontSize}`}>
@@ -47,7 +48,7 @@ const BookDetail = (props: DetailProps) => {
           {[...new Set(isbn)].join(", ")}
         </div>
         <div className={`relative ${altWidth}`}>{publisher}</div>{" "}
-        <div className={`relative`}>{`${releaseDate ?? "1/1/1900"}`} </div>
+        <div className={`relative`}>{`${releaseDate ?? "None"}`} </div>
         <div className={`relative ${altWidth}`}>
           {copies}, {availableCopies} available
         </div>
