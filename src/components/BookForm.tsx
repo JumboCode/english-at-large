@@ -133,7 +133,7 @@ const BookForm = (props: BookFormProps) => {
       // Allow empty string while typing
       setNumpages(value);
   
-      const parsed = value === "" ? 0 : Number(value);
+      const parsed = value === "" ? 0 : Math.max(Number(value), 0);
       
       if (existingBook) {
         setEditBook((prevBook) => ({

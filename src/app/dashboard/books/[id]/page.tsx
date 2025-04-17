@@ -196,7 +196,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                 <div className="mt-5 font-[family-name:var(--font-rubik)]">
                   <BookDetail
                     isbn={book.isbn.length !==  0 ? book.isbn : ["None"]}
-                    publisher={book.publisher}
+                    publisher={book.publisher ? book.publisher : "None"}
                     releaseDate={book.releaseDate ? book.releaseDate : "None"}
                     copies={book.copies}
                     numPages={book.numPages}
