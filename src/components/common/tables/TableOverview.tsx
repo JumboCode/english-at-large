@@ -181,25 +181,45 @@ const TableOverview = (props: TableOverviewProps) => {
               height="100%"
               style={{ background: "transparent" }}
               data={[
-                ["Skill", "Count", { role: "style" }],
-                ["Grammar", mapSkills.get("Grammar") ?? 0, "#7890CD"],
                 [
-                  "Vocab Building",
+                  { label: "Skill", id: "Skill" },
+                  { label: "Count", id: "Count" },
+                  { role: "style" },
+                ],
+                [
+                  { v: "Grammar", f: "Grammar" },
+                  mapSkills.get("Grammar") ?? 0,
+                  "#7890CD",
+                ],
+                [
+                  { v: "Vocab Building", f: "Vocab Building" },
                   mapSkills.get("Vocab_Building") ?? 0,
                   "#7890CD",
                 ],
-                ["Reading", mapSkills.get("Reading") ?? 0, "#7890CD"],
-                ["Writing", mapSkills.get("Writing"), "#7890CD"],
-                ["Speaking", mapSkills.get("Speaking") ?? 0, "#7890CD"],
                 [
-                  "Listening",
-                  mapSkills.get("Listening") ?? 0,
-                  "color: #7890CD",
+                  { v: "Reading", f: "Reading" },
+                  mapSkills.get("Reading") ?? 0,
+                  "#7890CD",
                 ],
                 [
-                  "Pronounciation",
+                  { v: "Writing", f: "Writing" },
+                  mapSkills.get("Writing") ?? 0,
+                  "#7890CD",
+                ],
+                [
+                  { v: "Speaking", f: "Speaking" },
+                  mapSkills.get("Speaking") ?? 0,
+                  "#7890CD",
+                ],
+                [
+                  { v: "Listening", f: "Listening" },
+                  mapSkills.get("Listening") ?? 0,
+                  "#7890CD",
+                ],
+                [
+                  { v: "Pronunciation", f: "Pronunciation" },
                   mapSkills.get("Pronounciation") ?? 0,
-                  "color: #7890CD",
+                  "#7890CD",
                 ],
               ]}
               options={{
@@ -208,7 +228,7 @@ const TableOverview = (props: TableOverviewProps) => {
                     fontName: "Rubik",
                   },
                 },
-                chartArea: { top: 10, width: "100%", height: "70%" },
+                chartArea: { top: 10, width: "100%", height: "65%" },
                 legend: { position: "none" },
                 vAxis: {
                   textPosition: "none",
@@ -224,7 +244,12 @@ const TableOverview = (props: TableOverviewProps) => {
                     fontWeight: 5,
                     color: "#000000",
                   },
+                  maxAlternation: 2,
+                  showTextEvery: 1,
+                  minTextSpacing: 0,
+                  title: "",
                 },
+                bar: { groupWidth: "70%" },
               }}
             />
           )}

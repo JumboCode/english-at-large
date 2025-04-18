@@ -6,7 +6,7 @@ import { Book, BookRequest, User, RequestStatus } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
-import { deleteRequest, getRequests, updateRequest } from "@/lib/api/requests";
+import { deleteRequest, getRequests } from "@/lib/api/requests";
 // import LoanDropdown from "@/components/common/forms/LoanDropdown";
 import {
   emptyRequest,
@@ -41,12 +41,13 @@ const Loans = () => {
         request.user?.email?.toLowerCase().includes(searchData))
   );
 
-  const updateReq = async (req: BookRequest) => {
-    await updateRequest(req);
-    if (req) {
-      setOneRequest(req);
-    }
-  };
+  // note: see markAsDone function
+  // const updateReq = async (req: BookRequest) => {
+  //   await updateRequest(req);
+  //   if (req) {
+  //     setOneRequest(req);
+  //   }
+  // };
 
   const positionFinder = (req: RequestWithBookAndUser) => {
     return req.book.requests.filter(
@@ -89,30 +90,29 @@ const Loans = () => {
     }
   };
 
-  const markAsDone = async (request: RequestWithBookAndUser) => {
-    const currentDate = new Date();
-    const futureDate = new Date(currentDate);
-    futureDate.setDate(futureDate.getDate() + 60);
-    try {
-      await updateReq({
-        ...request,
-        status: RequestStatus.Borrowed,
-        returnedBy: futureDate,
-      });
-      setConfirmPopup({
-        type: ConfirmPopupTypes.BORROWED,
-        action: ConfirmPopupActions.MARK,
-        success: true,
-      });
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      setConfirmPopup({
-        type: ConfirmPopupTypes.RETURNED,
-        action: ConfirmPopupActions.MARK,
-        success: false,
-      });
-    }
-  };
+  // functionality for forcing wait on loans coming off the waitlist to be clicked 'done' by an admin
+  // const markAsDone = async (request: RequestWithBookAndUser) => {
+  //   const currentDate = new Date();
+  //   try {
+  //     await updateReq({
+  //       ...request,
+  //       status: RequestStatus.Borrowed,
+  //       returnedBy: currentDate,
+  //     });
+  //     setConfirmPopup({
+  //       type: ConfirmPopupTypes.BORROWED,
+  //       action: ConfirmPopupActions.MARK,
+  //       success: true,
+  //     });
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //   } catch (error) {
+  //     setConfirmPopup({
+  //       type: ConfirmPopupTypes.RETURNED,
+  //       action: ConfirmPopupActions.MARK,
+  //       success: false,
+  //     });
+  //   }
+  // };
 
   const removeHold = async (
     request: BookRequest & { user: User; book: Book }
@@ -218,25 +218,14 @@ const Loans = () => {
                   <td>
                     <div className="flex justify-center items-center">
                       {/* Add in the functionality for waitlist position when it becomes available */}
-                      {getAvailableCopies(request.book) ? (
-                        <CommonButton
-                          label="Done"
-                          onClick={async () => {
-                            await markAsDone(request);
-                          }}
-                          altTextStyle="text-white"
-                          altStyle="bg-dark-blue"
-                        />
-                      ) : (
-                        <CommonButton
-                          label="Remove Hold"
-                          onClick={async () => {
-                            await removeHold(request);
-                          }}
-                          altTextStyle="text-white"
-                          altStyle="bg-[#C00F0C]"
-                        />
-                      )}
+                      <CommonButton
+                        label="Remove Hold"
+                        onClick={async () => {
+                          await removeHold(request);
+                        }}
+                        altTextStyle="text-white"
+                        altStyle="bg-[#C00F0C]"
+                      />
                     </div>
                   </td>
                 </tr>

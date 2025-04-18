@@ -45,7 +45,6 @@ const SignupForm = () => {
   const [isSignUpSuccessful, setIsSignUpSuccessful] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
 
-
   // Initial Clerk signup with invite token
   const clerkSignup = useCallback(async () => {
     if (!inviteToken) {
@@ -56,7 +55,6 @@ const SignupForm = () => {
     if (user) {
       await signOut();
     }
-
 
     if (!isLoaded || attemptedSignup) return;
 
@@ -85,7 +83,16 @@ const SignupForm = () => {
       }
       setAttemptedSignup(true);
     }
-  }, [attemptedSignup, inviteToken, isLoaded, setActive, signUp, router, signOut, user]);
+  }, [
+    attemptedSignup,
+    inviteToken,
+    isLoaded,
+    setActive,
+    signUp,
+    router,
+    signOut,
+    user,
+  ]);
 
   useEffect(() => {
     if (!attemptedSignup) {
@@ -168,14 +175,9 @@ const SignupForm = () => {
     }));
   };
 
-  if (!inviteToken) {
-    return <p>No invite found.</p>;
-  } else if (!formData.email) {
-    return (
-      <div>
-        <p>loading...</p>
-      </div>
-    );
+  if (!inviteToken || !formData.email) {
+    {/*TODO: add page for when there is no invite token or form data has no email */}
+    return <div></div>;
   } else {
     return (
       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center p-8 pb-20 sm:p-20 font-[family-name:var(--font-geist-sans)]">
