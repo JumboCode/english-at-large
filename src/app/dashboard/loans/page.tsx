@@ -16,6 +16,7 @@ import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
+import LoanStatusTag from "@/components/common/LoanStatusTag";
 
 const Loans = () => {
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
@@ -57,13 +58,16 @@ const Loans = () => {
     switch (selectedValue) {
       case "Request Date":
         return a.requestedOn > b.requestedOn ? 1 : -1;
-      case "Return Date": {
-        const dateA = a.returnedBy ? new Date(a.returnedBy) : new Date();
-        const dateB = b.returnedBy ? new Date(b.returnedBy) : new Date();
+      case "Due Date": {
+        const dateA = a.dueDate ? new Date(a.dueDate) : new Date();
+        const dateB = b.dueDate ? new Date(b.dueDate) : new Date();
         return dateB.getTime() - dateA.getTime(); // most recent first
       }
-      default:
-        return a.requestedOn > b.requestedOn ? 1 : -1;
+      default: {
+        const dateA = a.dueDate ? new Date(a.dueDate) : new Date();
+        const dateB = b.dueDate ? new Date(b.dueDate) : new Date();
+        return dateB.getTime() - dateA.getTime(); // most recent first
+      }
     }
   };
 
@@ -122,7 +126,7 @@ const Loans = () => {
       <SearchBar
         button={
           <CommonDropdown
-            items={["Request Date", "Return Date", "Pick-up", "Borrowed"]}
+            items={["Request Date", "Due Date", "Pick-up", "Borrowed"]}
             altButtonStyle="min-w-40"
             buttonText={"Sort by"}
             setFilter={setSelectedValue}
@@ -145,7 +149,7 @@ const Loans = () => {
                 Requested On
               </th>
               <th className="w-1/6  text-left text-text-default-secondary">
-                Return By
+                Due Date
               </th>
               <th className="w-1/6 text-left text-text-default-secondary">
                 Status
@@ -186,29 +190,35 @@ const Loans = () => {
                   </td>
 
                   <td className="text-black">
-                    {request.returnedBy
-                      ? dateToTimeString(request.returnedBy)
-                      : "Not Returned Yet"}
+                    {request.dueDate
+                      ? dateToTimeString(request.dueDate)
+                      : "Due Date not Found"}
                   </td>
 
                   <td className="text-black">
-                    <LoanDropdown
-                      report={request}
-                      selectedValue={selectedValue}
-                    />
+                    {request.status !== RequestStatus.Borrowed ? (
+                      <LoanDropdown
+                        report={request}
+                        selectedValue={selectedValue}
+                      />
+                    ) : (
+                      <LoanStatusTag status={request.status} />
+                    )}
                   </td>
 
                   <td>
-                    <div className="flex justify-center items-center">
-                      <CommonButton
-                        label="Mark as Returned"
-                        onClick={async () => {
-                          await markAsReturned(request);
-                        }}
-                        altTextStyle="text-white"
-                        altStyle="bg-dark-blue"
-                      />
-                    </div>
+                    {request.status === RequestStatus.Borrowed ? (
+                      <div className="flex justify-center items-center">
+                        <CommonButton
+                          label="Mark as Returned"
+                          onClick={async () => {
+                            await markAsReturned(request);
+                          }}
+                          altTextStyle="text-white"
+                          altStyle="bg-dark-blue"
+                        />
+                      </div>
+                    ) : null}
                   </td>
                 </tr>
               ))}

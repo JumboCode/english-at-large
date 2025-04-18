@@ -80,7 +80,6 @@ const Loans = () => {
       case "Request Date":
         return a.requestedOn > b.requestedOn ? 1 : -1;
       case "Due Date":
-      case "Due Date":
         if (!a.dueDate && !b.dueDate) return 0;
         if (!a.dueDate) return 1; // nulls go last
         if (!b.dueDate) return -1;
@@ -144,14 +143,7 @@ const Loans = () => {
         Manage holds
       </h1>
       <SearchBar
-        button={
-          <CommonDropdown
-            items={["Request Date", "Return Date", "Pick-up", "Borrowed"]}
-            altButtonStyle="min-w-40"
-            buttonText={"Sort by"}
-            setFilter={setSelectedValue}
-          />
-        }
+        button={null}
         placeholderText="Search by name or email"
         setSearchData={setSearchData}
       />
