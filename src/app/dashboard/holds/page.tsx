@@ -40,12 +40,12 @@ const Loans = () => {
   );
 
   // note: see markAsDone function
-  const updateReq = async (req: BookRequest) => {
-    await updateRequest(req);
-    if (req) {
-      setOneRequest(req);
-    }
-  };
+  // const updateReq = async (req: BookRequest) => {
+  //   await updateRequest(req);
+  //   if (req) {
+  //     setOneRequest(req);
+  //   }
+  // };
 
   const positionFinder = (req: RequestWithBookAndUser) => {
     return req.book.requests.filter(
