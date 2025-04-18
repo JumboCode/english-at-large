@@ -153,43 +153,30 @@ const SendInvite = (props: SendInviteProps) => {
                   </MenuButton>
                 </div>
 
-                <MenuItems
-                  transition
-                  className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                >
-                  <div>
-                    <MenuItem>
-                      <button
-                        onClick={() => setRole(UserRole.Admin)}
-                        className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
-                      >
-                        <div className="flex justify-between">
-                          <p className="text-sm text-black">Admin</p>
-                          {role == UserRole.Admin ? (
-                            <SmallCheckIcon />
-                          ) : (
-                            <div />
-                          )}
-                        </div>
-                      </button>
-                    </MenuItem>
-                    <MenuItem>
-                      <button
-                        onClick={() => setRole(UserRole.Tutor)}
-                        className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
-                      >
-                        <div className="flex justify-between">
-                          <p className="text-sm text-black">Tutor</p>
-                          {role == UserRole.Tutor ? (
-                            <SmallCheckIcon />
-                          ) : (
-                            <div />
-                          )}
-                        </div>
-                      </button>
-                    </MenuItem>
-                  </div>
-                </MenuItems>
+                <div>
+                  <MenuItems
+                    transition
+                    className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                  >
+                    <div>
+                      {Object.values(UserRole).map((userRole) => (
+                        <MenuItem key={userRole}>
+                          <button
+                            onClick={() => setRole(userRole)}
+                            className="block px-4 py-2 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none w-full"
+                          >
+                            <div className="flex justify-between">
+                              <p className="text-sm text-black capitalize">
+                                {userRole}
+                              </p>
+                              {role === userRole ? <SmallCheckIcon /> : <div />}
+                            </div>
+                          </button>
+                        </MenuItem>
+                      ))}
+                    </div>
+                  </MenuItems>
+                </div>
               </Menu>
             </div>
             <hr />

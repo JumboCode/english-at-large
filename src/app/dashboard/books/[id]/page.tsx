@@ -17,6 +17,7 @@ import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import { UserRole } from "@prisma/client";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -108,7 +109,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         />
                       }
 
-                      {user?.role === "Admin" ? (
+                      {user?.role === UserRole.Admin ? (
                         <>
                           <CommonButton
                             label="Edit"
