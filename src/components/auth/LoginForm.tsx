@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
-  const [remember, setRemember] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,10 +20,6 @@ const LoginForm = () => {
       router.replace("/dashboard");
     }
   }, [isSignedIn, router]);
-
-  const handleRememberChange = () => {
-    setRemember((prev) => !prev);
-  };
 
   const handleLogin = async () => {
     try {
@@ -76,17 +71,7 @@ const LoginForm = () => {
 
       {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
 
-      <div className="flex flex-row justify-between pt-10 text-sm font-bold">
-        <div className="flex gap-1 items-center">
-          <input
-            type="checkbox"
-            checked={remember}
-            onChange={handleRememberChange}
-          />
-          <label onClick={handleRememberChange} className="cursor-pointer">
-            Remember for 7 days
-          </label>
-        </div>
+      <div className="flex flex-row justify-between pt-5 text-sm font-bold">
         <Link href="/forgot-password">Forgot password?</Link>
       </div>
 
@@ -94,7 +79,7 @@ const LoginForm = () => {
         onClick={handleLogin}
         label={isLoading ? "Logging in..." : "Login"}
         altTextStyle="text-white"
-        altStyle="bg-dark-blue mt-10 w-full"
+        altStyle="bg-dark-blue mt-5 w-full"
         disabled={isLoading}
         type="submit"
       />
