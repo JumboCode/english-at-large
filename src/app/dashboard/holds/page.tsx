@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
 import { Book, BookRequest, User, RequestStatus } from "@prisma/client";
-import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { deleteRequest, getRequests } from "@/lib/api/requests";
@@ -23,7 +22,6 @@ import {
 const Loans = () => {
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
-  const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
 
   const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
@@ -42,12 +40,12 @@ const Loans = () => {
   );
 
   // note: see markAsDone function
-  // const updateReq = async (req: BookRequest) => {
-  //   await updateRequest(req);
-  //   if (req) {
-  //     setOneRequest(req);
-  //   }
-  // };
+  const updateReq = async (req: BookRequest) => {
+    await updateRequest(req);
+    if (req) {
+      setOneRequest(req);
+    }
+  };
 
   const positionFinder = (req: RequestWithBookAndUser) => {
     return req.book.requests.filter(
@@ -64,29 +62,8 @@ const Loans = () => {
     }
   };
 
-  const requestFilter = (request: BookRequest) => {
-    switch (selectedValue) {
-      case "Pick-up":
-        return request.status === RequestStatus.Pickup;
-      case "Borrowed":
-        return request.status === RequestStatus.Borrowed;
-      default:
-        return request.status !== RequestStatus.Returned;
-    }
-  };
-
   const sortByDate = (a: BookRequest, b: BookRequest) => {
-    switch (selectedValue) {
-      case "Request Date":
-        return a.requestedOn > b.requestedOn ? 1 : -1;
-      case "Due Date":
-        if (!a.dueDate && !b.dueDate) return 0;
-        if (!a.dueDate) return 1; // nulls go last
-        if (!b.dueDate) return -1;
-        return a.dueDate > b.dueDate ? 1 : -1;
-      default:
-        return a.requestedOn > b.requestedOn ? 1 : -1;
-    }
+    return a.requestedOn > b.requestedOn ? 1 : -1;
   };
 
   // functionality for forcing wait on loans coming off the waitlist to be clicked 'done' by an admin
@@ -135,7 +112,7 @@ const Loans = () => {
     };
 
     getReqs();
-  }, [oneRequest, selectedValue]);
+  }, [oneRequest]);
 
   return (
     <div className="bg-white">
@@ -170,58 +147,55 @@ const Loans = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-solid">
-            {subsetRequest
-              .filter(requestFilter)
-              .sort(sortByDate)
-              .map((request, index) => (
-                <tr key={index} className="bg-white h-16">
-                  <td className="flex flex-col">
-                    <p className="text-black font-semibold">
-                      {request.user?.name}
-                    </p>
-                    <Link
-                      href={"mailto:" + request.user?.email}
-                      className="text-text-default-secondary underline max-w-max"
-                    >
-                      {request.user?.email}
-                    </Link>
-                  </td>
-                  <td className="underline" style={{ color: "#202d74" }}>
-                    <Link
-                      href={`books/${request.bookId}`}
-                      className="flex items-start space-x-4"
-                    >
-                      <div className="flex justify-between max-w-[99%] ">
-                        <p className="line-clamp-2">{request.book?.title}</p>
-                      </div>
-                    </Link>
-                  </td>
-
-                  <td className="text-black">
-                    {getAvailableCopies(request.book)} of {request.book?.copies}
-                  </td>
-
-                  <td className="text-black">{positionFinder(request) + 1}</td>
-
-                  <td className="text-black">
-                    {dateToTimeString(request.requestedOn)}
-                  </td>
-
-                  <td>
-                    <div className="flex justify-center items-center">
-                      {/* Add in the functionality for waitlist position when it becomes available */}
-                      <CommonButton
-                        label="Remove Hold"
-                        onClick={async () => {
-                          await removeHold(request);
-                        }}
-                        altTextStyle="text-white"
-                        altStyle="bg-[#C00F0C]"
-                      />
+            {subsetRequest.sort(sortByDate).map((request, index) => (
+              <tr key={index} className="bg-white h-16">
+                <td className="flex flex-col">
+                  <p className="text-black font-semibold">
+                    {request.user?.name}
+                  </p>
+                  <Link
+                    href={"mailto:" + request.user?.email}
+                    className="text-text-default-secondary underline max-w-max"
+                  >
+                    {request.user?.email}
+                  </Link>
+                </td>
+                <td className="underline" style={{ color: "#202d74" }}>
+                  <Link
+                    href={`books/${request.bookId}`}
+                    className="flex items-start space-x-4"
+                  >
+                    <div className="flex justify-between max-w-[99%] ">
+                      <p className="line-clamp-2">{request.book?.title}</p>
                     </div>
-                  </td>
-                </tr>
-              ))}
+                  </Link>
+                </td>
+
+                <td className="text-black">
+                  {getAvailableCopies(request.book)} of {request.book?.copies}
+                </td>
+
+                <td className="text-black">{positionFinder(request) + 1}</td>
+
+                <td className="text-black">
+                  {dateToTimeString(request.requestedOn)}
+                </td>
+
+                <td>
+                  <div className="flex justify-center items-center">
+                    {/* Add in the functionality for waitlist position when it becomes available */}
+                    <CommonButton
+                      label="Remove Hold"
+                      onClick={async () => {
+                        await removeHold(request);
+                      }}
+                      altTextStyle="text-white"
+                      altStyle="bg-[#C00F0C]"
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

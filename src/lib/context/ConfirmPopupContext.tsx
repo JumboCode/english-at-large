@@ -32,11 +32,13 @@ export enum ConfirmPopupActions {
   BORROW = "borrow",
   MARK = "mark",
   PLACE = "place",
+  CANCEL = "cancel",
 }
 
 export enum ConfirmPopupTypes {
   NONE = "",
   BOOK = "book",
+  REQUEST = "request",
   EXISTING_BOOK = "new copy of book (book already exists)",
   USER = "user",
   RESOURCE = "resource",

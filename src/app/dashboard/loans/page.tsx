@@ -2,14 +2,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { BookRequest, RequestStatus } from "@prisma/client";
+import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
-import { getRequests, updateRequest } from "@/lib/api/requests";
+import { deleteRequest, getRequests, updateRequest } from "@/lib/api/requests";
 import LoanDropdown from "@/components/common/forms/LoanDropdown";
 import { updateBook } from "@/lib/api/books";
-import { RequestWithBookAndUser } from "@/lib/util/types";
+import { emptyRequest, RequestWithBookAndUser } from "@/lib/util/types";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import {
@@ -22,7 +22,7 @@ const Loans = () => {
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
-
+  const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest); //
   const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
 
   // use of structured clone creates new subset of search target requests
@@ -99,11 +99,43 @@ const Loans = () => {
         const earliestHold = holds[0];
         await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
       }
+
+      if (request) {
+        setOneRequest(request);
+      }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
         action: ConfirmPopupActions.MARK,
+        success: false,
+      });
+    }
+  };
+
+  const deleteReq = async (req: BookRequest) => {
+    await deleteRequest(req.id);
+    if (req) {
+      setOneRequest(req);
+    }
+  };
+
+  const cancelReq = async (
+    request: BookRequest & { user: User; book: Book }
+  ) => {
+    try {
+      await deleteReq(request);
+
+      setConfirmPopup({
+        type: ConfirmPopupTypes.REQUEST,
+        action: ConfirmPopupActions.CANCEL,
+        success: true,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      setConfirmPopup({
+        type: ConfirmPopupTypes.REQUEST,
+        action: ConfirmPopupActions.CANCEL,
         success: false,
       });
     }
@@ -116,7 +148,7 @@ const Loans = () => {
     };
 
     getReqs();
-  }, []);
+  }, [oneRequest]);
 
   return (
     <div className="bg-white">
@@ -218,7 +250,18 @@ const Loans = () => {
                           altStyle="bg-dark-blue"
                         />
                       </div>
-                    ) : null}
+                    ) : (
+                      <div className="flex justify-center items-center">
+                        <CommonButton
+                          label="Cancel Request"
+                          onClick={async () => {
+                            await cancelReq(request);
+                          }}
+                          altTextStyle="text-white"
+                          altStyle="bg-[#C00F0C]"
+                        />
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
