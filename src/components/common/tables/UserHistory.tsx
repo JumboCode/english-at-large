@@ -1,24 +1,28 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
-import CommonDropdown from "../forms/Dropdown";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { User, BookRequest } from "@prisma/client";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
-import LoanDropdown from "../forms/LoanDropdown";
 import { emptyRequest } from "@/lib/util/types";
+import DatePicker from "../DatePicker";
+import { DateRange } from "react-day-picker";
+import CalendarMonthIcon from "@/assets/icons/calendar_month";
+import LoanStatusTag from "../LoanStatusTag";
 
 interface UserHistoryProps {
   users: User[];
   requests: BookRequest[];
+  range?: DateRange;
+  setRange: (range?: DateRange) => void;
 }
 
 const UserHistory = (props: UserHistoryProps) => {
   const user = useCurrentUser();
 
-  const { users, requests } = props;
+  const { users, requests, range, setRange } = props;
   const [searchData, setSearchData] = useState("");
 
   useEffect(() => {
@@ -60,15 +64,23 @@ const UserHistory = (props: UserHistoryProps) => {
       (user) => requestsByUser[user.id] && requestsByUser[user.id].length > 0
     ); // Filter users with requests
 
+  // add a sort
+  const sortByDate = (a: BookRequest, b: BookRequest) => {
+    const fallback = new Date("9999-12-31");
+    const dateA = a.returnedBy ? new Date(a.returnedBy) : fallback;
+    const dateB = b.returnedBy ? new Date(b.returnedBy) : fallback;
+    return dateB.getTime() - dateA.getTime(); // latest returned or unreturned first
+  };
+
   return (
     <div className="bg-white">
       <SearchBar
         button={
-          <CommonDropdown
-            items={["hello", "world"]}
-            altButtonStyle="min-w-40"
-            buttonText={"Sort by"}
-            setFilter={() => {}}
+          <DatePicker
+            range={range}
+            setRange={setRange}
+            altButtonStyle="min-w-28"
+            leftIcon={<CalendarMonthIcon />}
           />
         }
         placeholderText="Search by user name"
@@ -91,7 +103,7 @@ const UserHistory = (props: UserHistoryProps) => {
                 Requested on
               </th>
               <th className="text-left text-text-default-secondary px-4 w-40">
-                Return on
+                Returned on
               </th>
               <th className="text-left text-text-default-secondary px-4 w-40">
                 Status
@@ -100,7 +112,9 @@ const UserHistory = (props: UserHistoryProps) => {
           </thead>
           <tbody className="divide-y divide-solid">
             {subsetUsers.map((user, index) => {
-              const userRequests = requestsByUser[user.id];
+              const userRequests = [...requestsByUser[user.id]].sort(
+                sortByDate
+              );
 
               // CHANGE 5: Restructure how requests are displayed
               // Instead of using a grid inside a cell, create a row for each request
@@ -148,10 +162,7 @@ const UserHistory = (props: UserHistoryProps) => {
 
                   {/* Status dropdown */}
                   <td className="px-4 py-4">
-                    <LoanDropdown
-                      report={request}
-                      selectedValue={selectedValue}
-                    />
+                    <LoanStatusTag status={request.status} />
                   </td>
                 </tr>
               ));

@@ -73,8 +73,8 @@ export function getAvailableCopies(book: BookWithRequests): number {
       // Only these statuses mean the book is  unavailable
       request.status === RequestStatus.Borrowed ||
       request.status === RequestStatus.Lost ||
-      request.status === RequestStatus.Pickup
-
+      request.status === RequestStatus.Pickup ||
+      request.status === RequestStatus.Requested
     );
   }).length;
 

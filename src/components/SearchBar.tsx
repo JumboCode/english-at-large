@@ -52,7 +52,7 @@ const SearchBar = (props: searchBarProps) => {
           <SearchIcon />
         </button>
       </div>
-      <div className="flex flex-row items-center gap-3">
+      <div className="flex flex-row items-center gap-3 flex-shrink-0">
         {button}
         {button2}
       </div>
