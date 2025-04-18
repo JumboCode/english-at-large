@@ -131,8 +131,8 @@ const BookForm = (props: BookFormProps) => {
   
     if (name === "numPages") {
       // Allow empty string while typing
-      setNumpages(value);
-  
+      {value >= "0" ? (setNumpages(value)) : (setNumpages(""))};
+
       const parsed = value === "" ? 0 : Math.max(Number(value), 0);
       
       if (existingBook) {
@@ -230,6 +230,8 @@ const BookForm = (props: BookFormProps) => {
     try {
       let similarBooks = [];
       if (editBook) {
+        
+
         const editedBook = await updateBook(editBook);
         setConfirmPopup({
           type: ConfirmPopupTypes.BOOK,
@@ -293,12 +295,18 @@ const BookForm = (props: BookFormProps) => {
                   exit(false);
                 }}
               />
-              <CommonButton
+              { editBook?.isbn.length == 0 || editBook?.title == "" || editBook?.author == "" || editBook?.copies == 0 || editBook?.numPages == 0 ?
+              (<CommonButton
+                label={existingBook ? "Save" : "Add Book"}
+                onClick={undefined}
+                altTextStyle="text-white"
+                altStyle="bg-dark-blue opacity-50 cursor-not-allowed"
+              />) : (<CommonButton
                 label={existingBook ? "Save" : "Add Book"}
                 onClick={handleSave}
                 altTextStyle="text-white"
                 altStyle="bg-dark-blue"
-              />
+              />)}
             </div>
           </div>
           <div className="h-[0.3px] bg-black"></div>
