@@ -244,6 +244,18 @@ export const putRequestController = async (
       throw new Error("Missing required request properties");
     }
 
+    // Add validation to prevent future returnedBy dates
+    if (
+      requestData.returnedBy &&
+      new Date(requestData.returnedBy) > new Date()
+    ) {
+      // If returnedBy is in the future, reset it to null
+      requestData.returnedBy = null;
+      console.warn(
+        `Prevented future returnedBy date for request ID ${requestData.id}`
+      );
+    }
+
     // ugly but necessary for destructing...
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { user, book, ...newRequest } = requestData;
