@@ -113,15 +113,15 @@ const BookPopup = (props: BookPopupProps) => {
               <Image
                 src={book.coverURL || imageToAdd.src}
                 alt="Book Cover"
-                width={150}
+                width={190}
                 height={190}
-                // className="w-full h-full object-fill"
+                className="flex-shrink-0"
               />
               <div>
-                <div className="font-[family-name:var(--font-rubik)] font-semibold text-2xl">
-                  {book.title}
+                <div className="font-[family-name:var(--font-rubik)] font-semibold text-2xl break-words">
+                  {book.title.slice(0,80)}
                 </div>
-                <div className="text-[#757575] text-sm">{book.author}</div>
+                <div className="text-[#757575] text-sm break-words">{book.author.slice(0,80)}</div>
                 <BookDetail
                   isbn={book.isbn}
                   publisher={book.publisher}
