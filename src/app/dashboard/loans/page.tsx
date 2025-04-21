@@ -2,14 +2,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import CommonButton from "@/components/common/button/CommonButton";
-import { BookRequest, RequestStatus } from "@prisma/client";
+import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import CommonDropdown from "@/components/common/forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
-import { getRequests, updateRequest } from "@/lib/api/requests";
+import { deleteRequest, getRequests, updateRequest } from "@/lib/api/requests";
 import LoanDropdown from "@/components/common/forms/LoanDropdown";
 import { updateBook } from "@/lib/api/books";
-import { RequestWithBookAndUser } from "@/lib/util/types";
+import { emptyRequest, RequestWithBookAndUser } from "@/lib/util/types";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import {
@@ -17,13 +17,14 @@ import {
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
 import useVolunteerLevelRedirect from "@/lib/hooks/useVolunteerLevelRedirect";
+import LoanStatusTag from "@/components/common/LoanStatusTag";
 
 const Loans = () => {
   useVolunteerLevelRedirect();
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
-
+  const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest); //
   const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
 
   // use of structured clone creates new subset of search target requests
@@ -59,13 +60,16 @@ const Loans = () => {
     switch (selectedValue) {
       case "Request Date":
         return a.requestedOn > b.requestedOn ? 1 : -1;
-      case "Return Date": {
-        const dateA = a.returnedBy ? new Date(a.returnedBy) : new Date();
-        const dateB = b.returnedBy ? new Date(b.returnedBy) : new Date();
+      case "Due Date": {
+        const dateA = a.dueDate ? new Date(a.dueDate) : new Date();
+        const dateB = b.dueDate ? new Date(b.dueDate) : new Date();
         return dateB.getTime() - dateA.getTime(); // most recent first
       }
-      default:
-        return a.requestedOn > b.requestedOn ? 1 : -1;
+      default: {
+        const dateA = a.dueDate ? new Date(a.dueDate) : new Date();
+        const dateB = b.dueDate ? new Date(b.dueDate) : new Date();
+        return dateB.getTime() - dateA.getTime(); // most recent first
+      }
     }
   };
 
@@ -97,11 +101,43 @@ const Loans = () => {
         const earliestHold = holds[0];
         await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
       }
+
+      if (request) {
+        setOneRequest(request);
+      }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
         type: ConfirmPopupTypes.RETURNED,
         action: ConfirmPopupActions.MARK,
+        success: false,
+      });
+    }
+  };
+
+  const deleteReq = async (req: BookRequest) => {
+    await deleteRequest(req.id);
+    if (req) {
+      setOneRequest(req);
+    }
+  };
+
+  const cancelReq = async (
+    request: BookRequest & { user: User; book: Book }
+  ) => {
+    try {
+      await deleteReq(request);
+
+      setConfirmPopup({
+        type: ConfirmPopupTypes.REQUEST,
+        action: ConfirmPopupActions.CANCEL,
+        success: true,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      setConfirmPopup({
+        type: ConfirmPopupTypes.REQUEST,
+        action: ConfirmPopupActions.CANCEL,
         success: false,
       });
     }
@@ -114,7 +150,7 @@ const Loans = () => {
     };
 
     getReqs();
-  }, []);
+  }, [oneRequest]);
 
   return (
     <div className="bg-white">
@@ -124,7 +160,7 @@ const Loans = () => {
       <SearchBar
         button={
           <CommonDropdown
-            items={["Request Date", "Return Date", "Pick-up", "Borrowed"]}
+            items={["Request Date", "Due Date", "Pick-up", "Borrowed"]}
             altButtonStyle="min-w-40"
             buttonText={"Sort by"}
             setFilter={setSelectedValue}
@@ -147,7 +183,7 @@ const Loans = () => {
                 Requested On
               </th>
               <th className="w-1/6  text-left text-text-default-secondary">
-                Return By
+                Due Date
               </th>
               <th className="w-1/6 text-left text-text-default-secondary">
                 Status
@@ -188,29 +224,46 @@ const Loans = () => {
                   </td>
 
                   <td className="text-black">
-                    {request.returnedBy
-                      ? dateToTimeString(request.returnedBy)
-                      : "Not Returned Yet"}
+                    {request.dueDate
+                      ? dateToTimeString(request.dueDate)
+                      : "Due Date not Found"}
                   </td>
 
                   <td className="text-black">
-                    <LoanDropdown
-                      report={request}
-                      selectedValue={selectedValue}
-                    />
+                    {request.status !== RequestStatus.Borrowed ? (
+                      <LoanDropdown
+                        report={request}
+                        selectedValue={selectedValue}
+                      />
+                    ) : (
+                      <LoanStatusTag status={request.status} />
+                    )}
                   </td>
 
                   <td>
-                    <div className="flex justify-center items-center">
-                      <CommonButton
-                        label="Mark as Returned"
-                        onClick={async () => {
-                          await markAsReturned(request);
-                        }}
-                        altTextStyle="text-white"
-                        altStyle="bg-dark-blue"
-                      />
-                    </div>
+                    {request.status === RequestStatus.Borrowed ? (
+                      <div className="flex justify-center items-center">
+                        <CommonButton
+                          label="Mark as Returned"
+                          onClick={async () => {
+                            await markAsReturned(request);
+                          }}
+                          altTextStyle="text-white"
+                          altStyle="bg-dark-blue"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex justify-center items-center">
+                        <CommonButton
+                          label="Cancel Request"
+                          onClick={async () => {
+                            await cancelReq(request);
+                          }}
+                          altTextStyle="text-white"
+                          altStyle="bg-[#C00F0C]"
+                        />
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
