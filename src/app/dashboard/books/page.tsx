@@ -2,7 +2,7 @@
 import React, { useCallback } from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
-import { Book, BookLevel, BookSkills } from "@prisma/client";
+import { Book, BookLevel, BookSkills, UserRole } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import SearchBar from "@/components/SearchBar";
 import FilterPopup from "@/components/common/FilterPopup";
@@ -168,7 +168,7 @@ const BooksPage = () => {
           />
         }
         button2={
-          user?.role === "Admin" ? (
+          user?.role === UserRole.Admin || user?.role === UserRole.Volunteer ? (
             <CommonButton
               label="Create Book"
               leftIcon={<AddIcon />}

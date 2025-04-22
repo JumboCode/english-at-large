@@ -16,7 +16,7 @@ const SuccessfulSignUp = () => {
           <CheckIcon className="place-self-center" />
 
           <p className="text-2xl font-bold text-gray-900 items-center place-self-center">
-            Congratulations, you&apos;re a tutor!
+            Congratulations, you&apos;re in!
           </p>
 
           <p className="font-[757575] place-self-center">
