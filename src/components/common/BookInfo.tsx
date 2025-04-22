@@ -1,7 +1,7 @@
 "use client";
 import { Book } from "@prisma/client";
 import Image from "next/image";
-import imageToAdd from "../../assets/images/harry_potter.jpg";
+import imageToAdd from "../../assets/images/Placeholder_Book_Cover.png";
 import Link from "next/link";
 
 interface BookProps {
