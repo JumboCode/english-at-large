@@ -19,29 +19,40 @@ export default function DataPage() {
     range?.from && range?.to
       ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
       : "all time";
+
   const [users, setUsers] = useState<User[]>([]);
   const [requests, setRequests] = useState<BookRequest[]>([]);
   const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
 
-  const [currentBookPage, setCurrentBookPage] = useState(1); // For Book Catalog
-  const [totalBookPages, setTotalBookPages] = useState(0); // Total pages for books
+  const [currentBookPage, setCurrentBookPage] = useState(1);
+  const [totalBookPages, setTotalBookPages] = useState(0);
 
-  const [currentUserPage, setCurrentUserPage] = useState(1); // For User History
-  const [totalUserPages, setTotalUserPages] = useState(0); // Total pages for users
+  const [currentUserPage, setCurrentUserPage] = useState(1);
+  const [totalUserPages, setTotalUserPages] = useState(0);
+
+  const [searchData, setSearchData] = useState(""); // NEW: search input
 
   useEffect(() => {
     if (activeTab === "Book Catalog") {
       const fetchBooks = async () => {
         try {
+          console.log("📚 Fetching books with params:", {
+            page: currentBookPage,
+            search: searchData,
+            from: range?.from,
+            to: range?.to,
+          });
           const booksResult = await getAllBooks({
             page: currentBookPage,
             limit: 10,
             withStats: true,
             fromDate: range?.from,
             endDate: range?.to,
+            search: searchData,
           });
+
           if (booksResult) {
             const { books: fetchedBooks, totalPages: fetchedTotalPages } =
               booksResult as {
@@ -49,16 +60,17 @@ export default function DataPage() {
                 totalPages: number;
               };
 
-            const bookStats: Record<number, BookStats> = {};
+            const stats: Record<number, BookStats> = {};
             for (const book of fetchedBooks) {
-              bookStats[book.id] = {
+              stats[book.id] = {
                 totalRequests: book.requests ? book.requests.length : 0,
                 uniqueUsers: book.uniqueUsers || 0,
               };
             }
+
             setBooks(fetchedBooks);
             setTotalBookPages(fetchedTotalPages);
-            setBookStats(bookStats);
+            setBookStats(stats);
           }
         } catch (err) {
           console.error("Failed to fetch books:", err);
@@ -67,7 +79,13 @@ export default function DataPage() {
 
       fetchBooks();
     }
-  }, [currentBookPage, activeTab, range]); // Refetch books when currentBookPage or activeTab changes
+  }, [currentBookPage, activeTab, range, searchData]); // include searchData
+
+  useEffect(() => {
+    if (activeTab === "Book Catalog") {
+      setCurrentBookPage(1); // Reset to first page when search changes
+    }
+  }, [searchData, activeTab]);
 
   useEffect(() => {
     if (activeTab === "User History") {
@@ -82,6 +100,7 @@ export default function DataPage() {
           if (usersResult) {
             const { users: fetchedUsers, totalPages: fetchedTotalPages } =
               usersResult;
+
             const allRequests = fetchedUsers.flatMap(
               (user) => user.requests || []
             );
@@ -100,18 +119,15 @@ export default function DataPage() {
 
       fetchUsers();
     }
-  }, [range, currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
+  }, [range, currentUserPage, activeTab]);
 
   useEffect(() => {
-    // console.log(range);
     const fetchData = async () => {
       try {
-        // promise.allSettled so they can fail independently.
         const [requestCountResult] = await Promise.allSettled([
           getRequestCount(range?.from, range?.to),
         ]);
 
-        // calculate the number of requests
         if (
           requestCountResult.status === "fulfilled" &&
           requestCountResult.value !== undefined
@@ -127,6 +143,7 @@ export default function DataPage() {
         console.error("Unexpected error in fetchData:", err);
       }
     };
+
     fetchData();
   }, [range]);
 
@@ -166,9 +183,8 @@ export default function DataPage() {
             </div>
           ) : null}
         </div>
-
-        {/* Tab Content */}
       </div>
+
       {activeTab === "Overview" && (
         <TableOverview
           filterInfo={filterText}
@@ -176,6 +192,7 @@ export default function DataPage() {
           range={range}
         />
       )}
+
       {activeTab === "Book Catalog" && (
         <>
           <BookCatalog
@@ -183,6 +200,8 @@ export default function DataPage() {
             bookStats={bookStats}
             range={range}
             setRange={setRange}
+            searchData={searchData}
+            setSearchData={setSearchData}
           />
           <div className="pagination-controls flex justify-center mt-4">
             <button
@@ -210,6 +229,7 @@ export default function DataPage() {
           </div>
         </>
       )}
+
       {activeTab === "User History" && (
         <>
           <UserHistory
