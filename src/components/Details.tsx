@@ -54,9 +54,6 @@ const BookDetail = (props: DetailProps) => {
         </div>
         <div className={`relative ${altWidth}`}>{numPages}</div>
       </div>
-
-      <div className="text-gray-500">No. of Pages</div>
-      <div>{numPages}</div>
     </div>
   );
 };

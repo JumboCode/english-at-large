@@ -139,7 +139,7 @@ const BookForm = (props: BookFormProps) => {
       bookToSave!.title.length != 0,
       bookToSave!.isbn.length != 0
     );
-  }, [newBook, editBook]);
+  }, [newBook, editBook, existingBook, requiredFields]);
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -348,12 +348,11 @@ const BookForm = (props: BookFormProps) => {
             <div
               id="isbn"
               className={
-                "text-black border border-medium-grey-border p-2 px-4 rounded-lg border-solid w-[90%] mx-auto block h-10 font-normal flex items-center "
+                "text-black border border-medium-grey-border p-2 px-4 rounded-lg border-solid w-[90%] mx-auto h-10 font-normal flex items-center "
               }
             >
               {editBook ? editBook.isbn[0] : isbn}
             </div>
-
           </div>
         ) : null}
         <div className="mt-4">

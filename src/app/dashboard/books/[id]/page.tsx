@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, use, useMemo} from "react";
+import React, { useEffect, useState, use, useMemo } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
 import Image from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
@@ -44,13 +44,13 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   useEffect(() => {
     const fetchBook = async () => {
       const book = await getOneBook(+(await params).id);
-      if (!book){
+      if (!book) {
         router.replace("/dashboard");
       }
-      setBook(book || null); 
+      setBook(book || null);
     };
     fetchBook();
-  }, [params]);
+  }, [params, router]);
 
   const availableCopies = useMemo(
     () => (book ? getAvailableCopies(book) : 0),
@@ -201,7 +201,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                 </div>
                 <div className="mt-5 font-[family-name:var(--font-rubik)]">
                   <BookDetail
-                    isbn={book.isbn.length !==  0 ? book.isbn : ["None"]}
+                    isbn={book.isbn.length !== 0 ? book.isbn : ["None"]}
                     publisher={book.publisher ? book.publisher : "None"}
                     releaseDate={book.releaseDate ? book.releaseDate : "None"}
                     copies={book.copies}
