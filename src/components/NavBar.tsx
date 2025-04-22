@@ -10,7 +10,30 @@ import arrow from "@/assets/icons/keyboard_arrow_up.svg";
 import profilePic from "@/assets/icons/reindeer.png";
 
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
-
+import { UserRole } from "@prisma/client";
+const NAV_CONFIG = {
+  [UserRole.Admin]: {
+    dashboard: true,
+    manage: true,
+    browse: true,
+    shelf: false,
+    users: true,
+  },
+  [UserRole.Volunteer]: {
+    dashboard: false,
+    manage: true,
+    browse: true,
+    shelf: false,
+    users: false,
+  },
+  [UserRole.Tutor]: {
+    dashboard: false,
+    manage: false,
+    browse: true,
+    shelf: true,
+    users: false,
+  },
+};
 // Consistent styles extracted to separate constants
 const STYLES = {
   logo: {
@@ -99,19 +122,18 @@ const NavBar = () => {
     }
   };
 
-  // Early return if user is undefined
   if (!user)
     return (
       <div className="bg-[#F6FAFD] flex p-4 justify-between text-black h-[72]" />
     );
 
-  // Prepare common navigation items
+  const access = NAV_CONFIG[user.role] ?? {};
+
   const browseItems = [
     { href: "/dashboard/books", label: "Books" },
     { href: "/dashboard/onlineResources", label: "Online Resources" },
   ];
 
-  // Render different navbar based on user role
   return (
     <div className="bg-[#F6FAFD] flex p-4 justify-between text-black">
       <div className="gap-10 flex">
@@ -124,63 +146,65 @@ const NavBar = () => {
           />
         </Link>
 
-        {/* Role-specific navigation */}
-        {user.role === "Admin" ? (
-          <>
-            <div className="relative group mt-2">
-              <Link
-                href="/dashboard/datapage"
-                className="font-[family-name:var(--font-rubik)] font-semibold"
-              >
-                Dashboard
-              </Link>
-            </div>
+        {/* Dashboard */}
+        {access.dashboard && (
+          <div className="relative group mt-2">
+            <Link
+              href="/dashboard/datapage"
+              className="font-[family-name:var(--font-rubik)] font-semibold"
+            >
+              Dashboard
+            </Link>
+          </div>
+        )}
 
-            {/* Browse Dropdown */}
-            <DropdownMenu title="Browse" items={browseItems} />
-            <DropdownMenu
-              title="Manage"
-              items={[
-                { href: "/dashboard/loans", label: "Loans" },
-                { href: "/dashboard/holds", label: "Holds" },
-              ]}
-            />
-            <div className="relative group mt-2">
-              <Link
-                href="/dashboard/users"
-                className="font-[family-name:var(--font-rubik)] font-semibold"
-              >
-                Users
-              </Link>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* Browse Dropdown */}
-            <DropdownMenu title="Browse" items={browseItems} />
-            <div className="relative group mt-2">
-              <Link
-                href={"/dashboard/shelf/" + user?.id}
-                className="font-[family-name:var(--font-rubik)] font-semibold"
-              >
-                Shelf
-              </Link>
-            </div>
-          </>
+        {/* Browse */}
+        {access.browse && <DropdownMenu title="Browse" items={browseItems} />}
+
+        {/* Manage */}
+        {access.manage && (
+          <DropdownMenu
+            title="Manage"
+            items={[
+              { href: "/dashboard/loans", label: "Loans" },
+              { href: "/dashboard/holds", label: "Holds" },
+            ]}
+          />
+        )}
+
+        {/* Users */}
+        {access.users && (
+          <div className="relative group mt-2">
+            <Link
+              href="/dashboard/users"
+              className="font-[family-name:var(--font-rubik)] font-semibold"
+            >
+              Users
+            </Link>
+          </div>
+        )}
+
+        {/* Shelf */}
+        {access.shelf && (
+          <div className="relative group mt-2">
+            <Link
+              href={`/dashboard/shelf/${user?.id}`}
+              className="font-[family-name:var(--font-rubik)] font-semibold"
+            >
+              Shelf
+            </Link>
+          </div>
         )}
       </div>
 
       {/* User Section */}
       <div className="flex row gap-3 mr-14 mt-2">
-        {/* Profile Picture */}
         <Image
           src={profilePic}
           alt="Profile Picture"
           style={STYLES.profilePic}
           className="w-8 h-8 rounded-full -mt-1"
         />
-
-        {/* User Menu */}
         <UserMenu name={user?.name} onSignOut={handleSignOut} />
       </div>
     </div>

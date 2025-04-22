@@ -1,16 +1,15 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { User, BookRequest } from "@prisma/client";
-import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { emptyRequest } from "@/lib/util/types";
 import DatePicker from "../DatePicker";
 import { DateRange } from "react-day-picker";
 import CalendarMonthIcon from "@/assets/icons/calendar_month";
 import LoanStatusTag from "../LoanStatusTag";
+import useAdminLevelRedirect from "@/lib/hooks/useAdminLevelRedirect";
 
 interface UserHistoryProps {
   users: User[];
@@ -20,16 +19,9 @@ interface UserHistoryProps {
 }
 
 const UserHistory = (props: UserHistoryProps) => {
-  const user = useCurrentUser();
-
+  useAdminLevelRedirect();
   const { users, requests, range, setRange } = props;
   const [searchData, setSearchData] = useState("");
-
-  useEffect(() => {
-    if (user?.role !== "Admin" && user?.role != undefined) {
-      redirect("/dashboard");
-    }
-  }, [user]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filter, setFilter] = useState<string>("");

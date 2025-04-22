@@ -18,8 +18,10 @@ import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
+import useVolunteerLevelRedirect from "@/lib/hooks/useVolunteerLevelRedirect";
 
 const Loans = () => {
+  useVolunteerLevelRedirect();
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
   const [searchData, setSearchData] = useState("");
