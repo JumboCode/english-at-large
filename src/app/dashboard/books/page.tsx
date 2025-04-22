@@ -64,7 +64,8 @@ const BooksPage = () => {
       return (
         (skills.length === 0 ||
           skills.some((skill) => book.skills.includes(skill))) &&
-        (levels.length === 0 || levels.includes(book.level)) &&
+        (levels.length === 0 ||
+          (book.level !== null && levels.includes(book.level))) &&
         // (status.length == 0 || status.includes(book.status)) TODO: replace filter logic
         bookAvailable
       );
@@ -246,27 +247,31 @@ const BooksPage = () => {
               ))}
         </ul>
 
-        <div className="pagination-controls flex justify-center mt-4">
-          <button
-            onClick={() => setCurrentBookPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentBookPage === 1}
-            className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="px-4 py-2">
-            Page {currentBookPage} of {totalBookPages}
-          </span>
-          <button
-            onClick={() =>
-              setCurrentBookPage((prev) => Math.min(prev + 1, totalBookPages))
-            }
-            disabled={currentBookPage === totalBookPages}
-            className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
+        {totalBookPages > 1 && (
+          <div className="pagination-controls flex justify-center mt-4">
+            <button
+              onClick={() =>
+                setCurrentBookPage((prev) => Math.max(prev - 1, 1))
+              }
+              disabled={currentBookPage === 1}
+              className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2">
+              Page {currentBookPage} of {totalBookPages}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentBookPage((prev) => Math.min(prev + 1, totalBookPages))
+              }
+              disabled={currentBookPage === totalBookPages}
+              className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

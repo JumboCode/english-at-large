@@ -260,7 +260,7 @@ const Loans = () => {
                             await cancelReq(request);
                           }}
                           altTextStyle="text-white"
-                          altStyle="bg-[#C00F0C]"
+                          altStyle="bg-[#C00F0C] border-0"
                         />
                       </div>
                     )}

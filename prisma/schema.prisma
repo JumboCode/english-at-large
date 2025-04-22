@@ -32,8 +32,8 @@ model Book {
   publisher   String
   releaseDate String?
   skills      BookSkills[]
-  bookType    BookType
-  level       BookLevel
+  bookType    BookType?
+  level       BookLevel?
   numPages    Int?          @default(0)
   coverURL    String        @default("placeholder")
   copies      Int           @default(0)
