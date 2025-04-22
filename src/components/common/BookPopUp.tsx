@@ -5,7 +5,7 @@ import ConfirmBookRequestPopup from "./ConfirmBookRequestPopup";
 import CommonButton from "@/components/common/button/CommonButton";
 import { User, BookRequest, RequestStatus } from "@prisma/client";
 import Image from "next/image";
-import imageToAdd from "../../assets/images/harry_potter.jpg";
+import imageToAdd from "../../assets/images/Placeholder_Book_Cover.png";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { createQuickRequest } from "@/lib/api/requests";
 import {

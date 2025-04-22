@@ -12,7 +12,7 @@ import Tag from "@/components/tag";
 import BookDetail from "@/components/Details";
 import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
-import imageToAdd from "../../../../assets/images/harry_potter.jpg";
+import imageToAdd from "../../../../assets/images/Placeholder_Book_Cover.png";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";

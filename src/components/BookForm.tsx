@@ -461,10 +461,16 @@ const BookForm = (props: BookFormProps) => {
           <textarea
             id="description"
             name="description"
-            className={
-              "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-15 font-normal" +
-              (newBook.description ? "bg-blue-100" : null)
-            }
+            className={`
+              text-black
+              border border-medium-grey-border
+              p-3
+              rounded-lg border-solid
+              w-[90%] mx-auto block
+              min-h-[150px]
+              font-normal
+              ${newBook.description ? "bg-blue-100" : ""}
+            `}
             onChange={bookChangeHandler}
             value={editBook ? editBook.description : newBook.description}
           ></textarea>
