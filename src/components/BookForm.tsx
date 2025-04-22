@@ -343,20 +343,17 @@ const BookForm = (props: BookFormProps) => {
         {isbn ? (
           <div>
             <label htmlFor="isbn" className="block text-lg ml-[5%] mb-2">
-              ISBN Number<span className="text-red-500 ml-1">*</span>
+              ISBN Number
             </label>
-            <input
-              type="text"
+            <div
               id="isbn"
-              name="isbn"
               className={
-                "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-10 font-normal " +
-                (newBook.isbn ? "bg-blue-100" : null)
+                "text-black border border-medium-grey-border p-2 px-4 rounded-lg border-solid w-[90%] mx-auto block h-10 font-normal flex items-center "
               }
-              onChange={bookChangeHandler}
-              defaultValue={editBook ? editBook.isbn[0] : isbn}
-              required
-            />
+            >
+              {editBook ? editBook.isbn[0] : isbn}
+            </div>
+
           </div>
         ) : null}
         <div className="mt-4">

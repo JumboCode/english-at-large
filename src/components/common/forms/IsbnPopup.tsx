@@ -82,7 +82,7 @@ const IsbnPopup = (props: IsbnPopupProps) => {
                 href="/dashboard/books"
                 onClick={() => submit(isbnData)}
               >
-                Add book manually
+                No ISBN? Add book manually
               </Link>
             </div>
           </div>
