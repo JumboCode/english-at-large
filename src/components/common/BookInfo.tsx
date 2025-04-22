@@ -36,9 +36,9 @@ const BookInfo = (props: BookProps) => {
 
         <div className="align-middle w-full md:w-3/5">
           <div className="text-left mt-4 mb-4">
-            <h3 className="text-lg text-black font-semibold">{book.title}</h3>
-            <p className="text-sm text-black mt-2">
-              {"by"} {book.author}{" "}
+            <h3 className="text-lg text-black font-semibold break-words">{book.title.slice(0,80)}</h3>
+            <p className="text-sm text-black mt-2 break-words">
+              {"by"} {book.author.slice(0,80)}{" "}
             </p>
           </div>
 

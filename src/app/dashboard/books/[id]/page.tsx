@@ -17,6 +17,7 @@ import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import { useRouter } from "next/navigation";
 import { UserRole } from "@prisma/client";
 type Params = Promise<{ id: string }>;
 
@@ -39,13 +40,17 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const user = useCurrentUser();
   const { hidePopup, popupStatus } = usePopup();
 
+  const router = useRouter();
   useEffect(() => {
     const fetchBook = async () => {
       const book = await getOneBook(+(await params).id);
+      if (!book) {
+        router.replace("/dashboard");
+      }
       setBook(book || null);
     };
     fetchBook();
-  }, [params]);
+  }, [params, router]);
 
   const availableCopies = useMemo(
     () => (book ? getAvailableCopies(book) : 0),
@@ -196,7 +201,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                 </div>
                 <div className="mt-5 font-[family-name:var(--font-rubik)]">
                   <BookDetail
-                    isbn={book.isbn.length !==  0 ? book.isbn : ["None"]}
+                    isbn={book.isbn.length !== 0 ? book.isbn : ["None"]}
                     publisher={book.publisher ? book.publisher : "None"}
                     releaseDate={book.releaseDate ? book.releaseDate : "None"}
                     copies={book.copies}
