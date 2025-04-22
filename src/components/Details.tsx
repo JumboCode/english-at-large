@@ -31,21 +31,28 @@ const BookDetail = (props: DetailProps) => {
   } = props;
 
   return (
-    <div
-      className={`grid grid-cols-[120px_1fr] gap-y-2 ${altStyle} ${lineSpacing} ${fontSize}`}
-    >
-      <div className="text-gray-500">ISBN</div>
-      <div>{[...new Set(isbn)].join(", ")}</div>
-
-      <div className="text-gray-500">Publisher</div>
-      <div>{publisher}</div>
-
-      <div className="text-gray-500">Release</div>
-      <div>{releaseDate ?? "1/1/1900"}</div>
-
-      <div className="text-gray-500">Copies</div>
-      <div>
-        {copies}, {availableCopies} available
+    <div className={`flex row-span-2 my-5 ${altStyle}`}>
+      <div className={`font-medium ${lineSpacing} ${fontSize}`}>
+        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>ISBN</div>
+        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
+          Publisher
+        </div>
+        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Release</div>
+        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Copies</div>
+        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
+          No. of Pages
+        </div>
+      </div>
+      <div className={`${lineSpacing} ${verticalSpacing} ${fontSize}`}>
+        <div className={`relative ${altWidth}`}>
+          {[...new Set(isbn)].join(", ")}
+        </div>
+        <div className={`relative ${altWidth}`}>{publisher}</div>{" "}
+        <div className={`relative`}>{`${releaseDate ?? "None"}`} </div>
+        <div className={`relative ${altWidth}`}>
+          {copies}, {availableCopies} available
+        </div>
+        <div className={`relative ${altWidth}`}>{numPages}</div>
       </div>
 
       <div className="text-gray-500">No. of Pages</div>
