@@ -122,10 +122,11 @@ const BookPopup = (props: BookPopupProps) => {
                   {book.title}
                 </div>
                 <div className="text-[#757575] text-sm">{book.author}</div>
+                
                 <BookDetail
-                  isbn={book.isbn}
-                  publisher={book.publisher}
-                  releaseDate={book.releaseDate}
+                  isbn={book.isbn.length !==  0 ? book.isbn : ["None"]}
+                  publisher={book.publisher ? book.publisher : "None"}
+                  releaseDate={book.releaseDate ? book.releaseDate : "None"}
                   copies={book.copies}
                   numPages={book.numPages}
                   availableCopies={getAvailableCopies(book)}

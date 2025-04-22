@@ -3,11 +3,8 @@ import {
   BookLevel,
   // BookSkills,
   BookType,
-  OnlineResource,
   Prisma,
   RequestStatus,
-  ResourceFormat,
-  ResourceTopic,
   User,
 } from "@prisma/client";
 import { BookRequest } from "@prisma/client";
@@ -53,16 +50,45 @@ export function validateBookData(bookData: Partial<Book>): boolean {
   return true; // No errors
 }
 
+//OLD (here you are saying that a book that has request.status = RequestStatus.Requested is unavailable - which in my opinion is wrong)
+// export function getAvailableCopies(book: BookWithRequests): number {
+//   const bookAndRequests = book as BookWithRequests;
+
+//   const filteredRequests = bookAndRequests.requests.filter((r) => {
+//     return (
+//       r.status !== RequestStatus.Returned && r.status != RequestStatus.Hold
+//     ); // TODO: track the lost case
+//   });
+
+//   return bookAndRequests.copies - filteredRequests.length;
+// }
+
+//new
 export function getAvailableCopies(book: BookWithRequests): number {
-  const bookAndRequests = book as BookWithRequests;
+  if (!book || !book.requests) return 0;
 
-  const filteredRequests = bookAndRequests.requests.filter((r) => {
+  // Count only books that are unavailable
+  const unavailableBooks = book.requests.filter((request) => {
     return (
-      r.status !== RequestStatus.Returned && r.status != RequestStatus.Hold
-    ); // TODO: track the lost case
-  });
+      // Only these statuses mean the book is  unavailable
+      request.status === RequestStatus.Borrowed ||
+      request.status === RequestStatus.Lost ||
+      request.status === RequestStatus.Pickup ||
+      request.status === RequestStatus.Requested
+    );
+  }).length;
 
-  return bookAndRequests.copies - filteredRequests.length;
+  const availableCopies = book.copies - unavailableBooks;
+
+  // Log data inconsistencies for admin attention
+  if (availableCopies < 0) {
+    console.warn(
+      `[DATA INCONSISTENCY] Book "${book.title}" (ID: ${book.id}) has ${unavailableBooks} ` +
+        `unavailable copies but only ${book.copies} total copies in inventory.`
+    );
+  }
+
+  return availableCopies;
 }
 
 /**
@@ -256,38 +282,12 @@ export interface CustomChangeEvent<T> {
 /////                                                                      /////
 ////////////////////////////////////////////////////////////////////////////////
 
-export const newEmptyResource: Omit<OnlineResource, "id"> = {
-  createdAt: new Date(),
-  name: "",
-  link: "Hello",
-  level: BookLevel.Beginner,
-  topic: ResourceTopic.Culture,
-  skills: [],
-  format: ResourceFormat.Video,
+export type DriveFolderType = {
+  name: string;
+  id: string;
+  mimeType: string;
+  kind: string;
 };
-
-export function validateResourceData(
-  resourceData: Partial<OnlineResource>
-): boolean {
-  // Don't validate ID since sometimes you'll need to have
-  const requiredFields = [
-    "createdAt",
-    "name",
-    "link",
-    "level",
-    "topic",
-    "skills",
-    "format",
-  ] as const;
-
-  for (const field of requiredFields) {
-    if (!resourceData[field]) {
-      return false;
-    }
-  }
-
-  return true; // No errors
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 /////                                                                      /////

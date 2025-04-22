@@ -155,14 +155,16 @@ export default function DataPage() {
             </div>
           </div>
 
-          <div className="flex">
-            <DatePicker
-              range={range}
-              setRange={setRange}
-              altButtonStyle="min-w-28"
-              leftIcon={<CalendarMonthIcon />}
-            />
-          </div>
+          {activeTab === "Overview" ? (
+            <div className="flex">
+              <DatePicker
+                range={range}
+                setRange={setRange}
+                altButtonStyle="min-w-28"
+                leftIcon={<CalendarMonthIcon />}
+              />
+            </div>
+          ) : null}
         </div>
 
         {/* Tab Content */}
@@ -176,7 +178,12 @@ export default function DataPage() {
       )}
       {activeTab === "Book Catalog" && (
         <>
-          <BookCatalog books={books} bookStats={bookStats} />
+          <BookCatalog
+            books={books}
+            bookStats={bookStats}
+            range={range}
+            setRange={setRange}
+          />
           <div className="pagination-controls flex justify-center mt-4">
             <button
               onClick={() =>
@@ -205,7 +212,12 @@ export default function DataPage() {
       )}
       {activeTab === "User History" && (
         <>
-          <UserHistory users={users} requests={requests} />
+          <UserHistory
+            users={users}
+            requests={requests}
+            range={range}
+            setRange={setRange}
+          />
           <div className="pagination-controls flex justify-center mt-4">
             <button
               onClick={() =>

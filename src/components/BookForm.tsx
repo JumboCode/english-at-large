@@ -154,7 +154,7 @@ const BookForm = (props: BookFormProps) => {
       // Allow empty string while typing
       setNumpages(value);
 
-      const parsed = value === "" ? 0 : Number(value);
+      const parsed = value === "" ? 0 : Math.max(Number(value), 0);
 
       if (existingBook) {
         setEditBook(
@@ -177,8 +177,16 @@ const BookForm = (props: BookFormProps) => {
       return;
     }
 
+    let updatedValue = value;
+
+    if (name === "releaseDate" && new Date(value) > new Date()) {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      updatedValue = `${year}-${month}-${day}`;
+    }
     // default case for other fields
-    const updatedValue = value;
 
     if (existingBook) {
       setEditBook(
@@ -415,7 +423,9 @@ const BookForm = (props: BookFormProps) => {
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
               defaultValue={
-                editBook && editBook.releaseDate ? editBook.releaseDate : ""
+                editBook && editBook.releaseDate
+                  ? editBook.releaseDate
+                  : undefined
               }
             />
           </div>

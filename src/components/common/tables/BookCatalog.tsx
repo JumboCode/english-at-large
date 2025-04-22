@@ -2,17 +2,21 @@
 import React, { useState } from "react";
 import { Book } from "@prisma/client";
 import SearchBar from "@/components/SearchBar";
-import CommonDropdown from "../forms/Dropdown";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { BookStats } from "@/lib/util/types";
+import DatePicker from "../DatePicker";
+import { DateRange } from "react-day-picker";
+import CalendarMonthIcon from "@/assets/icons/calendar_month";
 
 interface BookCatalogProps {
   bookStats: Record<number, BookStats>;
   books: Book[];
+  range?: DateRange;
+  setRange: (range?: DateRange) => void;
 }
 const BookCatalog = (props: BookCatalogProps) => {
-  const { bookStats, books } = props;
+  const { bookStats, books, range, setRange } = props;
 
   const [searchData, setSearchData] = useState("");
 
@@ -24,11 +28,11 @@ const BookCatalog = (props: BookCatalogProps) => {
     <div className="bg-white">
       <SearchBar
         button={
-          <CommonDropdown
-            items={["hello", "world"]}
-            altButtonStyle="min-w-40"
-            buttonText={"Sort by"}
-            setFilter={() => {}}
+          <DatePicker
+            range={range}
+            setRange={setRange}
+            altButtonStyle="min-w-28"
+            leftIcon={<CalendarMonthIcon />}
           />
         }
         placeholderText="Search by book title"
