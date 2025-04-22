@@ -1,7 +1,7 @@
 "use client";
 import { Book } from "@prisma/client";
 import Image from "next/image";
-import imageToAdd from "../../assets/images/harry_potter.jpg";
+import imageToAdd from "../../assets/images/Placeholder_Book_Cover.png";
 import Link from "next/link";
 
 interface BookProps {
@@ -36,19 +36,23 @@ const BookInfo = (props: BookProps) => {
 
         <div className="align-middle w-full md:w-3/5">
           <div className="text-left mt-4 mb-4">
-            <h3 className="text-lg text-black font-semibold break-words">{book.title.slice(0,80)}</h3>
+            <h3 className="text-lg text-black font-semibold break-words">
+              {book.title.slice(0, 80)}
+            </h3>
             <p className="text-sm text-black mt-2 break-words">
-              {"by"} {book.author.slice(0,80)}{" "}
+              {"by"} {book.author.slice(0, 80)}{" "}
             </p>
           </div>
 
           <div className="flex flex-wrap items-start">
             <div className="flex flex-wrap gap-2 mt-2">
               <div className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
-                <p>{book.bookType.replace("_", " ")}</p>
+                <p>
+                  {book.bookType ? book.bookType.replace("_", " ") : "Not set"}
+                </p>
               </div>
               <div className="bg-white-200 text-black px-4 py-2 rounded-full shadow-sm border border-gray-300 flex items-center justify-start">
-                <p>{book.level.replace("_", " ")}</p>
+                <p>{book.level ? book.level.replace("_", " ") : "Not set"}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 {book.skills.map((skill, index) => (

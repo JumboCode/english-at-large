@@ -2,10 +2,12 @@
 
 import CheckIcon from "@/assets/icons/Check";
 import CommonButton from "@/components/common/button/CommonButton";
+import { useRouter } from "next/navigation";
 
 const SuccessfulSignUp = () => {
+  const router = useRouter();
   const handleClick = () => {
-    window.location.href = "/dashboard";
+    router.push('/dashboard/books');
   };
   return (
     <div>

@@ -1,7 +1,7 @@
 "use client";
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "./common/button/CommonButton";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BookWithRequests,
   CustomChangeEvent,
@@ -55,7 +55,6 @@ const BookForm = (props: BookFormProps) => {
   const [isInvalidCopies, setisInvalidCopies] = useState<boolean>(false);
 
   const { setConfirmPopup } = usePopup();
-  const [requiredFields, setRequiredFields] = useState<boolean>(false);
 
   const addToISBN = (isbn: string, updateBook: Omit<Book, "id">) => {
     if (updateBook.isbn.length === 0) {
@@ -121,25 +120,22 @@ const BookForm = (props: BookFormProps) => {
     }
   }, [isbn, pullISBN]);
 
-  useEffect(() => {
-    let bookToSave = null;
-    if (existingBook) {
-      bookToSave = editBook;
-    } else {
-      bookToSave = newBook;
-    }
-    setRequiredFields(
-      bookToSave!.author.length != 0 &&
-        bookToSave!.title.length != 0 &&
-        bookToSave!.isbn.length != 0
+  const requiredFields = useMemo(() => {
+    const bookToSave = existingBook ? editBook : newBook;
+    const validLevel =
+      bookToSave!.level !== null &&
+      Object.values(BookLevel).includes(bookToSave!.level);
+    const validBookType =
+      bookToSave!.bookType !== null &&
+      Object.values(BookType).includes(bookToSave!.bookType);
+    return (
+      bookToSave!.author.length !== 0 &&
+      bookToSave!.title.length !== 0 &&
+      bookToSave!.isbn.length !== 0 &&
+      validLevel &&
+      validBookType
     );
-    console.log(
-      requiredFields,
-      bookToSave!.author.length != 0,
-      bookToSave!.title.length != 0,
-      bookToSave!.isbn.length != 0
-    );
-  }, [newBook, editBook, existingBook, requiredFields]);
+  }, [newBook, editBook, existingBook]);
 
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
@@ -326,16 +322,29 @@ const BookForm = (props: BookFormProps) => {
                   exit(false);
                 }}
               />
-              <CommonButton
-                label={existingBook ? "Save" : "Add Book"}
-                onClick={requiredFields ? handleSave : () => {}}
-                altTextStyle="text-white"
-                altStyle={
-                  requiredFields
-                    ? "bg-dark-blue"
-                    : "bg-dark-blue opacity-50 cursor-not-allowed"
-                }
-              />
+              {editBook?.isbn.length == 0 ||
+              editBook?.title == "" ||
+              editBook?.author == "" ||
+              editBook?.copies == 0 ||
+              editBook?.numPages == 0 ? (
+                <CommonButton
+                  label={existingBook ? "Save" : "Add Book"}
+                  onClick={undefined}
+                  altTextStyle="text-white"
+                  altStyle="bg-dark-blue opacity-50 cursor-not-allowed"
+                />
+              ) : (
+                <CommonButton
+                  label={existingBook ? "Save" : "Add Book"}
+                  onClick={requiredFields ? handleSave : () => {}}
+                  altTextStyle="text-white"
+                  altStyle={
+                    requiredFields
+                      ? "bg-dark-blue"
+                      : "bg-dark-blue opacity-50 cursor-not-allowed"
+                  }
+                />
+              )}
             </div>
           </div>
           <div className="h-[0.3px] bg-black"></div>
@@ -463,14 +472,17 @@ const BookForm = (props: BookFormProps) => {
         <div className="flex w-[90%] mx-auto space-x-4">
           <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="level" className="text-lg mb-2">
-              Level
+              Level<span className="text-red-500 ml-1">*</span>
             </label>
             <select
               id="level"
               name="level"
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
-              defaultValue={editBook ? editBook.level : ""}
+              defaultValue={
+                editBook && editBook.level !== null ? editBook.level : ""
+              }
+              required
             >
               <option value="">Select level</option>
               {levels.map((bookLevel, index) => {
@@ -484,14 +496,17 @@ const BookForm = (props: BookFormProps) => {
           </div>
           <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="bookType" className="text-lg mb-2">
-              Type
+              Type<span className="text-red-500 ml-1">*</span>
             </label>
             <select
               id="bookType"
               name="bookType"
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
-              defaultValue={editBook ? editBook.bookType : ""}
+              defaultValue={
+                editBook && editBook.bookType !== null ? editBook.bookType : ""
+              }
+              required
             >
               <option value="">Select book type</option>
               {types.map((bookType, index) => {
@@ -517,6 +532,7 @@ const BookForm = (props: BookFormProps) => {
                 <p>{editBook ? editBook.copies : newBook.copies}</p>
               </div>
               <button
+                type="button"
                 onClick={() => {
                   if (availableCopies > 0) {
                     setNumCopies(numCopies - 1);
@@ -530,6 +546,7 @@ const BookForm = (props: BookFormProps) => {
                 <p>-</p>
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setNumCopies(numCopies + 1);
                   setAvailableCopies(availableCopies + 1);

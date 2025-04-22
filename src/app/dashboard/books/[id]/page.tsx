@@ -92,29 +92,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                       by {book.author}
                     </div>
                     <div className="flex">
-                      {
-                        <CommonButton
-                          label={availableCopies > 0 ? "Borrow" : "Place Hold"}
-                          altStyle={`w-40 h-10 bg-dark-blue border-none mr-3`}
-                          onClick={
-                            availableCopies > 0
-                              ? toggleBorrowOpen
-                              : toggleHoldOpen
-                          }
-                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                          leftIcon={
-                            <Image
-                              src={
-                                availableCopies > 0 ? bookIcon : holdBookClock
-                              }
-                              alt="Book Icon"
-                              className="w-4 h-4 mr-3"
-                            />
-                          }
-                        />
-                      }
-
-                      {user?.role === UserRole.Admin ? (
+                      {user?.role === UserRole.Admin ||
+                      user?.role === UserRole.Volunteer ? (
                         <>
                           <CommonButton
                             label="Edit"
@@ -148,7 +127,27 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                             }
                           />
                         </>
-                      ) : null}
+                      ) : (
+                        <CommonButton
+                          label={availableCopies > 0 ? "Borrow" : "Place Hold"}
+                          altStyle={`w-40 h-10 bg-dark-blue border-none mr-3`}
+                          onClick={
+                            availableCopies > 0
+                              ? toggleBorrowOpen
+                              : toggleHoldOpen
+                          }
+                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                          leftIcon={
+                            <Image
+                              src={
+                                availableCopies > 0 ? bookIcon : holdBookClock
+                              }
+                              alt="Book Icon"
+                              className="w-4 h-4 mr-3"
+                            />
+                          }
+                        />
+                      )}
                       {showRemoveModal ? (
                         <RemoveModal
                           book={book}

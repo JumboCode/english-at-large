@@ -1,12 +1,4 @@
-import {
-  Book,
-  BookLevel,
-  // BookSkills,
-  BookType,
-  Prisma,
-  RequestStatus,
-  User,
-} from "@prisma/client";
+import { Book, Prisma, RequestStatus, User } from "@prisma/client";
 import { BookRequest } from "@prisma/client";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,8 +92,8 @@ export const emptyBook: Book = {
   author: "",
   isbn: ["000-0-00-000000-0"],
   publisher: "",
-  level: BookLevel.Beginner,
-  bookType: BookType.Reference,
+  level: null,
+  bookType: null,
   scanLink: "http://example.com/scan",
   description: "",
   notes: "",
@@ -122,8 +114,8 @@ export const newEmptyBook: Omit<Book, "id"> = {
   author: "",
   isbn: [],
   publisher: "",
-  level: BookLevel.Beginner,
-  bookType: BookType.Reference,
+  level: null,
+  bookType: null,
   scanLink: "",
   description: "",
   notes: "",
