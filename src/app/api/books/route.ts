@@ -35,8 +35,6 @@ export async function GET(req: Request) {
       // grab the date filter parameters - if none are specified then don't worry about it
       const fromDateStr = searchParams.get("fromDate");
       const endDateStr = searchParams.get("endDate");
-      const searchQuery = searchParams.get("search") ?? undefined; // <-- 👈 NEW
-      console.log("📥 API GET /api/books searchQuery:", searchQuery);
 
       const fromDate = fromDateStr ? new Date(fromDateStr) : undefined;
       const endDate = endDateStr ? new Date(endDateStr) : undefined;
@@ -61,8 +59,7 @@ export async function GET(req: Request) {
         limit,
         withStats,
         effectiveFromDate,
-        effectiveEndDate,
-        searchQuery
+        effectiveEndDate
       );
       //const books = await getAllBooksController();
       return NextResponse.json(books);
