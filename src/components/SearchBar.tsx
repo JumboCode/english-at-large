@@ -1,38 +1,37 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import SearchIcon from "../assets/icons/Search";
 
-interface searchBarProps {
-  setSearchData: ((searchData: string) => void) | null;
+interface SearchBarProps {
+  setSearchData: (searchData: string) => void;
   button: React.ReactNode;
   button2?: React.ReactNode;
   placeholderText: string;
+  defaultValue?: string;
 }
 
-const SearchBar = (props: searchBarProps) => {
-  const { setSearchData, button, button2, placeholderText } = props;
-
+const SearchBar = ({
+  setSearchData,
+  button,
+  button2,
+  placeholderText,
+  defaultValue = "",
+}: SearchBarProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [input, setInput] = useState(defaultValue);
+
+  useEffect(() => {
+    setInput(defaultValue); // keep input in sync with parent
+  }, [defaultValue]);
 
   const clickBar = () => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
+    searchInputRef.current?.focus();
   };
 
-  // may use this function later, also TODO: turn this into a useCallback
-  // function handleKeyDown(event: { key: string }) {
-  //   if (event.key === "Enter") {
-
-  //   }
-  // }
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-
-    if (setSearchData) {
-      setSearchData(value.toLowerCase());
-    }
+    const value = e.target.value;
+    setInput(value);
+    setSearchData(value.toLowerCase());
   };
 
   return (
@@ -46,6 +45,7 @@ const SearchBar = (props: searchBarProps) => {
           className="w-full focus:outline-none text-black placeholder-medium-grey-border text-base"
           name="search bar"
           onChange={handleInputChange}
+          value={input}
           placeholder={placeholderText}
         />
         <button>

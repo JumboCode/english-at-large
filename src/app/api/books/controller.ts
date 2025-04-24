@@ -58,39 +58,51 @@ export const getAllBooksController = async (
   limit: number = 0,
   withStats: boolean = false,
   fromDate?: Date,
-  endDate?: Date
+  endDate?: Date,
+  searchQuery?: string
 ): Promise<{
   books: (BookWithRequests | (BookWithRequests & BookStats))[];
   total: number;
   totalPages: number;
 }> => {
   try {
-    // Calculate the offset (skip) for pagination
+    console.log("🛠 getAllBooksController params:", {
+      page,
+      limit,
+      fromDate,
+      endDate,
+      searchQuery, // ✅ log the search query here
+    });
     const skip = page > 0 && limit > 0 ? (page - 1) * limit : undefined;
 
-    // create the date filter
     const where: Prisma.BookWhereInput = {};
 
     if (fromDate && endDate) {
       const toEndOfDay = new Date(endDate);
       toEndOfDay.setHours(23, 59, 59, 999);
-
       where.createdAt = {
         gte: fromDate,
         lte: toEndOfDay,
       };
     }
-    // Fetch paginated books and total count
+
+    if (searchQuery && searchQuery.trim() !== "") {
+      where.title = {
+        contains: searchQuery.trim(),
+        mode: "insensitive",
+      };
+    }
+
     const [books, total] = await Promise.all([
       prisma.book.findMany({
         where,
         skip,
         take: limit > 0 ? limit : undefined,
         include: {
-          requests: true, // Include related requests
+          requests: true,
         },
       }),
-      prisma.book.count({ where }), // Get the total number of books
+      prisma.book.count({ where }),
     ]);
 
     const booksWithStats = withStats
