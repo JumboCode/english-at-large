@@ -34,7 +34,6 @@ export const getAllBooks = async (options?: {
   withStats?: boolean;
   fromDate?: Date;
   endDate?: Date;
-  search?: string; // ✅ NEW
 }): Promise<
   | {
       books: (BookWithRequests | (BookWithRequests & BookStats))[];
@@ -44,27 +43,19 @@ export const getAllBooks = async (options?: {
   | undefined
 > => {
   try {
-    const {
-      page,
-      limit,
-      withStats = false,
-      fromDate,
-      endDate,
-      search, // ✅ NEW
-    } = options || {};
+    const { page, limit, withStats = false, fromDate, endDate } = options || {};
 
     const response = await axios.get(`/api/books`, {
       params: {
-        page,
-        limit,
-        withStats,
+        page: page,
+        limit: limit,
+        withStats: withStats,
         fromDate: fromDate?.toISOString(),
         endDate: endDate?.toISOString(),
-        search: search?.trim() || undefined, // ✅ Send search if it's non-empty
       },
     });
 
-    return response.data;
+    return response.data; // The response should include books, total, and totalPages
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch books: ${error.message}`);
