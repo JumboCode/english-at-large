@@ -151,17 +151,17 @@ const Loans = () => {
           <tbody className="divide-y divide-solid">
             {subsetRequest.sort(sortByDate).map((request, index) => (
               <tr key={index} className="bg-white h-16">
-                <td className="flex flex-col">
+                <div className="flex flex-col">
                   <p className="text-black font-semibold">
                     {request.user?.name}
                   </p>
                   <Link
                     href={"mailto:" + request.user?.email}
-                    className="text-text-default-secondary underline max-w-max"
+                    className="text-text-default-secondary underline truncate block max-w-[99%] pr-2"
                   >
                     {request.user?.email}
                   </Link>
-                </td>
+                </div>
                 <td className="underline" style={{ color: "#202d74" }}>
                   <Link
                     href={`books/${request.bookId}`}

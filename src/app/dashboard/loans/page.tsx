@@ -26,7 +26,7 @@ const Loans = () => {
   const [searchData, setSearchData] = useState("");
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest); //
   const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
-
+  const currDate = new Date();
   // use of structured clone creates new subset of search target requests
   // allows filter to act on subset of searched requests
 
@@ -68,7 +68,7 @@ const Loans = () => {
       default: {
         const dateA = a.dueDate ? new Date(a.dueDate) : new Date();
         const dateB = b.dueDate ? new Date(b.dueDate) : new Date();
-        return dateB.getTime() - dateA.getTime(); // most recent first
+        return dateA.getTime() - dateB.getTime(); // most recent first
       }
     }
   };
@@ -197,16 +197,18 @@ const Loans = () => {
               .sort(sortByDate)
               .map((request, index) => (
                 <tr key={index} className="bg-white h-16">
-                  <td className="flex flex-col">
-                    <p className="text-black font-semibold">
-                      {request.user?.name}
-                    </p>
-                    <Link
-                      href={"mailto:" + request.user?.email}
-                      className="text-text-default-secondary underline max-w-max"
-                    >
-                      {request.user?.email}
-                    </Link>
+                  <td>
+                    <div className="flex flex-col">
+                      <p className="text-black font-semibold">
+                        {request.user?.name}
+                      </p>
+                      <Link
+                        href={"mailto:" + request.user?.email}
+                        className="text-text-default-secondary underline truncate block max-w-[99%] pr-2"
+                      >
+                        {request.user?.email}
+                      </Link>
+                    </div>
                   </td>
                   <td className="underline" style={{ color: "#202d74" }}>
                     <Link
@@ -223,10 +225,16 @@ const Loans = () => {
                     {dateToTimeString(request.requestedOn)}
                   </td>
 
-                  <td className="text-black">
+                  <td
+                    className={
+                      request.dueDate && new Date(request.dueDate) <= currDate
+                        ? "text-[#C00F0C]"
+                        : "text-black"
+                    }
+                  >
                     {request.dueDate
                       ? dateToTimeString(request.dueDate)
-                      : "Due Date not Found"}
+                      : "Not Found"}
                   </td>
 
                   <td className="text-black">

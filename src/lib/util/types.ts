@@ -9,6 +9,7 @@ import { BookRequest } from "@prisma/client";
 export const DEFAULT_PAGINATION_START_PAGE = 1;
 export const DEFAULT_PAGINATION_LIMIT = 10;
 export const MAX_REQUESTS = 5;
+export const DEFAULT_LOAN_TIME_IN_MONTHS = 6;
 
 export type BookWithRequests = Prisma.BookGetPayload<{
   include: { requests: true };

@@ -1,6 +1,7 @@
 import { Book, BookRequest, RequestStatus, User } from "@prisma/client";
 import axios from "axios";
 import {
+  DEFAULT_LOAN_TIME_IN_MONTHS,
   RequestWithBookAndUser,
   validateBookData,
   validateRequestData,
@@ -161,7 +162,7 @@ export const createQuickRequest = async (
       throw new Error("Missing request fields");
     }
     const returnDate = new Date();
-    returnDate.setMonth(returnDate.getMonth() + 2);
+    returnDate.setMonth(returnDate.getMonth() + DEFAULT_LOAN_TIME_IN_MONTHS);
 
     const request: Omit<BookRequest, "id"> = {
       // id: 0, // or handle it as undefined

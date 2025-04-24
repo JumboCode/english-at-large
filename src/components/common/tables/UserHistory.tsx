@@ -122,7 +122,7 @@ const UserHistory = (props: UserHistoryProps) => {
                         <span style={{ color: "black" }}>{user.name}</span>
                         <Link
                           href={"mailto:" + user.email}
-                          className="text-text-default-secondary underline"
+                          className="text-text-default-secondary underline truncate block max-w-[100%]"
                         >
                           {user.email}
                         </Link>
