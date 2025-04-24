@@ -1,15 +1,19 @@
 "use client";
 import React, { useEffect, useState, use } from "react";
 import { getOneUser } from "@/lib/api/users";
-import { User, RequestStatus } from "@prisma/client";
+import { RequestStatus } from "@prisma/client";
 import BookInfo from "@/components/common/BookInfo";
 import { getUserRequests } from "@/lib/api/requests";
-import { MAX_REQUESTS, RequestWithBookAndUser } from "@/lib/util/types";
+import {
+  MAX_REQUESTS,
+  RequestWithBookAndUser,
+  UserWithRequests,
+} from "@/lib/util/types";
 type Params = Promise<{ id: string }>;
 
 const Shelf = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserWithRequests | null>(null);
 
   const [loans, setLoans] = useState<RequestWithBookAndUser[]>([]);
 

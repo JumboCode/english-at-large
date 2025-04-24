@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState, use, useMemo } from "react";
+import React, { useEffect, useState, use, useMemo, useCallback } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import holdBookClock from "../../../../assets/icons/holdBookClock.svg";
 import BookPopup from "@/components/common/BookPopUp";
@@ -18,7 +18,7 @@ import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import { useRouter } from "next/navigation";
-import { UserRole } from "@prisma/client";
+import { RequestStatus, UserRole } from "@prisma/client";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -30,6 +30,19 @@ type Params = Promise<{ id: string }>;
  *
  * TODO: Hook up the availability logic again once schema changes are pushed
  */
+
+enum UserBookStatus {
+  HAS_BORROWED = "HAS_BORROWED",
+  HAS_HOLD = "HAS_HOLD",
+  CAN_BORROW = "CAN_BORROW",
+}
+
+interface ButtonConfig {
+  label: string;
+  style: string;
+  icon: StaticImageData;
+  onClick: () => void;
+}
 const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [book, setBook] = useState<BookWithRequests | null>(null);
@@ -38,6 +51,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const user = useCurrentUser();
+
   const { hidePopup, popupStatus } = usePopup();
 
   const router = useRouter();
@@ -57,13 +71,67 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     [book]
   );
 
-  const toggleBorrowOpen = () => {
+  const toggleBorrowOpen = useCallback(() => {
     setIsBorrowOpen(!isBorrowOpen);
-  };
+  }, [isBorrowOpen]);
 
-  const toggleHoldOpen = () => {
+  const toggleHoldOpen = useCallback(() => {
     setIsHoldOpen(!isHoldOpen);
-  };
+  }, [isHoldOpen]);
+
+  const userBookStatus: UserBookStatus = useMemo(() => {
+    if (!user?.requests) return UserBookStatus.CAN_BORROW;
+
+    for (const request of user.requests) {
+      if (
+        request.bookId === book?.id &&
+        request.status !== RequestStatus.Returned
+      ) {
+        if (request.status === RequestStatus.Borrowed)
+          return UserBookStatus.HAS_BORROWED;
+        if (request.status === RequestStatus.Hold)
+          return UserBookStatus.HAS_HOLD;
+      }
+    }
+
+    return UserBookStatus.CAN_BORROW;
+  }, [book?.id, user?.requests]);
+
+  const buttonConfig: ButtonConfig = useMemo(() => {
+    if (userBookStatus === UserBookStatus.HAS_BORROWED) {
+      return {
+        label: "Borrowed",
+        style: "w-40 h-10 bg-gray-400 border-none mr-3",
+        icon: bookIcon,
+        onClick: () => {},
+      };
+    }
+
+    if (userBookStatus === UserBookStatus.HAS_HOLD) {
+      return {
+        label: "Hold Placed",
+        style: "w-40 h-10 bg-gray-400 border-none mr-3",
+        icon: holdBookClock,
+        onClick: () => {},
+      };
+    }
+
+    if (availableCopies > 0) {
+      return {
+        label: "Borrow",
+        style: "w-40 h-10 bg-dark-blue border-none mr-3",
+        icon: bookIcon,
+        onClick: toggleBorrowOpen,
+      };
+    } else {
+      return {
+        label: "Place Hold",
+        style: "w-40 h-10 bg-light-blue border-none mr-3",
+        icon: holdBookClock,
+        onClick: toggleHoldOpen,
+      };
+    }
+  }, [userBookStatus, availableCopies, toggleBorrowOpen, toggleHoldOpen]);
 
   if (book === null) return null;
 
@@ -129,13 +197,9 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                         </>
                       ) : (
                         <CommonButton
-                          label={availableCopies > 0 ? "Borrow" : "Place Hold"}
-                          altStyle={`w-40 h-10 bg-dark-blue border-none mr-3`}
-                          onClick={
-                            availableCopies > 0
-                              ? toggleBorrowOpen
-                              : toggleHoldOpen
-                          }
+                          label={buttonConfig.label}
+                          altStyle={buttonConfig.style}
+                          onClick={buttonConfig.onClick}
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
                             <Image
@@ -145,6 +209,10 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                               alt="Book Icon"
                               className="w-4 h-4 mr-3"
                             />
+                          }
+                          disabled={
+                            userBookStatus === UserBookStatus.HAS_HOLD ||
+                            userBookStatus === UserBookStatus.HAS_BORROWED
                           }
                         />
                       )}

@@ -62,9 +62,11 @@ export const getAllUsersController = async (
   }
 };
 
-export const getOneUserController = async (id: string): Promise<User> => {
+export const getOneUserController = async (
+  id: string
+): Promise<UserWithRequests> => {
   try {
-    const user = await prisma.user.findUnique({
+    const user: UserWithRequests | null = await prisma.user.findUnique({
       where: { id: id },
       include: {
         requests: true,

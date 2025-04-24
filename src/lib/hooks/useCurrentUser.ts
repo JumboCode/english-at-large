@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import { getOneUserByClerkid } from "../api/users";
-import { User } from "@prisma/client";
+import { UserWithRequests } from "../util/types";
 
 /**
  * a hook that grabs the currently authenticated user from Clerk and returns the corresponding user from neon.tech.
@@ -12,7 +12,9 @@ import { User } from "@prisma/client";
  */
 const useCurrentUser = () => {
   const { user } = useUser(); // Clerk user
-  const [currentUser, setCurrentUser] = useState<User | null | undefined>(null);
+  const [currentUser, setCurrentUser] = useState<
+    UserWithRequests | null | undefined
+  >(null);
 
   useEffect(() => {
     const fetchUser = async () => {
