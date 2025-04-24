@@ -89,22 +89,22 @@ const Loans = () => {
         success: true,
       });
 
-      // finds oldest request of status hold and sends email
-      const holds = requests.filter(
-        (holdRequest) =>
-          holdRequest.status === RequestStatus.Hold &&
-          holdRequest.bookId === request.bookId
-      );
+      // // finds oldest request of status hold and sends email
+      // const holds = requests.filter(
+      //   (holdRequest) =>
+      //     holdRequest.status === RequestStatus.Hold &&
+      //     holdRequest.bookId === request.bookId
+      // );
 
-      // if there are any holds for the current book
-      if (holds.length > 0) {
-        const earliestHold = holds[0];
-        await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
-      }
+      // // if there are any holds for the current book
+      // if (holds.length > 0) {
+      //   const earliestHold = holds[0];
+      //   await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
+      // }
 
-      if (request) {
-        setOneRequest(request);
-      }
+      // if (request) {
+      //   setOneRequest(request);
+      // }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({

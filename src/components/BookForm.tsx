@@ -322,11 +322,7 @@ const BookForm = (props: BookFormProps) => {
                   exit(false);
                 }}
               />
-              {editBook?.isbn.length == 0 ||
-              editBook?.title == "" ||
-              editBook?.author == "" ||
-              editBook?.copies == 0 ||
-              editBook?.numPages == 0 ? (
+              {requiredFields ? (
                 <CommonButton
                   label={existingBook ? "Save" : "Add Book"}
                   onClick={undefined}

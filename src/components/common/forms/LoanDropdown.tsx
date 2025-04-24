@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import DropArrowIcon from "@/assets/icons/DropArrow";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { BookRequest, RequestStatus } from "@prisma/client";
+import { RequestStatus } from "@prisma/client";
 import { updateRequest } from "@/lib/api/requests";
+import { RequestWithBookAndUser } from "@/lib/util/types";
 
 interface DropdownProps {
-  report: BookRequest;
+  report: RequestWithBookAndUser;
   selectedValue: string;
 }
 
@@ -13,7 +14,7 @@ const LoanDropdown = (props: DropdownProps) => {
   const { report, selectedValue } = props;
   const [filterType, setFilterType] = useState<RequestStatus>(report.status);
 
-  const updateReq = useCallback(async (req: BookRequest) => {
+  const updateReq = useCallback(async (req: RequestWithBookAndUser) => {
     await updateRequest(req);
   }, []);
   useEffect(() => {

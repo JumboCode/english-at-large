@@ -167,6 +167,56 @@ export const newEmptyRequest: Omit<BookRequest, "id"> = {
   dueDate: null,
 };
 
+export enum UserBookStatus {
+  HAS_BORROWED = "HAS_BORROWED",
+  HAS_HOLD = "HAS_HOLD",
+  CAN_BORROW = "CAN_BORROW",
+}
+
+interface UserRequest {
+  bookId: number;
+  status: RequestStatus;
+}
+
+export const getUserBookStatus = (
+  userRequests: UserRequest[] | undefined,
+  bookId: number | undefined
+): UserBookStatus => {
+  if (!userRequests || bookId === undefined) return UserBookStatus.CAN_BORROW;
+
+  for (const request of userRequests) {
+    if (
+      request.bookId === bookId &&
+      request.status !== RequestStatus.Returned
+    ) {
+      if (
+        request.status === RequestStatus.Borrowed ||
+        request.status === RequestStatus.Pickup ||
+        request.status === RequestStatus.Requested
+      ) {
+        return UserBookStatus.HAS_BORROWED;
+      }
+      if (request.status === RequestStatus.Hold) {
+        return UserBookStatus.HAS_HOLD;
+      }
+    }
+  }
+
+  return UserBookStatus.CAN_BORROW;
+};
+
+export const getCurrentUserRequestOnBook = (
+  book: Book,
+  user: UserWithRequests | undefined
+): BookRequest | undefined => {
+  if (!user?.requests || !book?.id) return undefined;
+
+  return user.requests.find(
+    (request) =>
+      request.bookId === book.id && request.status !== RequestStatus.Returned
+  );
+};
+
 /**
  * Utility function for checking if a request is valid (no fields are empty, etc.)
  *

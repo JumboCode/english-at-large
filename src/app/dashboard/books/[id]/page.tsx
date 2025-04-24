@@ -14,11 +14,16 @@ import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
 import imageToAdd from "../../../../assets/images/Placeholder_Book_Cover.png";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
+import {
+  BookWithRequests,
+  getAvailableCopies,
+  getUserBookStatus,
+  UserBookStatus,
+} from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import { useRouter } from "next/navigation";
-import { RequestStatus, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -30,12 +35,6 @@ type Params = Promise<{ id: string }>;
  *
  * TODO: Hook up the availability logic again once schema changes are pushed
  */
-
-enum UserBookStatus {
-  HAS_BORROWED = "HAS_BORROWED",
-  HAS_HOLD = "HAS_HOLD",
-  CAN_BORROW = "CAN_BORROW",
-}
 
 interface ButtonConfig {
   label: string;
@@ -57,11 +56,17 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const router = useRouter();
   useEffect(() => {
     const fetchBook = async () => {
-      const book = await getOneBook(+(await params).id);
-      if (!book) {
+      try {
+        const book = await getOneBook(+(await params).id);
+        if (!book) {
+          router.replace("/dashboard");
+        } else {
+          setBook(book);
+        }
+      } catch (error) {
+        console.error("Error fetching book:", error);
         router.replace("/dashboard");
       }
-      setBook(book || null);
     };
     fetchBook();
   }, [params, router]);
@@ -80,29 +85,15 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   }, [isHoldOpen]);
 
   const userBookStatus: UserBookStatus = useMemo(() => {
-    if (!user?.requests) return UserBookStatus.CAN_BORROW;
-
-    for (const request of user.requests) {
-      if (
-        request.bookId === book?.id &&
-        request.status !== RequestStatus.Returned
-      ) {
-        if (request.status === RequestStatus.Borrowed)
-          return UserBookStatus.HAS_BORROWED;
-        if (request.status === RequestStatus.Hold)
-          return UserBookStatus.HAS_HOLD;
-      }
-    }
-
-    return UserBookStatus.CAN_BORROW;
-  }, [book?.id, user?.requests]);
+    return getUserBookStatus(user?.requests, book?.id);
+  }, [book?.id, user]);
 
   const buttonConfig: ButtonConfig = useMemo(() => {
     if (userBookStatus === UserBookStatus.HAS_BORROWED) {
       return {
         label: "Borrowed",
         style: "w-40 h-10 bg-gray-400 border-none mr-3",
-        icon: bookIcon,
+        icon: null,
         onClick: () => {},
       };
     }
@@ -126,7 +117,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
     } else {
       return {
         label: "Place Hold",
-        style: "w-40 h-10 bg-light-blue border-none mr-3",
+        style: "w-40 h-10 bg-dark-blue border-none mr-3",
         icon: holdBookClock,
         onClick: toggleHoldOpen,
       };
@@ -135,6 +126,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
 
   if (book === null) return null;
 
+  if (!user) return;
   return (
     <div>
       {showBookForm ? (
@@ -202,13 +194,18 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                           onClick={buttonConfig.onClick}
                           altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
                           leftIcon={
-                            <Image
-                              src={
-                                availableCopies > 0 ? bookIcon : holdBookClock
-                              }
-                              alt="Book Icon"
-                              className="w-4 h-4 mr-3"
-                            />
+                            !(
+                              userBookStatus === UserBookStatus.HAS_HOLD ||
+                              userBookStatus === UserBookStatus.HAS_BORROWED
+                            ) ? (
+                              <Image
+                                src={
+                                  availableCopies > 0 ? bookIcon : holdBookClock
+                                }
+                                alt="Book Icon"
+                                className="w-4 h-4 mr-3"
+                              />
+                            ) : undefined
                           }
                           disabled={
                             userBookStatus === UserBookStatus.HAS_HOLD ||

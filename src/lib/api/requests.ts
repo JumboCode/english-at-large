@@ -203,7 +203,11 @@ export const updateRequest = async (
     if (!validateRequestData(request)) {
       throw new Error("Missing request fields");
     }
-    const response = await axios.put("/api/requests", request);
+    const response = await axios.put("/api/requests", request, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     return response.data;
   } catch (error) {
@@ -222,7 +226,7 @@ export const updateRequest = async (
  */
 export const deleteRequest = async (
   id: number
-): Promise<BookRequest[] | undefined> => {
+): Promise<BookRequest | undefined> => {
   try {
     const response = await axios.delete(`/api/requests?id=${id}`);
     return response.data;

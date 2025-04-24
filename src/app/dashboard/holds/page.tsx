@@ -68,13 +68,13 @@ const Loans = () => {
     return a.requestedOn > b.requestedOn ? 1 : -1;
   };
 
-  // functionality for forcing wait on loans coming off the waitlist to be clicked 'done' by an admin
+  // functionality for forcing wait on loans coming off the waitlist to be moved to waitlist
   // const markAsDone = async (request: RequestWithBookAndUser) => {
   //   const currentDate = new Date();
   //   try {
   //     await updateReq({
   //       ...request,
-  //       status: RequestStatus.Borrowed,
+  //       status: RequestStatus.Pickup,
   //       returnedBy: currentDate,
   //     });
   //     setConfirmPopup({
@@ -90,6 +90,14 @@ const Loans = () => {
   //       success: false,
   //     });
   //   }
+  // };
+
+  // const requestFilter = (request: RequestWithBookAndUser) => {
+  //   const currAvailCopies = getAvailableCopies(request.book);
+  //   if (currAvailCopies > 0) {
+  //     markAsDone(request);
+  //   }
+  //   return request;
   // };
 
   const removeHold = async (

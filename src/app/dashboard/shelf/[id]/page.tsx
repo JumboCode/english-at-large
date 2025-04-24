@@ -41,7 +41,6 @@ const Shelf = (props: { params: Promise<Params> }) => {
       const userHolds = allUserRequests?.filter(
         (request) => request.status === RequestStatus.Hold
       );
-      console.log(userLoans);
       setLoans(userLoans ?? []);
       setHolds(userHolds ?? []);
     };
@@ -82,7 +81,19 @@ const Shelf = (props: { params: Promise<Params> }) => {
           {loans.map((request) => (
             <li key={request.id} className="w-1/2">
               <div className="p-4 rounded-md border-2 border-[#D9D9D9] m-2">
-                <BookInfo book={request.book} />
+                <BookInfo
+                  book={request.book}
+                  user={user}
+                  onDelete={() => {
+                    // Remove from loans or holds after cancel
+                    setLoans((prevLoans) =>
+                      prevLoans.filter((r) => r.id !== request.id)
+                    );
+                    setHolds((prevHolds) =>
+                      prevHolds.filter((r) => r.id !== request.id)
+                    );
+                  }}
+                />
               </div>
             </li>
           ))}
@@ -98,7 +109,19 @@ const Shelf = (props: { params: Promise<Params> }) => {
           {holds.map((request) => (
             <li key={request.id} className="w-1/2">
               <div className="p-4 rounded-md border-2 border-[#D9D9D9] m-2">
-                <BookInfo book={request.book} />
+                <BookInfo
+                  book={request.book}
+                  user={user}
+                  onDelete={() => {
+                    // Remove from loans or holds after cancel
+                    setLoans((prevLoans) =>
+                      prevLoans.filter((r) => r.id !== request.id)
+                    );
+                    setHolds((prevHolds) =>
+                      prevHolds.filter((r) => r.id !== request.id)
+                    );
+                  }}
+                />
               </div>
             </li>
           ))}
