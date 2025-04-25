@@ -4,7 +4,14 @@ import {
   BookWithRequests,
   validateBookData,
 } from "@/lib/util/types";
-import { Book, BookRequest, Prisma } from "@prisma/client";
+import {
+  Book,
+  BookLevel,
+  BookRequest,
+  BookSkills,
+  Prisma,
+  RequestStatus,
+} from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
  *
@@ -58,7 +65,12 @@ export const getAllBooksController = async (
   limit: number = 0,
   withStats: boolean = false,
   fromDate?: Date,
-  endDate?: Date
+  endDate?: Date,
+  skills?: BookSkills[],
+  levels?: BookLevel[],
+  bookAvailable?: boolean,
+  sortBy?: string,
+  search?: string
 ): Promise<{
   books: (BookWithRequests | (BookWithRequests & BookStats))[];
   total: number;
@@ -80,32 +92,79 @@ export const getAllBooksController = async (
         lte: toEndOfDay,
       };
     }
-    // Fetch paginated books and total count
-    const [books, total] = await Promise.all([
-      prisma.book.findMany({
-        where,
-        skip,
-        take: limit > 0 ? limit : undefined,
-        include: {
-          requests: true, // Include related requests
+    if (skills && skills.length > 0) {
+      where.skills = { hasSome: skills }; // Prisma supports array overlap with `hasSome`
+    }
+
+    if (levels && levels.length > 0) {
+      where.level = { in: levels };
+    }
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { author: { contains: search, mode: "insensitive" } },
+        { isbn: { has: search } }, // assuming isbn is an array of strings
+      ];
+    }
+
+    const orderBy: Prisma.BookOrderByWithRelationInput = {};
+    switch (sortBy) {
+      case "By Title":
+        orderBy.title = "asc";
+        break;
+      case "By Author":
+        orderBy.author = "asc";
+        break;
+      case "By Release Date":
+        orderBy.releaseDate = "asc";
+        break;
+      default:
+        orderBy.title = "asc";
+    }
+
+    const books = await prisma.book.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit > 0 ? limit : undefined,
+      include: {
+        _count: {
+          select: {
+            requests: {
+              where: {
+                status: {
+                  notIn: [
+                    RequestStatus.Returned,
+                    RequestStatus.Lost,
+                    RequestStatus.Hold,
+                  ],
+                },
+              },
+            },
+          },
         },
-      }),
-      prisma.book.count({ where }), // Get the total number of books
-    ]);
+        requests: withStats, // only include full requests if withStats needed
+      },
+    });
+    // Fetch paginated books and total count
+    // Calculate availability
+    const filteredBooks = books.filter((book) => {
+      const activeRequests = book._count.requests;
+      const availableCopies = book.copies - activeRequests;
+      return bookAvailable ? availableCopies > 0 : true; // Apply availability filter if needed
+    });
 
     const booksWithStats = withStats
-      ? books.map((book) => {
+      ? filteredBooks.map((book) => {
           const totalRequests = book.requests.length;
           const uniqueUsers = new Set(book.requests.map((req) => req.userId))
             .size;
-          return {
-            ...book,
-            totalRequests,
-            uniqueUsers,
-          };
+          return { ...book, totalRequests, uniqueUsers };
         })
-      : books;
+      : filteredBooks;
 
+    const total = await prisma.book.count({ where });
     const totalPages = Math.ceil(total / limit);
 
     return {

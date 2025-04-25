@@ -437,7 +437,7 @@ export const putRequestController = async (
   }
 };
 
-const getAvailableCopies = async (
+export const getAvailableCopies = async (
   bookId: number,
   excludeRequestId?: number
 ): Promise<number> => {
