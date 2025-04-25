@@ -8,6 +8,7 @@ import {
   deleteRequestController,
   getUserRequestController,
 } from "./controller";
+import { requireUserWithRole } from "@/lib/auth";
 
 // GET - Fetch all requests
 export async function GET(req: Request) {
@@ -98,6 +99,13 @@ export async function PUT(req: Request) {
 
 // DELETE - Delete a request
 export async function DELETE(req: Request) {
+  try {
+    await requireUserWithRole(["Admin", "Volunteer"]);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id") as string;

@@ -12,25 +12,24 @@ import {
 
 // GET - retrieve all users or single user by ID
 export async function GET(req: Request) {
- 
-
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const clerkId = searchParams.get("clerkId");
 
   // Extract pagination parameters
-  const page = parseInt(searchParams.get("page") || "1", 10); //new
-  const limit = parseInt(searchParams.get("limit") || "10", 10); //new
+  const page = parseInt(searchParams.get("page") || "1", 10); // new
+  const limit = parseInt(searchParams.get("limit") || "10", 10); // new
 
-  try {
-    await requireUserWithRole(["Admin", "Volunteer"]); // new for HANNAH
-  } catch (err) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
-  }
+  // try {
+  //   await requireUserWithRole(["Admin", "Volunteer"]);
+  // } catch (err) {
+  //   console.error(err);
+  //   return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+  // }
+
   try {
     if (id) {
       // if id, fetch the specific user
-
       const user = await getOneUserController(id);
       return NextResponse.json(user);
     }
@@ -110,6 +109,13 @@ export async function POST(req: Request) {
 // PUT - update user
 export async function PUT(req: Request) {
   try {
+    await requireUserWithRole(["Admin"]);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+  }
+
+  try {
     const userData: User = await req.json();
     const updatedUser = putUserController(userData);
     return NextResponse.json(updatedUser, { status: 200 });
@@ -130,6 +136,13 @@ export async function PUT(req: Request) {
 
 // DELETE - delete user by id
 export async function DELETE(req: Request) {
+  try {
+    await requireUserWithRole(["Admin", "Volunteer"]);
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
