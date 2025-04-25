@@ -11,6 +11,7 @@ import { getRequestCount } from "@/lib/api/requests";
 import { BookStats, BookWithRequests } from "@/lib/util/types";
 import { getAllBooks } from "@/lib/api/books";
 import { DateRange } from "react-day-picker";
+import LoadingSkeleton from "@/app/loading";
 
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");
@@ -31,9 +32,13 @@ export default function DataPage() {
   const [currentUserPage, setCurrentUserPage] = useState(1); // For User History
   const [totalUserPages, setTotalUserPages] = useState(0); // Total pages for users
 
+  const [loadingBooks, setLoadingBooks] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
   useEffect(() => {
     if (activeTab === "Book Catalog") {
       const fetchBooks = async () => {
+        setLoadingBooks(true);
         try {
           const booksResult = await getAllBooks({
             page: currentBookPage,
@@ -62,6 +67,8 @@ export default function DataPage() {
           }
         } catch (err) {
           console.error("Failed to fetch books:", err);
+        } finally {
+          setLoadingBooks(false);
         }
       };
 
@@ -71,6 +78,7 @@ export default function DataPage() {
 
   useEffect(() => {
     if (activeTab === "User History") {
+      setLoadingUsers(true);
       const fetchUsers = async () => {
         try {
           const usersResult = await getAllUsers(
@@ -95,6 +103,8 @@ export default function DataPage() {
           }
         } catch (err) {
           console.error("Failed to fetch users:", err);
+        } finally {
+          setLoadingUsers(false);
         }
       };
 
@@ -124,6 +134,9 @@ export default function DataPage() {
         }
       } catch (err) {
         console.error("Unexpected error in fetchData:", err);
+      } finally {
+        setCurrentUserPage(1);
+        setCurrentBookPage(1);
       }
     };
     fetchData();
@@ -177,75 +190,87 @@ export default function DataPage() {
       )}
       {activeTab === "Book Catalog" && (
         <>
-          <BookCatalog
-            books={books}
-            bookStats={bookStats}
-            range={range}
-            setRange={setRange}
-          />
-          {totalBookPages > 1 && (
-            <div className="pagination-controls flex justify-center mt-4">
-              <button
-                onClick={() =>
-                  setCurrentBookPage((prev) => Math.max(prev - 1, 1))
-                }
-                disabled={currentBookPage === 1}
-                className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <span className="px-4 py-2">
-                Page {currentBookPage} of {totalBookPages}
-              </span>
-              <button
-                onClick={() =>
-                  setCurrentBookPage((prev) =>
-                    Math.min(prev + 1, totalBookPages)
-                  )
-                }
-                disabled={currentBookPage === totalBookPages}
-                className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+          {loadingBooks ? (
+            <LoadingSkeleton />
+          ) : (
+            <>
+              <BookCatalog
+                books={books}
+                bookStats={bookStats}
+                range={range}
+                setRange={setRange}
+              />
+              {totalBookPages > 1 && (
+                <div className="pagination-controls flex justify-center mt-4">
+                  <button
+                    onClick={() =>
+                      setCurrentBookPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentBookPage === 1}
+                    className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-4 py-2">
+                    Page {currentBookPage} of {totalBookPages}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentBookPage((prev) =>
+                        Math.min(prev + 1, totalBookPages)
+                      )
+                    }
+                    disabled={currentBookPage === totalBookPages}
+                    className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
       {activeTab === "User History" && (
         <>
-          <UserHistory
-            users={users}
-            requests={requests}
-            range={range}
-            setRange={setRange}
-          />
-          {totalUserPages > 1 && (
-            <div className="pagination-controls flex justify-center mt-4">
-              <button
-                onClick={() =>
-                  setCurrentUserPage((prev) => Math.max(prev - 1, 1))
-                }
-                disabled={currentUserPage === 1}
-                className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <span className="px-4 py-2">
-                Page {currentUserPage} of {totalUserPages}
-              </span>
-              <button
-                onClick={() =>
-                  setCurrentUserPage((prev) =>
-                    Math.min(prev + 1, totalUserPages)
-                  )
-                }
-                disabled={currentUserPage === totalUserPages}
-                className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+          {loadingUsers ? (
+            <LoadingSkeleton />
+          ) : (
+            <>
+              <UserHistory
+                users={users}
+                requests={requests}
+                range={range}
+                setRange={setRange}
+              />
+              {totalUserPages > 1 && (
+                <div className="pagination-controls flex justify-center mt-4">
+                  <button
+                    onClick={() =>
+                      setCurrentUserPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentUserPage === 1}
+                    className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="px-4 py-2">
+                    Page {currentUserPage} of {totalUserPages}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentUserPage((prev) =>
+                        Math.min(prev + 1, totalUserPages)
+                      )
+                    }
+                    disabled={currentUserPage === totalUserPages}
+                    className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </>
       )}

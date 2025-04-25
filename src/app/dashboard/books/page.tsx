@@ -103,6 +103,11 @@ const BooksPage = () => {
     fetchBooks();
   }, [currentBookPage, skills, levels, bookAvailable, bookSortBy, searchData]);
 
+  useEffect(() => {
+    // Reset to page 1 whenever filters or search changes but NOT currentBookPage
+    setCurrentBookPage(1);
+  }, [skills, levels, bookAvailable, bookSortBy, searchData]);
+
   const bookFormExit = (listLen: boolean) => {
     setFormShown(
       listLen ? formState.SIMILAR_BOOK_FORM_OPEN : formState.FORM_CLOSED
