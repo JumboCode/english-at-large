@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { Book, BookLevel, BookSkills, UserRole } from "@prisma/client";
@@ -43,7 +43,7 @@ const BooksPage = () => {
   const [bookAvailable, setBookAvailable] = useState<boolean>(true);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
   const [isbnOnSubmit, setISBN] = useState<string>("");
-
+  const [fetchedTotal, setFetchedTotal] = useState<number>(0);
   const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
 
@@ -62,12 +62,14 @@ const BooksPage = () => {
   // use of structured clone creates new subset of search target books
   // allows filter to act on subset of searched books
 
-  const subsetBooks = structuredClone<Book[]>(books).filter(
-    (book) =>
-      book.title.toLowerCase().includes(searchData) ||
-      book.author.toLowerCase().includes(searchData) ||
-      book.isbn.some((isbn) => isbn.includes(searchData))
-  );
+  const subsetBooks = useMemo(() => {
+    return structuredClone<Book[]>(books).filter(
+      (book) =>
+        book.title.toLowerCase().includes(searchData) ||
+        book.author.toLowerCase().includes(searchData) ||
+        book.isbn.some((isbn) => isbn.includes(searchData))
+    );
+  }, [books, searchData]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -75,7 +77,7 @@ const BooksPage = () => {
       try {
         const booksResult = await getAllBooks({
           page: currentBookPage,
-          limit: 20,
+          limit: 10,
           skills,
           levels,
           bookAvailable,
@@ -83,10 +85,14 @@ const BooksPage = () => {
           search: searchData,
         });
         if (booksResult) {
-          const { books: fetchedBooks, totalPages: fetchedTotalPages } =
-            booksResult;
-          setBooks(fetchedBooks);
+          const {
+            books: fetchedBooksPage,
+            totalPages: fetchedTotalPages,
+            total: fetchedTotalBooks,
+          } = booksResult;
+          setBooks(fetchedBooksPage);
           setTotalBookPages(fetchedTotalPages);
+          setFetchedTotal(fetchedTotalBooks);
         }
       } catch (err) {
         console.error("Failed to fetch books:", err);
@@ -177,7 +183,7 @@ const BooksPage = () => {
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500 mb-6">
-              {subsetBooks.length} {"titles"}
+              {fetchedTotal} {"titles"}
             </p>
           </div>
         </div>
