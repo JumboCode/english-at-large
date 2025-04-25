@@ -72,7 +72,8 @@ const FilterPopup = (props: FilterPopupProps) => {
     setSkills(saveSkills);
     setLevels(saveLevels);
     setSortBook(saveSortBook);
-    if (saveAvailable && setBookAvailable) setBookAvailable(saveAvailable);
+    if (saveAvailable != null && setBookAvailable != null)
+      setBookAvailable(saveAvailable);
     toggle();
   };
 

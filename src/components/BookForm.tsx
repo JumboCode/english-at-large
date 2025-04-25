@@ -128,6 +128,7 @@ const BookForm = (props: BookFormProps) => {
     const validBookType =
       bookToSave!.bookType !== null &&
       Object.values(BookType).includes(bookToSave!.bookType);
+
     return (
       bookToSave!.author.length !== 0 &&
       bookToSave!.title.length !== 0 &&
@@ -146,35 +147,20 @@ const BookForm = (props: BookFormProps) => {
   ) => {
     const { name, value } = e.target;
 
-    if (name === "numPages") {
-      // Allow empty string while typing
-      setNumpages(value);
+    // Fields that should be treated as numbers
+    const numericFields = new Set(["numPages"]);
 
-      const parsed = value === "" ? 0 : Math.max(Number(value), 0);
+    let updatedValue: string | number = value;
 
-      if (existingBook) {
-        setEditBook(
-          (prevBook) =>
-            ({
-              ...prevBook,
-              [name]: parsed,
-            } as BookWithRequests)
-        );
-      } else if (newBook) {
-        setNewBook(
-          (prevBook) =>
-            ({
-              ...prevBook,
-              [name]: parsed,
-            } as Omit<Book, "id">)
-        );
-      }
+    // Handle numeric fields
+    if (numericFields.has(name)) {
+      // Allow empty string for input UI, but store as 0
+      setNumpages(value); // only needed for numPages input
 
-      return;
+      updatedValue = value === "" ? 0 : Math.max(Number(value), 0);
     }
 
-    let updatedValue = value;
-
+    // Handle date logic
     if (name === "releaseDate" && new Date(value) > new Date()) {
       const date = new Date();
       const year = date.getFullYear();
@@ -182,24 +168,18 @@ const BookForm = (props: BookFormProps) => {
       const day = String(date.getDate()).padStart(2, "0");
       updatedValue = `${year}-${month}-${day}`;
     }
-    // default case for other fields
 
+    // Update the correct book state
     if (existingBook) {
-      setEditBook(
-        (prevBook) =>
-          ({
-            ...prevBook,
-            [name]: updatedValue,
-          } as BookWithRequests)
-      );
-    } else if (newBook) {
-      setNewBook(
-        (prevBook) =>
-          ({
-            ...prevBook,
-            [name]: updatedValue,
-          } as Omit<Book, "id">)
-      );
+      setEditBook((prevBook) => ({
+        ...prevBook!,
+        [name]: updatedValue,
+      }));
+    } else {
+      setNewBook((prevBook) => ({
+        ...prevBook,
+        [name]: updatedValue,
+      }));
     }
   };
 
@@ -322,25 +302,14 @@ const BookForm = (props: BookFormProps) => {
                   exit(false);
                 }}
               />
-              {requiredFields ? (
-                <CommonButton
-                  label={existingBook ? "Save" : "Add Book"}
-                  onClick={undefined}
-                  altTextStyle="text-white"
-                  altStyle="bg-dark-blue opacity-50 cursor-not-allowed"
-                />
-              ) : (
-                <CommonButton
-                  label={existingBook ? "Save" : "Add Book"}
-                  onClick={requiredFields ? handleSave : () => {}}
-                  altTextStyle="text-white"
-                  altStyle={
-                    requiredFields
-                      ? "bg-dark-blue"
-                      : "bg-dark-blue opacity-50 cursor-not-allowed"
-                  }
-                />
-              )}
+              <CommonButton
+                label={existingBook ? "Save" : "Add Book"}
+                onClick={requiredFields ? handleSave : undefined}
+                altTextStyle="text-white"
+                altStyle={`bg-dark-blue ${
+                  requiredFields ? "" : "opacity-50 cursor-not-allowed"
+                }`}
+              />
             </div>
           </div>
           <div className="h-[0.3px] bg-black"></div>

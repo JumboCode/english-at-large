@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useMemo } from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { Book, BookLevel, BookSkills, UserRole } from "@prisma/client";
@@ -43,7 +43,7 @@ const BooksPage = () => {
   const [bookAvailable, setBookAvailable] = useState<boolean>(true);
   const [bookSortBy, setBookSortBy] = useState<string>("By Title");
   const [isbnOnSubmit, setISBN] = useState<string>("");
-
+  const [fetchedTotal, setFetchedTotal] = useState<number>(0);
   const { hidePopup, popupStatus } = usePopup();
   const [searchData, setSearchData] = useState("");
 
@@ -59,66 +59,40 @@ const BooksPage = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  const filterBooks = useCallback(
-    (book: Book) => {
-      return (
-        (skills.length === 0 ||
-          skills.some((skill) => book.skills.includes(skill))) &&
-        (levels.length === 0 ||
-          (book.level !== null && levels.includes(book.level))) &&
-        // (status.length == 0 || status.includes(book.status)) TODO: replace filter logic
-        bookAvailable
-      );
-    },
-    [levels, skills, bookAvailable]
-  );
-
-  const sortBooks = useCallback(
-    (a: Book, b: Book) => {
-      if (bookSortBy === "By Title") {
-        return (
-          a.title.localeCompare(b.title) || a.author.localeCompare(b.author)
-        );
-      } else if (bookSortBy === "By Author") {
-        return (
-          a.author.localeCompare(b.author) || a.title.localeCompare(b.title)
-        );
-      } else if (bookSortBy === "By Release Date") {
-        return (a.releaseDate || 0) < (b.releaseDate || 0) ? -1 : 1;
-      }
-      return 0;
-    },
-    [bookSortBy]
-  );
-
   // use of structured clone creates new subset of search target books
   // allows filter to act on subset of searched books
 
-  const subsetBooks = structuredClone<Book[]>(books)
-    .filter(
+  const subsetBooks = useMemo(() => {
+    return structuredClone<Book[]>(books).filter(
       (book) =>
         book.title.toLowerCase().includes(searchData) ||
         book.author.toLowerCase().includes(searchData) ||
         book.isbn.some((isbn) => isbn.includes(searchData))
-    )
-    .sort((a, b) => sortBooks(a, b))
-    .filter((book) => filterBooks(book));
+    );
+  }, [books, searchData]);
 
   useEffect(() => {
     const fetchBooks = async () => {
       setLoadingBooks(true);
       try {
-        // change second arg to alter number of books displayed on 1 page
-        // 20 is limit of how many books to load
         const booksResult = await getAllBooks({
           page: currentBookPage,
-          limit: 20,
+          limit: 10,
+          skills,
+          levels,
+          bookAvailable,
+          sortBy: bookSortBy,
+          search: searchData,
         });
         if (booksResult) {
-          const { books: fetchedBooks, totalPages: fetchedTotalPages } =
-            booksResult;
-          setBooks(fetchedBooks);
+          const {
+            books: fetchedBooksPage,
+            totalPages: fetchedTotalPages,
+            total: fetchedTotalBooks,
+          } = booksResult;
+          setBooks(fetchedBooksPage);
           setTotalBookPages(fetchedTotalPages);
+          setFetchedTotal(fetchedTotalBooks);
         }
       } catch (err) {
         console.error("Failed to fetch books:", err);
@@ -127,7 +101,12 @@ const BooksPage = () => {
       }
     };
     fetchBooks();
-  }, [currentBookPage]); // Refetch books when currentBookPage or activeTab changes
+  }, [currentBookPage, skills, levels, bookAvailable, bookSortBy, searchData]);
+
+  useEffect(() => {
+    // Reset to page 1 whenever filters or search changes but NOT currentBookPage
+    setCurrentBookPage(1);
+  }, [skills, levels, bookAvailable, bookSortBy, searchData]);
 
   const bookFormExit = (listLen: boolean) => {
     setFormShown(
@@ -209,7 +188,7 @@ const BooksPage = () => {
         <div className="text-left">
           <div className="whitespace-normal">
             <p className="text-sm text-slate-500 mb-6">
-              {subsetBooks.length} {"titles"}
+              {fetchedTotal} {"titles"}
             </p>
           </div>
         </div>
