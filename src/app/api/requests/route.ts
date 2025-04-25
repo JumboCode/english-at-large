@@ -8,7 +8,10 @@ import {
   deleteRequestController,
   getUserRequestController,
 } from "./controller";
-import { requireUserWithRole } from "@/lib/auth";
+import {
+  // requireUserWithRole,
+  requireUserWithRoleForRequestDelete,
+} from "@/lib/auth";
 
 // GET - Fetch all requests
 export async function GET(req: Request) {
@@ -100,15 +103,16 @@ export async function PUT(req: Request) {
 // DELETE - Delete a request
 export async function DELETE(req: Request) {
   try {
-    await requireUserWithRole(["Admin", "Volunteer"]);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
-  }
-
-  try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id") as string;
+
+    try {
+      await requireUserWithRoleForRequestDelete(+id);
+    } catch (err) {
+      console.error(err);
+      return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+    }
+
     //+id casts id from a string to a number
     const deletedRequest = await deleteRequestController(+id);
 

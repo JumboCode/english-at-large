@@ -102,13 +102,6 @@ export async function POST(req: Request) {
 // PUT - Update a book
 export async function PUT(req: Request) {
   try {
-    await requireUserWithRole(["Admin", "Volunteer"]);
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
-  }
-
-  try {
     const bookData: BookWithRequests = await req.json();
     const updatedBook = await putBookController(bookData);
 
