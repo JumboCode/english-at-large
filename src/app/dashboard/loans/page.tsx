@@ -16,15 +16,17 @@ import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
+import useVolunteerLevelRedirect from "@/lib/hooks/useVolunteerLevelRedirect";
 import LoanStatusTag from "@/components/common/LoanStatusTag";
 
 const Loans = () => {
+  useVolunteerLevelRedirect();
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [selectedValue, setSelectedValue] = useState<string>("");
   const [searchData, setSearchData] = useState("");
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest); //
   const { setConfirmPopup, hidePopup, popupStatus } = usePopup();
-
+  const currDate = new Date();
   // use of structured clone creates new subset of search target requests
   // allows filter to act on subset of searched requests
 
@@ -66,7 +68,7 @@ const Loans = () => {
       default: {
         const dateA = a.dueDate ? new Date(a.dueDate) : new Date();
         const dateB = b.dueDate ? new Date(b.dueDate) : new Date();
-        return dateB.getTime() - dateA.getTime(); // most recent first
+        return dateA.getTime() - dateB.getTime(); // most recent first
       }
     }
   };
@@ -87,22 +89,22 @@ const Loans = () => {
         success: true,
       });
 
-      // finds oldest request of status hold and sends email
-      const holds = requests.filter(
-        (holdRequest) =>
-          holdRequest.status === RequestStatus.Hold &&
-          holdRequest.bookId === request.bookId
-      );
+      // // finds oldest request of status hold and sends email
+      // const holds = requests.filter(
+      //   (holdRequest) =>
+      //     holdRequest.status === RequestStatus.Hold &&
+      //     holdRequest.bookId === request.bookId
+      // );
 
-      // if there are any holds for the current book
-      if (holds.length > 0) {
-        const earliestHold = holds[0];
-        await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
-      }
+      // // if there are any holds for the current book
+      // if (holds.length > 0) {
+      //   const earliestHold = holds[0];
+      //   await updateRequest({ ...earliestHold, status: RequestStatus.Pickup });
+      // }
 
-      if (request) {
-        setOneRequest(request);
-      }
+      // if (request) {
+      //   setOneRequest(request);
+      // }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setConfirmPopup({
@@ -195,16 +197,18 @@ const Loans = () => {
               .sort(sortByDate)
               .map((request, index) => (
                 <tr key={index} className="bg-white h-16">
-                  <td className="flex flex-col">
-                    <p className="text-black font-semibold">
-                      {request.user?.name}
-                    </p>
-                    <Link
-                      href={"mailto:" + request.user?.email}
-                      className="text-text-default-secondary underline max-w-max"
-                    >
-                      {request.user?.email}
-                    </Link>
+                  <td>
+                    <div className="flex flex-col">
+                      <p className="text-black font-semibold">
+                        {request.user?.name}
+                      </p>
+                      <Link
+                        href={"mailto:" + request.user?.email}
+                        className="text-text-default-secondary underline truncate block max-w-[99%] pr-2"
+                      >
+                        {request.user?.email}
+                      </Link>
+                    </div>
                   </td>
                   <td className="underline" style={{ color: "#202d74" }}>
                     <Link
@@ -221,10 +225,16 @@ const Loans = () => {
                     {dateToTimeString(request.requestedOn)}
                   </td>
 
-                  <td className="text-black">
+                  <td
+                    className={
+                      request.dueDate && new Date(request.dueDate) <= currDate
+                        ? "text-[#C00F0C]"
+                        : "text-black"
+                    }
+                  >
                     {request.dueDate
                       ? dateToTimeString(request.dueDate)
-                      : "Due Date not Found"}
+                      : "Not Found"}
                   </td>
 
                   <td className="text-black">
@@ -258,7 +268,7 @@ const Loans = () => {
                             await cancelReq(request);
                           }}
                           altTextStyle="text-white"
-                          altStyle="bg-[#C00F0C]"
+                          altStyle="bg-[#C00F0C] border-0"
                         />
                       </div>
                     )}

@@ -11,7 +11,6 @@ import { deleteUser } from "@/lib/api/users";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
-import { redirect } from "next/navigation";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
 import XIcon from "@/assets/icons/X";
@@ -19,17 +18,12 @@ import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
+import useAdminLevelRedirect from "@/lib/hooks/useAdminLevelRedirect";
 
 export default function Manage() {
   const user = useCurrentUser();
-
+  useAdminLevelRedirect();
   const [searchData, setSearchData] = useState("");
-
-  useEffect(() => {
-    if (user?.role !== "Admin" && user?.role != undefined) {
-      redirect("/dashboard");
-    }
-  }, [user]);
 
   const [users, setUsers] = useState<User[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -65,6 +59,8 @@ export default function Manage() {
         return user.role === UserRole.Admin;
       case "Tutors":
         return user.role === UserRole.Tutor;
+      case "Volunteers":
+        return user.role === UserRole.Volunteer;
       case "Pending":
         return user.pending === true;
       default:
@@ -94,7 +90,7 @@ export default function Manage() {
 
   return (
     <div>
-      {user?.role === "Admin" ? (
+      {user?.role === UserRole.Admin ? (
         <div className="bg-white">
           <h1 className="bg-white text-black px-16 pt-12 font-bold text-3xl font-[family-name:var(--font-rubik)]">
             Users
@@ -102,7 +98,7 @@ export default function Manage() {
           <SearchBar
             button={
               <CommonDropdown
-                items={["All", "Tutors", "Admins", "Pending"]}
+                items={["All", "Tutors", "Admins", "Volunteers", "Pending"]}
                 altButtonStyle="min-w-28"
                 buttonText={"Sort by"}
                 setFilter={setFilter}

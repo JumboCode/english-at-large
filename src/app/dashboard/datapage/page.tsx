@@ -203,30 +203,33 @@ export default function DataPage() {
             searchData={searchData}
             setSearchData={setSearchData}
           />
-          <div className="pagination-controls flex justify-center mt-4">
-            <button
-              onClick={() =>
-                setCurrentBookPage((prev) => Math.max(prev - 1, 1))
-              }
-              disabled={currentBookPage === 1}
-              className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span className="px-4 py-2">
-              Page {totalBookPages > 0 ? currentBookPage : 0} of{" "}
-              {totalBookPages}
-            </span>
-            <button
-              onClick={() =>
-                setCurrentBookPage((prev) => Math.min(prev + 1, totalBookPages))
-              }
-              disabled={currentBookPage === totalBookPages}
-              className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+          {totalBookPages > 1 && (
+            <div className="pagination-controls flex justify-center mt-4">
+              <button
+                onClick={() =>
+                  setCurrentBookPage((prev) => Math.max(prev - 1, 1))
+                }
+                disabled={currentBookPage === 1}
+                className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2">
+                Page {currentBookPage} of {totalBookPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentBookPage((prev) =>
+                    Math.min(prev + 1, totalBookPages)
+                  )
+                }
+                disabled={currentBookPage === totalBookPages}
+                className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
 
@@ -238,29 +241,33 @@ export default function DataPage() {
             range={range}
             setRange={setRange}
           />
-          <div className="pagination-controls flex justify-center mt-4">
-            <button
-              onClick={() =>
-                setCurrentUserPage((prev) => Math.max(prev - 1, 1))
-              }
-              disabled={currentUserPage === 1}
-              className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <span className="px-4 py-2">
-              Page {currentUserPage} of {totalUserPages}
-            </span>
-            <button
-              onClick={() =>
-                setCurrentUserPage((prev) => Math.min(prev + 1, totalUserPages))
-              }
-              disabled={currentUserPage === totalUserPages}
-              className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+          {totalUserPages > 1 && (
+            <div className="pagination-controls flex justify-center mt-4">
+              <button
+                onClick={() =>
+                  setCurrentUserPage((prev) => Math.max(prev - 1, 1))
+                }
+                disabled={currentUserPage === 1}
+                className="px-4 py-2 bg-gray-200 rounded-md mr-2 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2">
+                Page {currentUserPage} of {totalUserPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentUserPage((prev) =>
+                    Math.min(prev + 1, totalUserPages)
+                  )
+                }
+                disabled={currentUserPage === totalUserPages}
+                className="px-4 py-2 bg-gray-200 rounded-md ml-2 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

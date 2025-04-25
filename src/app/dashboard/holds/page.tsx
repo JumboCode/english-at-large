@@ -18,8 +18,10 @@ import {
   ConfirmPopupActions,
   ConfirmPopupTypes,
 } from "@/lib/context/ConfirmPopupContext";
+import useVolunteerLevelRedirect from "@/lib/hooks/useVolunteerLevelRedirect";
 
 const Loans = () => {
+  useVolunteerLevelRedirect();
   const [requests, setRequests] = useState<RequestWithBookAndUser[]>([]);
   const [oneRequest, setOneRequest] = useState<BookRequest>(emptyRequest);
   const [searchData, setSearchData] = useState("");
@@ -66,13 +68,13 @@ const Loans = () => {
     return a.requestedOn > b.requestedOn ? 1 : -1;
   };
 
-  // functionality for forcing wait on loans coming off the waitlist to be clicked 'done' by an admin
+  // functionality for forcing wait on loans coming off the waitlist to be moved to waitlist
   // const markAsDone = async (request: RequestWithBookAndUser) => {
   //   const currentDate = new Date();
   //   try {
   //     await updateReq({
   //       ...request,
-  //       status: RequestStatus.Borrowed,
+  //       status: RequestStatus.Pickup,
   //       returnedBy: currentDate,
   //     });
   //     setConfirmPopup({
@@ -88,6 +90,14 @@ const Loans = () => {
   //       success: false,
   //     });
   //   }
+  // };
+
+  // const requestFilter = (request: RequestWithBookAndUser) => {
+  //   const currAvailCopies = getAvailableCopies(request.book);
+  //   if (currAvailCopies > 0) {
+  //     markAsDone(request);
+  //   }
+  //   return request;
   // };
 
   const removeHold = async (
@@ -149,16 +159,18 @@ const Loans = () => {
           <tbody className="divide-y divide-solid">
             {subsetRequest.sort(sortByDate).map((request, index) => (
               <tr key={index} className="bg-white h-16">
-                <td className="flex flex-col">
-                  <p className="text-black font-semibold">
-                    {request.user?.name}
-                  </p>
-                  <Link
-                    href={"mailto:" + request.user?.email}
-                    className="text-text-default-secondary underline max-w-max"
-                  >
-                    {request.user?.email}
-                  </Link>
+                <td>
+                  <div className="flex flex-col">
+                    <p className="text-black font-semibold">
+                      {request.user?.name}
+                    </p>
+                    <Link
+                      href={"mailto:" + request.user?.email}
+                      className="text-text-default-secondary underline truncate block max-w-[99%] pr-2"
+                    >
+                      {request.user?.email}
+                    </Link>
+                  </div>
                 </td>
                 <td className="underline" style={{ color: "#202d74" }}>
                   <Link
@@ -190,7 +202,7 @@ const Loans = () => {
                         await removeHold(request);
                       }}
                       altTextStyle="text-white"
-                      altStyle="bg-[#C00F0C]"
+                      altStyle="bg-[#C00F0C] border-0"
                     />
                   </div>
                 </td>

@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState, use, useMemo } from "react";
+import React, { useEffect, useState, use, useMemo, useCallback } from "react";
 import CommonButton from "@/components/common/button/CommonButton";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import bookIcon from "../../../../assets/icons/bookmark_add.svg";
 import holdBookClock from "../../../../assets/icons/holdBookClock.svg";
 import BookPopup from "@/components/common/BookPopUp";
@@ -12,11 +12,18 @@ import Tag from "@/components/tag";
 import BookDetail from "@/components/Details";
 import BookForm from "@/components/BookForm";
 import RemoveModal from "@/components/RemoveModal";
-import imageToAdd from "../../../../assets/images/harry_potter.jpg";
+import imageToAdd from "../../../../assets/images/Placeholder_Book_Cover.png";
 import ConfirmationPopup from "@/components/common/message/ConfirmationPopup";
-import { BookWithRequests, getAvailableCopies } from "@/lib/util/types";
+import {
+  BookWithRequests,
+  getAvailableCopies,
+  getUserBookStatus,
+  UserBookStatus,
+} from "@/lib/util/types";
 import useCurrentUser from "@/lib/hooks/useCurrentUser";
 import { usePopup } from "@/lib/context/ConfirmPopupContext";
+import { useRouter } from "next/navigation";
+import { UserRole } from "@prisma/client";
 type Params = Promise<{ id: string }>;
 
 /**
@@ -28,6 +35,13 @@ type Params = Promise<{ id: string }>;
  *
  * TODO: Hook up the availability logic again once schema changes are pushed
  */
+
+interface ButtonConfig {
+  label: string;
+  style: string;
+  icon: StaticImageData;
+  onClick: () => void;
+}
 const BookDetails = (props: { params: Promise<Params> }) => {
   const params = use(props.params);
   const [book, setBook] = useState<BookWithRequests | null>(null);
@@ -36,31 +50,83 @@ const BookDetails = (props: { params: Promise<Params> }) => {
   const [showBookForm, setShowBookForm] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const user = useCurrentUser();
+
   const { hidePopup, popupStatus } = usePopup();
 
+  const router = useRouter();
   useEffect(() => {
     const fetchBook = async () => {
-      const book = await getOneBook(+(await params).id);
-      setBook(book || null);
+      try {
+        const book = await getOneBook(+(await params).id);
+        if (!book) {
+          router.replace("/dashboard");
+        } else {
+          setBook(book);
+        }
+      } catch (error) {
+        console.error("Error fetching book:", error);
+        router.replace("/dashboard");
+      }
     };
     fetchBook();
-  }, [params]);
+  }, [params, router]);
 
   const availableCopies = useMemo(
     () => (book ? getAvailableCopies(book) : 0),
     [book]
   );
 
-  const toggleBorrowOpen = () => {
+  const toggleBorrowOpen = useCallback(() => {
     setIsBorrowOpen(!isBorrowOpen);
-  };
+  }, [isBorrowOpen]);
 
-  const toggleHoldOpen = () => {
+  const toggleHoldOpen = useCallback(() => {
     setIsHoldOpen(!isHoldOpen);
-  };
+  }, [isHoldOpen]);
+
+  const userBookStatus: UserBookStatus = useMemo(() => {
+    return getUserBookStatus(user?.requests, book?.id);
+  }, [book?.id, user]);
+
+  const buttonConfig: ButtonConfig = useMemo(() => {
+    if (userBookStatus === UserBookStatus.HAS_BORROWED) {
+      return {
+        label: "Borrowed",
+        style: "w-40 h-10 bg-gray-400 border-none mr-3",
+        icon: null,
+        onClick: () => {},
+      };
+    }
+
+    if (userBookStatus === UserBookStatus.HAS_HOLD) {
+      return {
+        label: "Hold Placed",
+        style: "w-40 h-10 bg-gray-400 border-none mr-3",
+        icon: holdBookClock,
+        onClick: () => {},
+      };
+    }
+
+    if (availableCopies > 0) {
+      return {
+        label: "Borrow",
+        style: "w-40 h-10 bg-dark-blue border-none mr-3",
+        icon: bookIcon,
+        onClick: toggleBorrowOpen,
+      };
+    } else {
+      return {
+        label: "Place Hold",
+        style: "w-40 h-10 bg-dark-blue border-none mr-3",
+        icon: holdBookClock,
+        onClick: toggleHoldOpen,
+      };
+    }
+  }, [userBookStatus, availableCopies, toggleBorrowOpen, toggleHoldOpen]);
 
   if (book === null) return null;
 
+  if (!user) return;
   return (
     <div>
       {showBookForm ? (
@@ -86,29 +152,8 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                       by {book.author}
                     </div>
                     <div className="flex">
-                      {
-                        <CommonButton
-                          label={availableCopies > 0 ? "Borrow" : "Place Hold"}
-                          altStyle={`w-40 h-10 bg-dark-blue border-none mr-3`}
-                          onClick={
-                            availableCopies > 0
-                              ? toggleBorrowOpen
-                              : toggleHoldOpen
-                          }
-                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
-                          leftIcon={
-                            <Image
-                              src={
-                                availableCopies > 0 ? bookIcon : holdBookClock
-                              }
-                              alt="Book Icon"
-                              className="w-4 h-4 mr-3"
-                            />
-                          }
-                        />
-                      }
-
-                      {user?.role === "Admin" ? (
+                      {user?.role === UserRole.Admin ||
+                      user?.role === UserRole.Volunteer ? (
                         <>
                           <CommonButton
                             label="Edit"
@@ -142,7 +187,32 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                             }
                           />
                         </>
-                      ) : null}
+                      ) : (
+                        <CommonButton
+                          label={buttonConfig.label}
+                          altStyle={buttonConfig.style}
+                          onClick={buttonConfig.onClick}
+                          altTextStyle="text-white font-[family-name:var(--font-rubik)] font-semibold -ml-2"
+                          leftIcon={
+                            !(
+                              userBookStatus === UserBookStatus.HAS_HOLD ||
+                              userBookStatus === UserBookStatus.HAS_BORROWED
+                            ) ? (
+                              <Image
+                                src={
+                                  availableCopies > 0 ? bookIcon : holdBookClock
+                                }
+                                alt="Book Icon"
+                                className="w-4 h-4 mr-3"
+                              />
+                            ) : undefined
+                          }
+                          disabled={
+                            userBookStatus === UserBookStatus.HAS_HOLD ||
+                            userBookStatus === UserBookStatus.HAS_BORROWED
+                          }
+                        />
+                      )}
                       {showRemoveModal ? (
                         <RemoveModal
                           book={book}
@@ -195,7 +265,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                 </div>
                 <div className="mt-5 font-[family-name:var(--font-rubik)]">
                   <BookDetail
-                    isbn={book.isbn.length !==  0 ? book.isbn : ["None"]}
+                    isbn={book.isbn.length !== 0 ? book.isbn : ["None"]}
                     publisher={book.publisher ? book.publisher : "None"}
                     releaseDate={book.releaseDate ? book.releaseDate : "None"}
                     copies={book.copies}

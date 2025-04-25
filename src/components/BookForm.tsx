@@ -1,7 +1,7 @@
 "use client";
 import { BookSkills, BookLevel, BookType, Book } from "@prisma/client";
 import CommonButton from "./common/button/CommonButton";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BookWithRequests,
   CustomChangeEvent,
@@ -120,6 +120,23 @@ const BookForm = (props: BookFormProps) => {
     }
   }, [isbn, pullISBN]);
 
+  const requiredFields = useMemo(() => {
+    const bookToSave = existingBook ? editBook : newBook;
+    const validLevel =
+      bookToSave!.level !== null &&
+      Object.values(BookLevel).includes(bookToSave!.level);
+    const validBookType =
+      bookToSave!.bookType !== null &&
+      Object.values(BookType).includes(bookToSave!.bookType);
+    return (
+      bookToSave!.author.length !== 0 &&
+      bookToSave!.title.length !== 0 &&
+      bookToSave!.isbn.length !== 0 &&
+      validLevel &&
+      validBookType
+    );
+  }, [newBook, editBook, existingBook]);
+
   // handles the setState for all HTML input fields
   const bookChangeHandler = (
     e:
@@ -128,49 +145,61 @@ const BookForm = (props: BookFormProps) => {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-  
+
     if (name === "numPages") {
       // Allow empty string while typing
       setNumpages(value);
-  
+
       const parsed = value === "" ? 0 : Math.max(Number(value), 0);
-      
+
       if (existingBook) {
-        setEditBook((prevBook) => ({
-          ...prevBook,
-          [name]: parsed,
-        }) as BookWithRequests);
+        setEditBook(
+          (prevBook) =>
+            ({
+              ...prevBook,
+              [name]: parsed,
+            } as BookWithRequests)
+        );
       } else if (newBook) {
-        setNewBook((prevBook) => ({
-          ...prevBook,
-          [name]: parsed,
-        }) as Omit<Book, "id">);
+        setNewBook(
+          (prevBook) =>
+            ({
+              ...prevBook,
+              [name]: parsed,
+            } as Omit<Book, "id">)
+        );
       }
-  
+
       return;
     }
 
     let updatedValue = value;
 
     if (name === "releaseDate" && new Date(value) > new Date()) {
-      const date = new Date() 
+      const date = new Date();
       const year = date.getFullYear();
-      const month = String(date.getMonth()+1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
       updatedValue = `${year}-${month}-${day}`;
     }
     // default case for other fields
-    
+
     if (existingBook) {
-      setEditBook((prevBook) => ({
-        ...prevBook,
-        [name]: updatedValue,
-      }) as BookWithRequests);
+      setEditBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: updatedValue,
+          } as BookWithRequests)
+      );
     } else if (newBook) {
-      setNewBook((prevBook) => ({
-        ...prevBook,
-        [name]: updatedValue,
-      }) as Omit<Book, "id">);
+      setNewBook(
+        (prevBook) =>
+          ({
+            ...prevBook,
+            [name]: updatedValue,
+          } as Omit<Book, "id">)
+      );
     }
   };
 
@@ -293,12 +322,25 @@ const BookForm = (props: BookFormProps) => {
                   exit(false);
                 }}
               />
-              <CommonButton
-                label={existingBook ? "Save" : "Add Book"}
-                onClick={handleSave}
-                altTextStyle="text-white"
-                altStyle="bg-dark-blue"
-              />
+              {requiredFields ? (
+                <CommonButton
+                  label={existingBook ? "Save" : "Add Book"}
+                  onClick={undefined}
+                  altTextStyle="text-white"
+                  altStyle="bg-dark-blue opacity-50 cursor-not-allowed"
+                />
+              ) : (
+                <CommonButton
+                  label={existingBook ? "Save" : "Add Book"}
+                  onClick={requiredFields ? handleSave : () => {}}
+                  altTextStyle="text-white"
+                  altStyle={
+                    requiredFields
+                      ? "bg-dark-blue"
+                      : "bg-dark-blue opacity-50 cursor-not-allowed"
+                  }
+                />
+              )}
             </div>
           </div>
           <div className="h-[0.3px] bg-black"></div>
@@ -308,23 +350,19 @@ const BookForm = (props: BookFormProps) => {
             <label htmlFor="isbn" className="block text-lg ml-[5%] mb-2">
               ISBN Number
             </label>
-            <input
-              type="text"
+            <div
               id="isbn"
-              name="isbn"
               className={
-                "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-10 font-normal " +
-                (newBook.isbn ? "bg-blue-100" : null)
+                "text-black border border-medium-grey-border p-2 px-4 rounded-lg border-solid w-[90%] mx-auto h-10 font-normal flex items-center "
               }
-              onChange={bookChangeHandler}
-              defaultValue={editBook ? editBook.isbn[0] : isbn}
-              required
-            />
+            >
+              {editBook ? editBook.isbn[0] : isbn}
+            </div>
           </div>
         ) : null}
         <div className="mt-4">
           <label htmlFor="title" className="block text-lg ml-[5%] mb-2">
-            Title
+            Title<span className="text-red-500 ml-1">*</span>
           </label>
           <input
             type="text"
@@ -340,14 +378,15 @@ const BookForm = (props: BookFormProps) => {
           />
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="author" className="text-lg mb-2">
-              Author(s)
+              Author(s)<span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="text"
               id="author"
               name="author"
+              required
               className={
                 "text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal " +
                 (newBook.author ? "bg-blue-100" : null)
@@ -356,7 +395,7 @@ const BookForm = (props: BookFormProps) => {
               value={editBook ? editBook.author : newBook.author}
             />
           </div>
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="publisher" className="text-lg mb-2">
               Publisher(s)
             </label>
@@ -374,7 +413,7 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="releaseDate" className="text-lg mb-2">
               Release Date
             </label>
@@ -385,11 +424,13 @@ const BookForm = (props: BookFormProps) => {
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
               defaultValue={
-                editBook && editBook.releaseDate ? editBook.releaseDate : undefined 
+                editBook && editBook.releaseDate
+                  ? editBook.releaseDate
+                  : undefined
               }
             />
           </div>
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="pages" className="text-lg mb-2">
               No. of pages
             </label>
@@ -407,31 +448,43 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div>
-          <label htmlFor="description" className="block text-lg ml-[5%] mb-2">
+          <label
+            htmlFor="description"
+            className="block text-lg ml-[5%] mb-2 max-w-[75vw]"
+          >
             Description
           </label>
           <textarea
             id="description"
             name="description"
-            className={
-              "text-black border border-medium-grey-border p-5 rounded-lg border-solid w-[90%] mx-auto block h-15 font-normal " +
-              (newBook.description ? "bg-blue-100" : null)
-            }
+            className={`
+              text-black
+              border border-medium-grey-border
+              p-3
+              rounded-lg border-solid
+              w-[90%] mx-auto block
+              min-h-[150px]
+              font-normal
+              ${newBook.description ? "bg-blue-100" : ""}
+            `}
             onChange={bookChangeHandler}
             value={editBook ? editBook.description : newBook.description}
           ></textarea>
         </div>
         <div className="flex w-[90%] mx-auto space-x-4">
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="level" className="text-lg mb-2">
-              Level
+              Level<span className="text-red-500 ml-1">*</span>
             </label>
             <select
               id="level"
               name="level"
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
-              defaultValue={editBook ? editBook.level : ""}
+              defaultValue={
+                editBook && editBook.level !== null ? editBook.level : ""
+              }
+              required
             >
               <option value="">Select level</option>
               {levels.map((bookLevel, index) => {
@@ -443,16 +496,19 @@ const BookForm = (props: BookFormProps) => {
               })}
             </select>
           </div>
-          <div className="flex flex-col w-[50%]">
+          <div className="flex flex-col w-[50%] break-words">
             <label htmlFor="bookType" className="text-lg mb-2">
-              Type
+              Type<span className="text-red-500 ml-1">*</span>
             </label>
             <select
               id="bookType"
               name="bookType"
               className="text-black border border-medium-grey-border rounded-lg border-solid block h-10 font-normal"
               onChange={bookChangeHandler}
-              defaultValue={editBook ? editBook.bookType : ""}
+              defaultValue={
+                editBook && editBook.bookType !== null ? editBook.bookType : ""
+              }
+              required
             >
               <option value="">Select book type</option>
               {types.map((bookType, index) => {
@@ -478,6 +534,7 @@ const BookForm = (props: BookFormProps) => {
                 <p>{editBook ? editBook.copies : newBook.copies}</p>
               </div>
               <button
+                type="button"
                 onClick={() => {
                   if (availableCopies > 0) {
                     setNumCopies(numCopies - 1);
@@ -491,6 +548,7 @@ const BookForm = (props: BookFormProps) => {
                 <p>-</p>
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setNumCopies(numCopies + 1);
                   setAvailableCopies(availableCopies + 1);
@@ -511,7 +569,7 @@ const BookForm = (props: BookFormProps) => {
           </div>
         </div>
         <div>
-          <div className = "mb-4"> 
+          <div className="mb-4">
             <p className="block text-lg ml-[5%] mb-2">Skills</p>
             <div className="flex flex-wrap gap-x-4 gap-y-4 ml-[5%] mr-[5%] items-center">
               {skills.map((bookSkill, index) => {
@@ -529,7 +587,6 @@ const BookForm = (props: BookFormProps) => {
               })}
             </div>
           </div>
-          
         </div>
       </form>
     </div>

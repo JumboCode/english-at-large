@@ -128,6 +128,24 @@ export const postRequestController = async (
     }
 
     const request = await prisma.$transaction(async (tx) => {
+      // reject existing holds
+      const existingHold = await prisma.bookRequest.findFirst({
+        where: {
+          userId: requestData.userId,
+          bookId: requestData.bookId,
+          status: {
+            in: [
+              RequestStatus.Hold,
+              RequestStatus.Pickup,
+              RequestStatus.Borrowed,
+            ],
+          },
+        },
+      });
+
+      if (existingHold) {
+        throw new Error("User already has an active request for this book.");
+      }
       await tx.book.update({
         where: { id: requestData.bookId },
         data: { extraInfo: "" },
@@ -167,6 +185,12 @@ export const postRequestController = async (
         return newRequest;
       }
     });
+
+    if (!request)
+      throw Error("Prisma transaction failed and request is undefined");
+
+    // if it's a hold (or anything else, don't send an email to the admins)
+    if (request && request.status !== RequestStatus.Requested) return request;
 
     // email logic
     const users = await prisma.user.findMany();
@@ -215,11 +239,7 @@ export const postRequestController = async (
       await Promise.all(admins);
     }
 
-    if (request) {
-      return request;
-    } else {
-      throw Error("Prisma transaction failed and request is undefined");
-    }
+    return request;
   } catch (error) {
     console.error("Error in postRequestController:", error);
     throw error;
@@ -256,6 +276,24 @@ export const putRequestController = async (
       );
     }
 
+    // exclude the request in question from the #available copies
+    const availableCopies = await getAvailableCopies(
+      requestData.bookId,
+      requestData.id
+    );
+
+    // console.log("available copies [excluding this one]: ", availableCopies);
+    // Prevent requesting, borrowing, or marking as pickup if no copies are available
+    if (
+      (requestData.status === RequestStatus.Pickup ||
+        requestData.status === RequestStatus.Requested) &&
+      availableCopies <= 0
+    ) {
+      throw new Error("No available copies for pickup");
+    }
+
+    //
+
     // ugly but necessary for destructing...
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { user, book, ...newRequest } = requestData;
@@ -264,6 +302,11 @@ export const putRequestController = async (
       where: { id: newRequest.id },
       data: newRequest,
     });
+
+    // move next book off hold list
+    if (requestData.status === RequestStatus.Returned) {
+      promoteNextHold(requestData.bookId);
+    }
 
     // note: this is assuming that only the status changes when updating, otherwise
     // if you edit another field of something on pickup it'll send another email
@@ -394,6 +437,64 @@ export const putRequestController = async (
   }
 };
 
+const getAvailableCopies = async (
+  bookId: number,
+  excludeRequestId?: number
+): Promise<number> => {
+  const book = await prisma.book.findUnique({
+    where: { id: bookId },
+    include: {
+      requests: {
+        where: {
+          status: {
+            notIn: [
+              RequestStatus.Returned,
+              RequestStatus.Lost,
+              RequestStatus.Hold,
+            ],
+          },
+          ...(excludeRequestId ? { id: { not: excludeRequestId } } : {}),
+        },
+      },
+    },
+  });
+
+  if (!book) throw new Error(`Book with ID ${bookId} not found`);
+
+  const activeRequests = book.requests.length;
+  return book.copies - activeRequests;
+};
+
+/*
+ * helper function to pop next hold off the list
+ */
+const promoteNextHold = async (bookId: number): Promise<void> => {
+  const availableCopies = await getAvailableCopies(bookId);
+
+  if (availableCopies > 0) {
+    const nextHold = await prisma.bookRequest.findFirst({
+      where: {
+        bookId,
+        status: RequestStatus.Hold,
+      },
+      orderBy: { requestedOn: "asc" },
+    });
+
+    if (nextHold) {
+      const newDueDate = new Date();
+      newDueDate.setMonth(newDueDate.getMonth() + 6);
+
+      await prisma.bookRequest.update({
+        where: { id: nextHold.id },
+        data: {
+          status: RequestStatus.Requested,
+          dueDate: newDueDate,
+        },
+      });
+    }
+  }
+};
+
 /**
  * Utility controller that deletes a request.
  *
@@ -406,14 +507,13 @@ export const deleteRequestController = async (
   id: number
 ): Promise<BookRequest> => {
   try {
-    const deletedBook = await prisma.bookRequest.delete({
+    const deletedRequest = await prisma.bookRequest.delete({
       where: { id: id },
     });
-    if (!deletedBook) {
-      throw new Error("Book not found!");
-    } else {
-      return deletedBook;
-    }
+    if (!deletedRequest) throw new Error("Book not found!");
+    promoteNextHold(deletedRequest.bookId);
+
+    return deletedRequest;
   } catch (error) {
     console.error("Error deleting request", error);
     throw error;

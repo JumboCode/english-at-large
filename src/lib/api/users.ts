@@ -53,7 +53,9 @@ export const getAllUsers = async (
  *
  * @remarks
  */
-export const getOneUser = async (id: string): Promise<User | undefined> => {
+export const getOneUser = async (
+  id: string
+): Promise<UserWithRequests | undefined> => {
   try {
     const response = await axios.get("/api/users/?id=" + id);
     return response.data;
@@ -72,9 +74,11 @@ export const getOneUser = async (id: string): Promise<User | undefined> => {
  */
 export async function getOneUserByClerkid(
   clerkId: string
-): Promise<User | null> {
+): Promise<UserWithRequests | null> {
   try {
-    const response = await axios.get<User>(`/api/users?clerkId=${clerkId}`);
+    const response = await axios.get<UserWithRequests>(
+      `/api/users?clerkId=${clerkId}`
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

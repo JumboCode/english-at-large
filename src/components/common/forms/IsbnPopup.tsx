@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import XIcon from "@/assets/icons/X";
-import Link from "next/link";
 import CommonButton from "../button/CommonButton";
 
 interface IsbnPopupProps {
@@ -77,13 +76,13 @@ const IsbnPopup = (props: IsbnPopupProps) => {
                   <p className="text-red-500 text-sm">Invalid ISBN</p>
                 )}
               </div>
-              <Link
+              {/* <Link
                 className="text-dark-blue text-sm font-medium"
                 href="/dashboard/books"
                 onClick={() => submit(isbnData)}
               >
-                Add book manually
-              </Link>
+                No ISBN? Add book manually
+              </Link> */}
             </div>
           </div>
         </div>
