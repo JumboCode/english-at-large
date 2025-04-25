@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireUserWithRole } from "@/lib/auth";
-import { Book } from "@prisma/client";
+import { Book, BookLevel, BookSkills } from "@prisma/client";
 import {
   deleteBookController,
   getAllBooksController,
@@ -36,6 +36,17 @@ export async function GET(req: Request) {
       // grab the date filter parameters - if none are specified then don't worry about it
       const fromDateStr = searchParams.get("fromDate");
       const endDateStr = searchParams.get("endDate");
+      const skillsParam = searchParams.get("skills");
+      const levelsParam = searchParams.get("levels");
+      const bookAvailableParam = searchParams.get("bookAvailable");
+      const sortByParam = searchParams.get("sortBy") ?? undefined;
+      const searchParam = searchParams.get("search") ?? undefined;
+
+      const skills = skillsParam
+        ? (skillsParam.split(",") as BookSkills[])
+        : [];
+      const levels = levelsParam ? (levelsParam.split(",") as BookLevel[]) : [];
+      const bookAvailable = bookAvailableParam === "true";
 
       const fromDate = fromDateStr ? new Date(fromDateStr) : undefined;
       const endDate = endDateStr ? new Date(endDateStr) : undefined;
@@ -60,7 +71,12 @@ export async function GET(req: Request) {
         limit,
         withStats,
         effectiveFromDate,
-        effectiveEndDate
+        effectiveEndDate,
+        skills,
+        levels,
+        bookAvailable,
+        sortByParam,
+        searchParam
       );
       //const books = await getAllBooksController();
       return NextResponse.json(books);
