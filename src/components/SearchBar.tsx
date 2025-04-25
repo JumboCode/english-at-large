@@ -1,24 +1,34 @@
 "use client";
 import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 interface searchBarProps {
   setSearchData: ((searchData: string) => void) | null;
   button: React.ReactNode;
   button2?: React.ReactNode;
   placeholderText: string;
+  manualSearch?: boolean;
 }
 
 const SearchBar = (props: searchBarProps) => {
-  const { setSearchData, button, button2, placeholderText } = props;
+  const { setSearchData, button, button2, placeholderText, manualSearch } =
+    props;
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-
+  const [localSearch, setLocalSearch] = React.useState<string>("");
+  const debouncedSearch = useDebounce(localSearch, 300); // Debounce delay: 300ms
   const clickBar = () => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
   };
+
+  React.useEffect(() => {
+    if (!manualSearch && setSearchData) {
+      setSearchData(debouncedSearch);
+    }
+  }, [debouncedSearch, manualSearch, setSearchData]);
 
   // may use this function later, also TODO: turn this into a useCallback
   // function handleKeyDown(event: { key: string }) {
@@ -28,10 +38,13 @@ const SearchBar = (props: searchBarProps) => {
   // }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
+    const value = e.target.value.toLowerCase();
+    setLocalSearch(value);
+  };
 
-    if (setSearchData) {
-      setSearchData(value.toLowerCase());
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (manualSearch && e.key === "Enter" && setSearchData) {
+      setSearchData(localSearch);
     }
   };
 
@@ -45,7 +58,9 @@ const SearchBar = (props: searchBarProps) => {
           ref={searchInputRef}
           className="w-full focus:outline-none text-black placeholder-medium-grey-border text-base"
           name="search bar"
+          value={localSearch}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
           placeholder={placeholderText}
         />
         <button>
