@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireUserWithRole } from "@/lib/auth";
 import { User } from "@prisma/client";
 import {
   getAllUsersController,
@@ -11,6 +12,8 @@ import {
 
 // GET - retrieve all users or single user by ID
 export async function GET(req: Request) {
+ 
+
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const clerkId = searchParams.get("clerkId");
@@ -19,6 +22,11 @@ export async function GET(req: Request) {
   const page = parseInt(searchParams.get("page") || "1", 10); //new
   const limit = parseInt(searchParams.get("limit") || "10", 10); //new
 
+  try {
+    await requireUserWithRole(["Admin", "Volunteer"]); // new for HANNAH
+  } catch (err) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
+  }
   try {
     if (id) {
       // if id, fetch the specific user
