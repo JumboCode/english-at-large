@@ -109,7 +109,7 @@ const BookForm = (props: BookFormProps) => {
       setConfirmPopup({
         type: ConfirmPopupTypes.ISBN_ERROR,
         action: ConfirmPopupActions.NONE,
-        success: true,
+        success: false,
       });
     }
   }, [isbn, newBook.isbn, setConfirmPopup]);
