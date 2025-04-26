@@ -4,7 +4,7 @@ import React from "react";
 interface DetailProps {
   isbn: string[];
   publisher: string;
-  releaseDate: string | null;
+  releaseDate: Date | null;
   copies: number;
   availableCopies: number;
   numPages: number | null;
@@ -31,29 +31,32 @@ const BookDetail = (props: DetailProps) => {
   } = props;
 
   return (
-    <div className={`flex row-span-2 my-5 ${altStyle}`}>
-      <div className={`font-medium ${lineSpacing} ${fontSize}`}>
-        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>ISBN</div>
-        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
-          Publisher
+    <div className={`flex flex-col my-5 ${altStyle} ${lineSpacing} max-w-sm`}>
+      {[
+        { label: "ISBN", value: [...new Set(isbn)].join(", ") },
+        { label: "Publisher", value: publisher },
+        {
+          label: "Release",
+          value: releaseDate
+            ? new Date(releaseDate).toISOString().split("T")[0]
+            : "None",
+        },
+        {
+          label: "Copies",
+          value: `${copies}, ${availableCopies} available`,
+        },
+        { label: "No. of Pages", value: numPages ?? "None" },
+      ].map((item, idx) => (
+        <div
+          key={idx}
+          className={`flex justify-between mb-1 ${fontSize} ${verticalSpacing}`}
+        >
+          <div className={`text-gray-500 font-medium ${altWidth}`}>
+            {item.label}
+          </div>
+          <div className={`text-black ${altWidth}`}>{item.value}</div>
         </div>
-        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Release</div>
-        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>Copies</div>
-        <div className={`relative text-gray-500 mr-4 ${altWidth}`}>
-          No. of Pages
-        </div>
-      </div>
-      <div className={`${lineSpacing} ${verticalSpacing} ${fontSize}`}>
-        <div className={`relative ${altWidth}`}>
-          {[...new Set(isbn)].join(", ")}
-        </div>
-        <div className={`relative ${altWidth}`}>{publisher}</div>{" "}
-        <div className={`relative`}>{`${releaseDate ?? "None"}`} </div>
-        <div className={`relative ${altWidth}`}>
-          {copies}, {availableCopies} available
-        </div>
-        <div className={`relative ${altWidth}`}>{numPages}</div>
-      </div>
+      ))}
     </div>
   );
 };

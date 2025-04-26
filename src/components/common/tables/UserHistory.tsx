@@ -1,13 +1,10 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import SearchBar from "@/components/SearchBar";
 import Link from "next/link";
 import { User, BookRequest } from "@prisma/client";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { emptyRequest } from "@/lib/util/types";
-import DatePicker from "../DatePicker";
 import { DateRange } from "react-day-picker";
-import CalendarMonthIcon from "@/assets/icons/calendar_month";
 import LoanStatusTag from "../LoanStatusTag";
 import useAdminLevelRedirect from "@/lib/hooks/useAdminLevelRedirect";
 
@@ -16,12 +13,12 @@ interface UserHistoryProps {
   requests: BookRequest[];
   range?: DateRange;
   setRange: (range?: DateRange) => void;
+  searchData: string;
 }
 
 const UserHistory = (props: UserHistoryProps) => {
   useAdminLevelRedirect();
-  const { users, requests, range, setRange } = props;
-  const [searchData, setSearchData] = useState("");
+  const { users, requests, searchData } = props;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filter, setFilter] = useState<string>("");
@@ -66,18 +63,6 @@ const UserHistory = (props: UserHistoryProps) => {
 
   return (
     <div className="bg-white">
-      <SearchBar
-        button={
-          <DatePicker
-            range={range}
-            setRange={setRange}
-            altButtonStyle="min-w-28"
-            leftIcon={<CalendarMonthIcon />}
-          />
-        }
-        placeholderText="Search by user name"
-        setSearchData={setSearchData}
-      />
       {/* CHANGE 2: Update the px-16 to be responsive and add overflow handling */}
       <div className="px-4 md:px-8 lg:px-16 overflow-x-auto">
         {/* CHANGE 3: Make the table more stable with min-w-full */}
@@ -161,6 +146,11 @@ const UserHistory = (props: UserHistoryProps) => {
             })}
           </tbody>
         </table>
+        {subsetUsers.length === 0 ? (
+          <p className="ml-2 mt-4">
+            There are no users with requests found in this date range.
+          </p>
+        ) : null}
       </div>
     </div>
   );

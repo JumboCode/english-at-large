@@ -100,7 +100,7 @@ const BookPopup = (props: BookPopupProps) => {
     <div>
       {isNextOpen ? (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-8 w-5/12">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-5/12 max-w-lg">
             <div className="flex justify-end items-center h-full"></div>
             <h1 className="font-[family-name:var(--font-rubik)] font-semibold text-2xl">
               {localBorrow ? "Borrow" : "Place hold"}
@@ -109,16 +109,16 @@ const BookPopup = (props: BookPopupProps) => {
               You are {localBorrow ? "borrowing" : "placing a hold for"}:
             </div>
             <hr className="h-px bg-[#D4D4D4] border-0 mt-5"></hr>
-            <div className="flex grid-cols-2 gap-4 mt-4 ">
+            <div className="flex flex-col lg:flex-row gap-4 mt-4">
               <Image
                 src={book.coverURL || imageToAdd.src}
                 alt="Book Cover"
                 width={190}
                 height={190}
-                className="flex-shrink-0"
+                className="mx-auto md:mx-0 flex-shrink-0"
               />
               <div>
-                <div className="font-[family-name:var(--font-rubik)] font-semibold text-2xl break-words">
+                <div className="font-[family-name:var(--font-rubik)] font-semibold text-2xl break-words mt-4 md:mt-0">
                   {book.title.slice(0, 80)}
                 </div>
                 <div className="text-[#757575] text-sm break-words">
@@ -127,7 +127,7 @@ const BookPopup = (props: BookPopupProps) => {
                 <BookDetail
                   isbn={book.isbn.length !== 0 ? book.isbn : ["None"]}
                   publisher={book.publisher ? book.publisher : "None"}
-                  releaseDate={book.releaseDate ? book.releaseDate : "None"}
+                  releaseDate={book.releaseDate}
                   copies={book.copies}
                   numPages={book.numPages}
                   availableCopies={getAvailableCopies(book)}

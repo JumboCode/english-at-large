@@ -30,7 +30,7 @@ model Book {
   author      String
   description String
   publisher   String
-  releaseDate String?
+  releaseDate DateTime?     @default(now())
   skills      BookSkills[]
   bookType    BookType?
   level       BookLevel?
