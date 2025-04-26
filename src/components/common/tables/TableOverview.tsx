@@ -1,17 +1,20 @@
 "use client";
 import { getRequests } from "@/lib/api/requests";
+import { Book } from "@prisma/client";
+import Link from "next/link";
 
 import React, { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { Chart } from "react-google-charts";
 
 interface TableOverviewProps {
-  filterInfo: string; // TODO: change this prop as needed
+  borrowDuration: string;
+  topThree: Book[];
   requestCount: number;
   range: DateRange | undefined;
 }
 const TableOverview = (props: TableOverviewProps) => {
-  const { filterInfo, requestCount, range } = props;
+  const { borrowDuration, topThree, requestCount, range } = props;
   const [mapLevel, setMapLevel] = useState<Map<string, number> | null>(null);
   const [mapSkills, setMapSkills] = useState<Map<string, number> | null>(null);
 
@@ -64,9 +67,9 @@ const TableOverview = (props: TableOverviewProps) => {
   return (
     <div className="flex flex-col mt-6 mx-16 text-xl font-medium text-center gap-6">
       <div className="grid grid-cols-3 gap-6">
-        <div className="flex flex-col w-full aspect-[16/6] bg-[#F6FAFD] outline outline-2 outline-[#D4D4D4] text-black items-start justify-center p-6 rounded-[4] gap-2">
+        <div className="flex flex-col w-full aspect-[16/6] bg-[#F6FAFD] outline outline-2 outline-[#D4D4D4] text-black items-start justify-start p-6 rounded-[4] gap-2">
           <div>
-            <p className="text-xl font-semibold">Books Borrowed: </p>
+            <p className="text-xl font-semibold">No. of books borrowed </p>
           </div>
           <div>
             <p
@@ -79,32 +82,40 @@ const TableOverview = (props: TableOverviewProps) => {
                 : "loading..."}
             </p>
           </div>
+        </div>
+
+        <div className="flex flex-col w-full aspect-[16/6] bg-[#F6FAFD] outline outline-2 outline-[#D4D4D4] text-black items-start justify-start p-6 rounded-[4] gap-2">
           <div>
-            <p className="text-[#757575] font-normal">{filterInfo}</p>
+            <p className="text-xl font-semibold">Top 3 borrowed books </p>
+          </div>
+          <div className="w-full">
+            {topThree.map((book, i) => {
+              return (
+                <div
+                  key={book.id}
+                  className="flex flex-row w-full gap-1 text-base text-start font-normal text-[#202D74] "
+                >
+                  <p>{i + 1}.</p>
+                  <Link
+                    href={"/dashboard/books/" + book.id}
+                    className="max-w-full"
+                  >
+                    <p className=" w-full text-base font-normal underline truncate ">
+                      {book.title}
+                    </p>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        <div className="flex flex-col w-full aspect-[16/6] bg-[#F6FAFD] outline outline-2 outline-[#D4D4D4] text-black items-start justify-center p-6 rounded-[4] gap-2">
+        <div className="flex flex-col w-full aspect-[16/6] bg-[#F6FAFD] outline outline-2 outline-[#D4D4D4] text-black items-start justify-start p-6 rounded-[4] gap-2">
           <div>
-            <p className="text-xl font-semibold">Books Added: </p>
+            <p className="text-xl font-semibold">Average borrow duration </p>
           </div>
           <div>
-            <p className="text-4xl font-medium">10</p>
-          </div>
-          <div>
-            <p className="text-[#757575] font-normal">{filterInfo}</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col w-full aspect-[16/6] bg-[#F6FAFD] outline outline-2 outline-[#D4D4D4] text-black items-start justify-center p-6 rounded-[4] gap-2">
-          <div>
-            <p className="text-xl font-semibold">Books Removed: </p>
-          </div>
-          <div>
-            <p className="text-4xl font-medium">10</p>
-          </div>
-          <div>
-            <p className="text-[#757575] font-normal">{filterInfo}</p>
+            <p className="text-4xl font-medium">{borrowDuration}</p>
           </div>
         </div>
       </div>

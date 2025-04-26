@@ -17,15 +17,14 @@ import SearchBar from "@/components/SearchBar";
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");
   const [range, setRange] = useState<DateRange | undefined>(undefined);
-  const filterText =
-    range?.from && range?.to
-      ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
-      : "all time";
   const [users, setUsers] = useState<User[]>([]);
   const [requests, setRequests] = useState<BookRequest[]>([]);
   const [bookStats, setBookStats] = useState<Record<number, BookStats>>({});
   const [books, setBooks] = useState<Book[]>([]);
   const [requestCount, setRequestCount] = useState(0);
+
+  const [topThree, setTopThree] = useState<Book[]>([]);
+  const [averageDuration, setAverageDuration] = useState<string>("");
 
   const [currentBookPage, setCurrentBookPage] = useState(1); // For Book Catalog
   const [totalBookPages, setTotalBookPages] = useState(0); // Total pages for books
@@ -39,6 +38,7 @@ export default function DataPage() {
   // LOADING STATES
   const [loadingBooks, setLoadingBooks] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingGraphs, setLoadingGraphs] = useState(false);
 
   useEffect(() => {
     if (activeTab === "Book Catalog") {
@@ -115,8 +115,63 @@ export default function DataPage() {
   }, [range, currentUserPage, activeTab, searchData]); // Refetch users when currentUserPage or activeTab changes
 
   useEffect(() => {
+    setLoadingGraphs(true);
     const fetchData = async () => {
       try {
+        const booksResult = await getAllBooks({
+          withStats: true,
+          fromDate: range?.from,
+          endDate: range?.to,
+        });
+
+        if (booksResult) {
+          const { books: fetchedBooks } = booksResult as {
+            books: (BookWithRequests & BookStats)[];
+            totalPages: number;
+          };
+
+          // getting top 3 most requested books
+          const top3 = fetchedBooks
+            .sort((a, b) => {
+              return (
+                (b.requests ? b.requests.length : 0) -
+                (a.requests ? a.requests.length : 0)
+              );
+            })
+            .slice(0, 3);
+          setTopThree(top3);
+
+          // aggregating all the requests
+          const allRequests = fetchedBooks.flatMap(
+            (book) => book.requests ?? []
+          );
+          if (allRequests.length > 0) {
+            const avgTime =
+              allRequests
+                .filter((req) => req.returnedBy)
+                .reduce((prev, curr) => {
+                  if (!curr.returnedBy) return 0;
+                  return (
+                    new Date(curr.returnedBy).getTime() -
+                    new Date(curr.requestedOn).getTime() +
+                    prev
+                  );
+                }, 0) / allRequests.length;
+
+            const avgMinutes = avgTime / 60000;
+            const avgHours = avgMinutes / 60;
+            const avgDays = avgHours / 24;
+            const avgWeeks = avgDays / 7;
+
+            const displayText =
+              Math.floor(avgWeeks) > 0
+                ? Math.floor(avgWeeks) + " Weeks"
+                : Math.floor(avgDays) + " Days";
+            setAverageDuration(displayText);
+          } else {
+            setAverageDuration("No requests");
+          }
+        }
         // promise.allSettled so they can fail independently.
         const [requestCountResult] = await Promise.allSettled([
           getRequestCount(range?.from, range?.to),
@@ -139,6 +194,7 @@ export default function DataPage() {
       } finally {
         setCurrentUserPage(1);
         setCurrentBookPage(1);
+        setLoadingGraphs(false);
       }
     };
     fetchData();
@@ -183,13 +239,17 @@ export default function DataPage() {
 
         {/* Tab Content */}
       </div>
-      {activeTab === "Overview" && (
-        <TableOverview
-          filterInfo={filterText}
-          requestCount={requestCount}
-          range={range}
-        />
-      )}
+      {activeTab === "Overview" &&
+        (loadingGraphs ? (
+          <LoadingSkeleton />
+        ) : (
+          <TableOverview
+            borrowDuration={averageDuration}
+            topThree={topThree}
+            requestCount={requestCount}
+            range={range}
+          />
+        ))}
       {activeTab === "Book Catalog" && (
         <>
           <SearchBar
