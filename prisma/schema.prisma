@@ -32,13 +32,14 @@ model Book {
   publisher   String
   releaseDate DateTime?     @default(now())
   skills      BookSkills[]
-  bookType    BookType
-  level       BookLevel
+  bookType    BookType?
+  level       BookLevel?
   numPages    Int?          @default(0)
   coverURL    String        @default("placeholder")
   copies      Int           @default(0)
   isbn        String[]
   createdAt   DateTime      @default(now()) @map("created_at")
+  extraInfo   String?
   requests    BookRequest[]
 
   @@map("Books")
@@ -48,12 +49,13 @@ model BookRequest {
   id          Int           @id @default(autoincrement())
   userId      String
   bookId      Int
+  status      RequestStatus
   createdAt   DateTime
   message     String
   bookTitle   String
   requestedOn DateTime
-  returnedBy  DateTime
-  status      RequestStatus
+  returnedBy  DateTime?
+  dueDate     DateTime?
   book        Book          @relation(fields: [bookId], references: [id], onDelete: Cascade)
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 

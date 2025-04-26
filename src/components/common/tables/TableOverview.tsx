@@ -95,7 +95,7 @@ const TableOverview = (props: TableOverviewProps) => {
                   key={book.id}
                   className="flex flex-row w-full gap-1 text-base text-start font-normal text-[#202D74] "
                 >
-                  <p>{i}.</p>
+                  <p>{i + 1}.</p>
                   <Link
                     href={"/dashboard/books/" + book.id}
                     className="max-w-full"

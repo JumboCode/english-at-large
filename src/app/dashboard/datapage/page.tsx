@@ -38,6 +38,7 @@ export default function DataPage() {
   // LOADING STATES
   const [loadingBooks, setLoadingBooks] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingGraphs, setLoadingGraphs] = useState(false);
 
   useEffect(() => {
     if (activeTab === "Book Catalog") {
@@ -114,6 +115,7 @@ export default function DataPage() {
   }, [range, currentUserPage, activeTab, searchData]); // Refetch users when currentUserPage or activeTab changes
 
   useEffect(() => {
+    setLoadingGraphs(true);
     const fetchData = async () => {
       try {
         const booksResult = await getAllBooks({
@@ -192,6 +194,7 @@ export default function DataPage() {
       } finally {
         setCurrentUserPage(1);
         setCurrentBookPage(1);
+        setLoadingGraphs(false);
       }
     };
     fetchData();
@@ -236,14 +239,17 @@ export default function DataPage() {
 
         {/* Tab Content */}
       </div>
-      {activeTab === "Overview" && (
-        <TableOverview
-          borrowDuration={averageDuration}
-          topThree={topThree}
-          requestCount={requestCount}
-          range={range}
-        />
-      )}
+      {activeTab === "Overview" &&
+        (loadingGraphs ? (
+          <LoadingSkeleton />
+        ) : (
+          <TableOverview
+            borrowDuration={averageDuration}
+            topThree={topThree}
+            requestCount={requestCount}
+            range={range}
+          />
+        ))}
       {activeTab === "Book Catalog" && (
         <>
           <SearchBar
