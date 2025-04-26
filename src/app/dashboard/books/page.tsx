@@ -81,7 +81,6 @@ const BooksPage = () => {
             totalPages: fetchedTotalPages,
             total: fetchedTotalBooks,
           } = booksResult;
-          console.log(fetchedBooksPage);
           setBooks(fetchedBooksPage);
           setTotalBookPages(fetchedTotalPages);
           setFetchedTotal(fetchedTotalBooks);
