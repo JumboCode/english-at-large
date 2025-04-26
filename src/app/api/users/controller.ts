@@ -1,61 +1,86 @@
-import { User, BookRequest } from "@prisma/client";
+import { User, BookRequest, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { UserWithRequests, validateUserData } from "@/lib/util/types";
 import clerkClient from "@/clerk";
 
 // added date filtering on requests for each user
 export const getAllUsersController = async (
-  page: number = 1,
-  limit: number = 10,
+  page: number = 0,
+  limit: number = 0,
   fromDate?: Date,
-  endDate?: Date
+  endDate?: Date,
+  search?: string,
+  filterUsersWithoutRequests: boolean = false
 ): Promise<{
   users: UserWithRequests[];
   total: number;
   totalPages: number;
 }> => {
   try {
-    // Calculate the offset (skip) for pagination
-    const skip = page > 0 && limit > 0 ? (page - 1) * limit : undefined;
-    // Fetch paginated users and total count
-    if (fromDate && endDate) {
-      const [users, total] = await Promise.all([
-        prisma.user.findMany({
-          skip: skip,
-          take: limit > 0 ? limit : undefined,
-          include: {
-            requests: {
-              where: {
-                requestedOn: {
-                  gte: fromDate,
-                  lte: new Date(endDate.setHours(23, 59, 59, 999)),
-                },
-              },
-            },
-          },
-        }),
-        prisma.user.count(),
-      ]);
-      // Calculate total pages
-      const totalPages = Math.ceil(total / limit);
+    const noFilters = !page && !limit && !search && !filterUsersWithoutRequests;
 
-      return { users, total, totalPages };
-    } else {
-      const [users, total] = await Promise.all([
-        prisma.user.findMany({
-          skip: skip,
-          take: limit > 0 ? limit : undefined,
-          include: {
-            requests: true,
-          },
-        }),
-        prisma.user.count(),
-      ]);
-      // Calculate total pages
-      const totalPages = Math.ceil(total / limit);
-
-      return { users, total, totalPages };
+    if (noFilters) {
+      const allUsers = await prisma.user.findMany({
+        include: { requests: true },
+      });
+      return {
+        users: allUsers,
+        total: allUsers.length,
+        totalPages: 1,
+      };
     }
+
+    // Calculate the offset (skip) for pagination
+    const skip = page > 0 && limit > 0 ? (page - 1) * limit : 0;
+    // build the query
+    const where: Prisma.UserWhereInput = {};
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    if (fromDate && endDate) {
+      const toEndOfDay = new Date(endDate);
+      toEndOfDay.setHours(23, 59, 59, 999);
+
+      where.requests = {
+        some: {
+          requestedOn: { gte: fromDate, lte: toEndOfDay },
+        },
+      };
+    }
+
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: limit > 0 ? limit : undefined,
+        include: {
+          requests: {
+            where:
+              fromDate && endDate
+                ? {
+                    requestedOn: {
+                      gte: fromDate,
+                      lte: new Date(endDate.setHours(23, 59, 59, 999)),
+                    },
+                  }
+                : undefined,
+          },
+        },
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    const usersWithRequests = users.filter((user) => user.requests.length > 0);
+    return {
+      users: filterUsersWithoutRequests ? usersWithRequests : users,
+      total,
+      totalPages: Math.ceil(total / limit),
+    };
   } catch (error) {
     console.error("Error fetching users: ", error);
     throw error;

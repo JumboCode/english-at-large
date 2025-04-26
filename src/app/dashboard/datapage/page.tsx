@@ -12,6 +12,7 @@ import { BookStats, BookWithRequests } from "@/lib/util/types";
 import { getAllBooks } from "@/lib/api/books";
 import { DateRange } from "react-day-picker";
 import LoadingSkeleton from "@/app/loading";
+import SearchBar from "@/components/SearchBar";
 
 export default function DataPage() {
   const [activeTab, setActiveTab] = useState("Overview");
@@ -31,6 +32,10 @@ export default function DataPage() {
   const [currentUserPage, setCurrentUserPage] = useState(1); // For User History
   const [totalUserPages, setTotalUserPages] = useState(0); // Total pages for users
 
+  // user history and book catalog can share the same search data, reset each time
+  const [searchData, setSearchData] = useState<string>("");
+
+  // LOADING STATES
   const [loadingBooks, setLoadingBooks] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
@@ -45,6 +50,7 @@ export default function DataPage() {
             withStats: true,
             fromDate: range?.from,
             endDate: range?.to,
+            search: searchData,
           });
           if (booksResult) {
             const { books: fetchedBooks, totalPages: fetchedTotalPages } =
@@ -73,31 +79,27 @@ export default function DataPage() {
 
       fetchBooks();
     }
-  }, [currentBookPage, activeTab, range]); // Refetch books when currentBookPage or activeTab changes
+  }, [currentBookPage, activeTab, range, searchData]); // Refetch books when currentBookPage or activeTab changes
 
   useEffect(() => {
     if (activeTab === "User History") {
       setLoadingUsers(true);
       const fetchUsers = async () => {
         try {
-          const usersResult = await getAllUsers(
-            currentUserPage,
-            10,
-            range?.from,
-            range?.to
-          );
+          const usersResult = await getAllUsers({
+            page: currentUserPage,
+            limit: 10,
+            fromDate: range?.from,
+            endDate: range?.to,
+            search: searchData,
+          });
           if (usersResult) {
             const { users: fetchedUsers, totalPages: fetchedTotalPages } =
               usersResult;
-            const allRequests = fetchedUsers.flatMap(
-              (user) => user.requests || []
-            );
-            const usersWithRequests = fetchedUsers.filter((user) =>
-              allRequests.some((request) => request.userId === user.id)
-            );
 
-            setUsers(usersWithRequests);
-            setRequests(allRequests);
+            setUsers(fetchedUsers); // no manual filtering
+            setRequests(fetchedUsers.flatMap((user) => user.requests || [])); // still set requests if needed
+            setTotalUserPages(fetchedTotalPages);
             setTotalUserPages(fetchedTotalPages);
           }
         } catch (err) {
@@ -109,7 +111,7 @@ export default function DataPage() {
 
       fetchUsers();
     }
-  }, [range, currentUserPage, activeTab]); // Refetch users when currentUserPage or activeTab changes
+  }, [range, currentUserPage, activeTab, searchData]); // Refetch users when currentUserPage or activeTab changes
 
   useEffect(() => {
     const fetchData = async () => {
@@ -244,6 +246,18 @@ export default function DataPage() {
       )}
       {activeTab === "Book Catalog" && (
         <>
+          <SearchBar
+            button={
+              <DatePicker
+                range={range}
+                setRange={setRange}
+                altButtonStyle="min-w-28"
+                leftIcon={<CalendarMonthIcon />}
+              />
+            }
+            placeholderText="Search by book title"
+            setSearchData={setSearchData}
+          />
           {loadingBooks ? (
             <LoadingSkeleton />
           ) : (
@@ -253,6 +267,7 @@ export default function DataPage() {
                 bookStats={bookStats}
                 range={range}
                 setRange={setRange}
+                searchData={searchData}
               />
               {totalBookPages > 1 && (
                 <div className="pagination-controls flex justify-center mt-4">
@@ -287,6 +302,18 @@ export default function DataPage() {
       )}
       {activeTab === "User History" && (
         <>
+          <SearchBar
+            button={
+              <DatePicker
+                range={range}
+                setRange={setRange}
+                altButtonStyle="min-w-28"
+                leftIcon={<CalendarMonthIcon />}
+              />
+            }
+            placeholderText="Search by user name"
+            setSearchData={setSearchData}
+          />
           {loadingUsers ? (
             <LoadingSkeleton />
           ) : (
@@ -296,6 +323,7 @@ export default function DataPage() {
                 requests={requests}
                 range={range}
                 setRange={setRange}
+                searchData={searchData}
               />
               {totalUserPages > 1 && (
                 <div className="pagination-controls flex justify-center mt-4">
