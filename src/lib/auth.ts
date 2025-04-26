@@ -40,3 +40,28 @@ export async function requireUserWithRoleForRequestDelete(requestId: number) {
 
   return user;
 }
+
+export async function requireUserWithRoleOrInvite(
+  expectedRoles?: string | string[],
+  allowNewUser = false
+) {
+  const { userId: clerkId } = await auth();
+
+  if (!clerkId) throw new Error("Not authenticated");
+
+  const user = await prisma.user.findFirst({ where: { clerkId } });
+
+  if (!user) {
+    if (allowNewUser) {
+      // Allow if we're intentionally letting invited, not-yet-in-DB users through
+      return { clerkId, role: "Invited" };
+    }
+    throw new Error("User not found");
+  }
+
+  if (!expectedRoles?.includes(user.role)) {
+    throw new Error("Forbidden");
+  }
+
+  return user;
+}

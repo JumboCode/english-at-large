@@ -190,10 +190,16 @@ export const deleteUserController = async (id: string): Promise<User> => {
     if (!user) {
       throw new Error("User not found");
     } else {
-      if (!user.pending) {
-        await clerkClient.users.deleteUser(user.clerkId);
-      } else if (user.inviteID) {
-        await clerkClient.invitations.revokeInvitation(user.inviteID);
+      try {
+        if (!user.pending) {
+          await clerkClient.users.deleteUser(user.clerkId);
+        } else if (user.inviteID) {
+          await clerkClient.invitations.revokeInvitation(user.inviteID);
+        } else {
+          console.warn(`Invitation ${user.inviteID} cannot be revoked`);
+        }
+      } catch {
+        console.error("Failed to revoke invitation:");
       }
 
       return await prisma.user.delete({

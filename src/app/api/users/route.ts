@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireUserWithRole } from "@/lib/auth";
+import { requireUserWithRole, requireUserWithRoleOrInvite } from "@/lib/auth";
 import { User } from "@prisma/client";
 import {
   getAllUsersController,
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
 // PUT - update user
 export async function PUT(req: Request) {
   try {
-    await requireUserWithRole(["Admin"]);
+    await requireUserWithRoleOrInvite(["Admin"], true); // Allow new invited users
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
