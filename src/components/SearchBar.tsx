@@ -2,6 +2,7 @@
 import React, { useRef } from "react";
 import SearchIcon from "../assets/icons/Search";
 import { useDebounce } from "@/lib/hooks/useDebounce";
+import CloseIcon from "@/assets/icons/Close";
 
 interface searchBarProps {
   setSearchData: ((searchData: string) => void) | null;
@@ -48,6 +49,13 @@ const SearchBar = (props: searchBarProps) => {
     }
   };
 
+  const clearSearch = () => {
+    setLocalSearch("");
+    if (setSearchData) {
+      setSearchData("");
+    }
+  };
+
   return (
     <div className="flex flex-row gap-6 items-center min-w-full justify-between px-16 py-6 bg-white">
       <div
@@ -63,9 +71,21 @@ const SearchBar = (props: searchBarProps) => {
           onKeyDown={handleKeyDown}
           placeholder={placeholderText}
         />
-        <button>
-          <SearchIcon />
-        </button>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={clearSearch}
+            className={`text-gray-400 text-sm ${
+              localSearch ? "opacity-50" : "opacity-0"
+            } hover:opacity-100 hover:text-gray-600 transition-opacity duration-200`}
+            style={{ pointerEvents: localSearch ? "auto" : "none" }}
+          >
+            <CloseIcon className="w-[10px] h-[10px]" />
+          </button>
+          <button>
+            <SearchIcon />
+          </button>
+        </div>
       </div>
       <div className="flex flex-row items-center gap-3 flex-shrink-0">
         {button}

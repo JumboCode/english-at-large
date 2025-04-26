@@ -24,19 +24,22 @@ import { Invitation } from "@clerk/backend";
 //   }
 // };
 
-export const getAllUsers = async (
-  page: number = 0,
-  limit: number = 0,
-  fromDate?: Date,
-  endDate?: Date
-): Promise<
+export const getAllUsers = async (options?: {
+  page?: number;
+  limit?: number;
+  fromDate?: Date;
+  endDate?: Date;
+  search?: string;
+}): Promise<
   { users: UserWithRequests[]; total: number; totalPages: number } | undefined
 > => {
+  const { page, limit, fromDate, endDate, search } = options || {};
   try {
     const response = await axios.get(`/api/users?page=${page}&limit=${limit}`, {
       params: {
         fromDate: fromDate?.toISOString(),
         endDate: endDate?.toISOString(),
+        search: search,
       },
     });
     return response.data;

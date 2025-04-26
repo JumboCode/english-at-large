@@ -1,24 +1,20 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Book } from "@prisma/client";
-import SearchBar from "@/components/SearchBar";
 import Link from "next/link";
 import { dateToTimeString } from "@/lib/util/utilFunctions";
 import { BookStats } from "@/lib/util/types";
-import DatePicker from "../DatePicker";
 import { DateRange } from "react-day-picker";
-import CalendarMonthIcon from "@/assets/icons/calendar_month";
 
 interface BookCatalogProps {
   bookStats: Record<number, BookStats>;
   books: Book[];
   range?: DateRange;
   setRange: (range?: DateRange) => void;
+  searchData: string;
 }
 const BookCatalog = (props: BookCatalogProps) => {
-  const { bookStats, books, range, setRange } = props;
-
-  const [searchData, setSearchData] = useState("");
+  const { bookStats, books, searchData } = props;
 
   const subsetBooks = structuredClone<Book[]>(books).filter((book) =>
     book.title.toLowerCase().includes(searchData)
@@ -26,18 +22,6 @@ const BookCatalog = (props: BookCatalogProps) => {
 
   return (
     <div className="bg-white">
-      <SearchBar
-        button={
-          <DatePicker
-            range={range}
-            setRange={setRange}
-            altButtonStyle="min-w-28"
-            leftIcon={<CalendarMonthIcon />}
-          />
-        }
-        placeholderText="Search by book title"
-        setSearchData={setSearchData}
-      />
       <div className="px-16">
         <table className="table-auto bg-white w-full font-family-name:var(--font-geist-sans)]">
           <thead>
@@ -79,6 +63,11 @@ const BookCatalog = (props: BookCatalogProps) => {
               ))}
           </tbody>
         </table>
+        {subsetBooks.length === 0 ? (
+          <p className="ml-2 mt-4">
+            There are no requests on books found in this date range.
+          </p>
+        ) : null}
       </div>
     </div>
   );

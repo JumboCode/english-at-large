@@ -58,12 +58,13 @@ export async function GET(req: Request) {
 
       const effectiveFromDate = fromDate ?? new Date(0);
       const effectiveEndDate = endDate ?? new Date();
-
+      const searchParam = searchParams.get("search") ?? undefined;
       const { users, total, totalPages } = await getAllUsersController(
         page,
         limit,
         effectiveFromDate,
-        effectiveEndDate
+        effectiveEndDate,
+        searchParam
       ); // new
       return NextResponse.json({ users, total, totalPages, page }); // new
     }
