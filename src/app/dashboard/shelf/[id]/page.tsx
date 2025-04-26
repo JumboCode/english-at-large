@@ -72,60 +72,69 @@ const Shelf = (props: { params: Promise<Params> }) => {
         </div>
       </div>
 
-      <div>
-        <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10">
-          {" "}
-          Your loans{" "}
+      {loans.length > 0 && (
+        <div>
+          <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10">
+            {" "}
+            Your loans{" "}
+          </div>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {loans.map((request) => (
+              <li key={request.id} className="h-full">
+                <div className="h-full p-4 rounded-md border-2 border-[#D9D9D9]">
+                  <BookInfo
+                    book={request.book}
+                    user={user}
+                    onDelete={() => {
+                      setLoans((prevLoans) =>
+                        prevLoans.filter((r) => r.id !== request.id)
+                      );
+                      setHolds((prevHolds) =>
+                        prevHolds.filter((r) => r.id !== request.id)
+                      );
+                    }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {loans.map((request) => (
-            <li key={request.id} className="h-full">
-              <div className="h-full p-4 rounded-md border-2 border-[#D9D9D9]">
-                <BookInfo
-                  book={request.book}
-                  user={user}
-                  onDelete={() => {
-                    setLoans((prevLoans) =>
-                      prevLoans.filter((r) => r.id !== request.id)
-                    );
-                    setHolds((prevHolds) =>
-                      prevHolds.filter((r) => r.id !== request.id)
-                    );
-                  }}
-                />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      )}
 
-      <div className="pb-[100px]">
-        <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10">
-          {" "}
-          Your holds{" "}
+      {holds.length > 0 && (
+        <div className="pb-[100px]">
+          <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10">
+            {" "}
+            Your holds{" "}
+          </div>
+          <ul className="flex flex-wrap gap-4">
+            {holds.map((request) => (
+              <li key={request.id} className="w-1/2">
+                <div className="p-4 rounded-md border-2 border-[#D9D9D9] m-2">
+                  <BookInfo
+                    book={request.book}
+                    user={user}
+                    onDelete={() => {
+                      // Remove from loans or holds after cancel
+                      setLoans((prevLoans) =>
+                        prevLoans.filter((r) => r.id !== request.id)
+                      );
+                      setHolds((prevHolds) =>
+                        prevHolds.filter((r) => r.id !== request.id)
+                      );
+                    }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="flex flex-wrap gap-4">
-          {holds.map((request) => (
-            <li key={request.id} className="w-1/2">
-              <div className="p-4 rounded-md border-2 border-[#D9D9D9] m-2">
-                <BookInfo
-                  book={request.book}
-                  user={user}
-                  onDelete={() => {
-                    // Remove from loans or holds after cancel
-                    setLoans((prevLoans) =>
-                      prevLoans.filter((r) => r.id !== request.id)
-                    );
-                    setHolds((prevHolds) =>
-                      prevHolds.filter((r) => r.id !== request.id)
-                    );
-                  }}
-                />
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      )}
+      {holds.length == 0 && loans.length == 0 && (
+        <div className="font-[family-name:var(--font-rubik)] mb-5 mt-10">
+          You currently have no loans or holds
+        </div>
+      )}
     </div>
   );
 };
