@@ -75,9 +75,9 @@ const RemoveModal = ({ book, setShowRemoveModal }: RemoveModalProps) => {
             </p>
             <div className="mt-5 text-md font-[family-name:var(--font-rubik)]">
               <BookDetail
-                isbn={book.isbn.length !==  0 ? book.isbn : ["None"]}
+                isbn={book.isbn.length !== 0 ? book.isbn : ["None"]}
                 publisher={book.publisher ? book.publisher : "None"}
-                releaseDate={book.releaseDate ? book.releaseDate : "None"}
+                releaseDate={book.releaseDate}
                 numPages={book.numPages}
                 availableCopies={getAvailableCopies(book)}
                 copies={book.copies}

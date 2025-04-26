@@ -150,7 +150,7 @@ const BookForm = (props: BookFormProps) => {
     // Fields that should be treated as numbers
     const numericFields = new Set(["numPages"]);
 
-    let updatedValue: string | number = value;
+    let updatedValue: Date | string | number = value;
 
     // Handle numeric fields
     if (numericFields.has(name)) {
@@ -160,13 +160,13 @@ const BookForm = (props: BookFormProps) => {
       updatedValue = value === "" ? 0 : Math.max(Number(value), 0);
     }
 
-    // Handle date logic
-    if (name === "releaseDate" && new Date(value) > new Date()) {
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      updatedValue = `${year}-${month}-${day}`;
+    if (name === "releaseDate") {
+      // Prevent future dates
+      let dateValue = new Date(value);
+      if (dateValue > new Date()) {
+        dateValue = new Date(); // <-- just use the current date directly
+      }
+      updatedValue = dateValue;
     }
 
     // Update the correct book state
@@ -394,7 +394,7 @@ const BookForm = (props: BookFormProps) => {
               onChange={bookChangeHandler}
               defaultValue={
                 editBook && editBook.releaseDate
-                  ? editBook.releaseDate
+                  ? new Date(editBook.releaseDate).toISOString().split("T")[0]
                   : undefined
               }
             />

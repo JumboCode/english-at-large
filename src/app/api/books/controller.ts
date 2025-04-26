@@ -91,21 +91,19 @@ export const getAllBooksController = async (
         (status) => Prisma.sql`${status}::"RequestStatus"`
       );
 
-      // Inject into SQL:
-
       // RAW SQL path when availability matters
       const sortColumn =
         sortBy === "By Author"
-          ? Prisma.sql`b.author`
-          : sortBy === "By Release Date"
-          ? Prisma.sql`b."releaseDate"`
-          : Prisma.sql`b.title`; // default to title
+          ? Prisma.sql`ORDER BY LOWER(b.author) ASC`
+          : sortBy === "Date Added"
+          ? Prisma.sql`ORDER BY b."created_at" DESC`
+          : Prisma.sql`ORDER BY LOWER(b.title) ASC`; // default title sort
 
       const rawBooks = await prisma.$queryRaw<
         (Book & { active_requests: number })[]
       >(
         Prisma.sql`
-        SELECT b.*, 
+        SELECT b.*,    b."created_at" AS "createdAt", -- Explicitly map it
                COUNT(r.id) FILTER (
                  WHERE r.status NOT IN (${Prisma.join(castedStatuses)})
                ) AS active_requests
@@ -146,7 +144,7 @@ export const getAllBooksController = async (
         HAVING b.copies > COUNT(r.id) FILTER (
           WHERE r.status NOT IN ('Returned', 'Lost', 'Hold')
         )
-        ORDER BY ${sortColumn} ASC
+        ${sortColumn}
         LIMIT ${limit} OFFSET ${skip};
       `
       );
@@ -204,8 +202,14 @@ export const getAllBooksController = async (
         where: { id: { in: bookIds } },
         include: { requests: true },
       });
+
+      const orderedBooks = bookIds.flatMap((id) => {
+        const book = booksWithRequests.find((b) => b.id === id);
+        return book ? [book] : [];
+      });
+
       return {
-        books: booksWithRequests,
+        books: orderedBooks,
         total: Number(count),
         totalPages: Math.ceil(Number(count) / limit),
       };

@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React from "react";
 import { useState, useEffect } from "react";
 import { getAllBooks } from "@/lib/api/books";
 import { Book, BookLevel, BookSkills, UserRole } from "@prisma/client";
@@ -62,15 +62,6 @@ const BooksPage = () => {
   // use of structured clone creates new subset of search target books
   // allows filter to act on subset of searched books
 
-  const subsetBooks = useMemo(() => {
-    return structuredClone<Book[]>(books).filter(
-      (book) =>
-        book.title.toLowerCase().includes(searchData) ||
-        book.author.toLowerCase().includes(searchData) ||
-        book.isbn.some((isbn) => isbn.includes(searchData))
-    );
-  }, [books, searchData]);
-
   useEffect(() => {
     const fetchBooks = async () => {
       setLoadingBooks(true);
@@ -90,6 +81,7 @@ const BooksPage = () => {
             totalPages: fetchedTotalPages,
             total: fetchedTotalBooks,
           } = booksResult;
+          console.log(fetchedBooksPage);
           setBooks(fetchedBooksPage);
           setTotalBookPages(fetchedTotalPages);
           setFetchedTotal(fetchedTotalBooks);
@@ -193,7 +185,7 @@ const BooksPage = () => {
           </div>
         </div>
 
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 grid-flow-row">
           {loadingBooks
             ? // placeholders while books are loading
               Array.from({ length: 4 }).map((_, index) => (
@@ -215,7 +207,7 @@ const BooksPage = () => {
                   </div>
                 </li>
               ))
-            : subsetBooks.map((book, index) => (
+            : books.map((book, index) => (
                 <li key={index}>
                   <div>
                     <div className="p-4 border-gray-200 border bg-white shadow-md rounded-md hover:bg-blue-100 transition duration-200">

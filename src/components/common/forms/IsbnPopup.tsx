@@ -15,12 +15,17 @@ const IsbnPopup = (props: IsbnPopupProps) => {
   const [isbnError, setIsbnError] = useState(false);
 
   const validateIsbn = (isbnVal: string) => {
-    if (isbnVal.length !== 10 && isbnVal.length !== 13) {
+    // Remove dashes and spaces
+    const cleanedIsbn = isbnVal.replace(/[-\s]/g, "");
+
+    // Validate length after cleaning
+    if (cleanedIsbn.length !== 10 && cleanedIsbn.length !== 13) {
       setIsbnError(true);
     } else {
       setIsbnError(false);
     }
-    setIsbnData(isbnVal);
+
+    setIsbnData(cleanedIsbn);
   };
 
   return (

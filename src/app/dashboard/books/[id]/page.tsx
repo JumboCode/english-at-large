@@ -267,7 +267,7 @@ const BookDetails = (props: { params: Promise<Params> }) => {
                   <BookDetail
                     isbn={book.isbn.length !== 0 ? book.isbn : ["None"]}
                     publisher={book.publisher ? book.publisher : "None"}
-                    releaseDate={book.releaseDate ? book.releaseDate : "None"}
+                    releaseDate={book.releaseDate}
                     copies={book.copies}
                     numPages={book.numPages}
                     availableCopies={availableCopies}

@@ -4,7 +4,7 @@ import React from "react";
 interface DetailProps {
   isbn: string[];
   publisher: string;
-  releaseDate: string | null;
+  releaseDate: Date | null;
   copies: number;
   availableCopies: number;
   numPages: number | null;
@@ -31,11 +31,16 @@ const BookDetail = (props: DetailProps) => {
   } = props;
 
   return (
-    <div className={`flex flex-col my-5 ${altStyle} max-w-sm`}>
+    <div className={`flex flex-col my-5 ${altStyle} ${lineSpacing} max-w-sm`}>
       {[
         { label: "ISBN", value: [...new Set(isbn)].join(", ") },
         { label: "Publisher", value: publisher },
-        { label: "Release", value: releaseDate ?? "None" },
+        {
+          label: "Release",
+          value: releaseDate
+            ? new Date(releaseDate).toISOString().split("T")[0]
+            : "None",
+        },
         {
           label: "Copies",
           value: `${copies}, ${availableCopies} available`,
@@ -44,7 +49,7 @@ const BookDetail = (props: DetailProps) => {
       ].map((item, idx) => (
         <div
           key={idx}
-          className={`flex justify-between mb-1 ${lineSpacing} ${fontSize} ${verticalSpacing}`}
+          className={`flex justify-between mb-1 ${fontSize} ${verticalSpacing}`}
         >
           <div className={`text-gray-500 font-medium ${altWidth}`}>
             {item.label}
