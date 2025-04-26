@@ -4,7 +4,14 @@ import {
   BookWithRequests,
   validateBookData,
 } from "@/lib/util/types";
-import { Book, BookRequest, Prisma } from "@prisma/client";
+import {
+  Book,
+  BookLevel,
+  BookRequest,
+  BookSkills,
+  Prisma,
+  RequestStatus,
+} from "@prisma/client";
 /**
  * Utility controller that validates book fields, then creates a Book in backend.
  *
@@ -58,61 +65,219 @@ export const getAllBooksController = async (
   limit: number = 0,
   withStats: boolean = false,
   fromDate?: Date,
-  endDate?: Date
+  endDate?: Date,
+  skills?: BookSkills[],
+  levels?: BookLevel[],
+  bookAvailable?: boolean,
+  sortBy?: string,
+  search?: string
 ): Promise<{
   books: (BookWithRequests | (BookWithRequests & BookStats))[];
   total: number;
   totalPages: number;
 }> => {
   try {
-    // Calculate the offset (skip) for pagination
-    const skip = page > 0 && limit > 0 ? (page - 1) * limit : undefined;
+    const skip = page > 0 && limit > 0 ? (page - 1) * limit : 0;
 
-    // create the date filter
-    const where: Prisma.BookWhereInput = {};
+    if (bookAvailable) {
+      const excludedStatuses = [
+        RequestStatus.Returned,
+        RequestStatus.Lost,
+        RequestStatus.Hold,
+      ];
 
-    if (fromDate && endDate) {
-      const toEndOfDay = new Date(endDate);
-      toEndOfDay.setHours(23, 59, 59, 999);
+      // Cast each excluded status to the enum
+      const castedStatuses = excludedStatuses.map(
+        (status) => Prisma.sql`${status}::"RequestStatus"`
+      );
 
-      where.createdAt = {
-        gte: fromDate,
-        lte: toEndOfDay,
+      // Inject into SQL:
+
+      // RAW SQL path when availability matters
+      const sortColumn =
+        sortBy === "By Author"
+          ? Prisma.sql`b.author`
+          : sortBy === "By Release Date"
+          ? Prisma.sql`b."releaseDate"`
+          : Prisma.sql`b.title`; // default to title
+
+      const rawBooks = await prisma.$queryRaw<
+        (Book & { active_requests: number })[]
+      >(
+        Prisma.sql`
+        SELECT b.*, 
+               COUNT(r.id) FILTER (
+                 WHERE r.status NOT IN (${Prisma.join(castedStatuses)})
+               ) AS active_requests
+        FROM "Books" b
+        LEFT JOIN "BookRequests" r ON r."bookId" = b.id
+        ${
+          (skills && skills.length > 0) ||
+          (levels && levels.length > 0) ||
+          search
+            ? Prisma.sql`WHERE 1=1
+              ${
+                skills && skills.length > 0
+                  ? Prisma.sql`AND b.skills && ARRAY[${Prisma.join(
+                      skills
+                    )}]::"BookSkills"[]`
+                  : Prisma.empty
+              }
+              ${
+                levels && levels.length > 0
+                  ? Prisma.sql`AND b.level IN (${Prisma.join(
+                      levels.map((level) => Prisma.sql`${level}::"BookLevel"`)
+                    )})`
+                  : Prisma.empty
+              }
+              ${
+                search
+                  ? Prisma.sql`AND (
+                      LOWER(b.title) LIKE ${`%${search.toLowerCase()}%`} OR
+                      LOWER(b.author) LIKE ${`%${search.toLowerCase()}%`} OR
+                      ${search} = ANY(b.isbn)
+                    )`
+                  : Prisma.empty
+              }
+            `
+            : Prisma.empty
+        }
+        GROUP BY b.id
+        HAVING b.copies > COUNT(r.id) FILTER (
+          WHERE r.status NOT IN ('Returned', 'Lost', 'Hold')
+        )
+        ORDER BY ${sortColumn} ASC
+        LIMIT ${limit} OFFSET ${skip};
+      `
+      );
+
+      // Get total count for pagination with availability
+      const [{ count }] = await prisma.$queryRaw<{ count: bigint }[]>(
+        Prisma.sql`
+        SELECT COUNT(*) as count
+        FROM (
+          SELECT b.id
+          FROM "Books" b
+          LEFT JOIN "BookRequests" r ON r."bookId" = b.id
+          ${
+            (skills && skills.length > 0) ||
+            (levels && levels.length > 0) ||
+            search
+              ? Prisma.sql`WHERE 1=1
+               ${
+                 skills && skills.length > 0
+                   ? Prisma.sql`AND b.skills && ARRAY[${Prisma.join(
+                       skills
+                     )}]::"BookSkills"[]`
+                   : Prisma.empty
+               }
+                ${
+                  levels && levels.length > 0
+                    ? Prisma.sql`AND b.level IN (${Prisma.join(
+                        levels.map((level) => Prisma.sql`${level}::"BookLevel"`)
+                      )})`
+                    : Prisma.empty
+                }
+                ${
+                  search
+                    ? Prisma.sql`AND (
+                        LOWER(b.title) LIKE ${`%${search.toLowerCase()}%`} OR
+                        LOWER(b.author) LIKE ${`%${search.toLowerCase()}%`} OR
+                        ${search} = ANY(b.isbn)
+                      )`
+                    : Prisma.empty
+                }
+              `
+              : Prisma.empty
+          }
+          GROUP BY b.id
+          HAVING b.copies > COUNT(r.id) FILTER (
+            WHERE r.status NOT IN ('Returned', 'Lost', 'Hold')
+          )
+        ) AS available_books;
+      `
+      );
+
+      const bookIds = rawBooks.map((b) => b.id);
+
+      const booksWithRequests = await prisma.book.findMany({
+        where: { id: { in: bookIds } },
+        include: { requests: true },
+      });
+      return {
+        books: booksWithRequests,
+        total: Number(count),
+        totalPages: Math.ceil(Number(count) / limit),
+      };
+    } else {
+      // Regular Prisma path when no availability filtering is needed
+      const where: Prisma.BookWhereInput = {};
+
+      if (fromDate && endDate) {
+        const toEndOfDay = new Date(endDate);
+        toEndOfDay.setHours(23, 59, 59, 999);
+        where.createdAt = { gte: fromDate, lte: toEndOfDay };
+      }
+
+      if (skills && skills.length > 0) {
+        where.skills = { hasSome: skills };
+      }
+
+      if (levels && levels.length > 0) {
+        where.level = { in: levels };
+      }
+
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: "insensitive" } },
+          { author: { contains: search, mode: "insensitive" } },
+          { isbn: { has: search } },
+        ];
+      }
+
+      const orderBy: Prisma.BookOrderByWithRelationInput = {};
+      switch (sortBy) {
+        case "By Title":
+          orderBy.title = "asc";
+          break;
+        case "By Author":
+          orderBy.author = "asc";
+          break;
+        case "By Release Date":
+          orderBy.releaseDate = "asc";
+          break;
+        default:
+          orderBy.title = "asc";
+      }
+
+      const [books, total] = await Promise.all([
+        prisma.book.findMany({
+          where,
+          orderBy,
+          skip,
+          take: limit > 0 ? limit : undefined,
+          include: {
+            requests: withStats,
+          },
+        }),
+        prisma.book.count({ where }),
+      ]);
+
+      const booksWithStats = withStats
+        ? books.map((book) => {
+            const totalRequests = book.requests.length;
+            const uniqueUsers = new Set(book.requests.map((req) => req.userId))
+              .size;
+            return { ...book, totalRequests, uniqueUsers };
+          })
+        : books;
+
+      return {
+        books: booksWithStats,
+        total,
+        totalPages: Math.ceil(total / limit),
       };
     }
-    // Fetch paginated books and total count
-    const [books, total] = await Promise.all([
-      prisma.book.findMany({
-        where,
-        skip,
-        take: limit > 0 ? limit : undefined,
-        include: {
-          requests: true, // Include related requests
-        },
-      }),
-      prisma.book.count({ where }), // Get the total number of books
-    ]);
-
-    const booksWithStats = withStats
-      ? books.map((book) => {
-          const totalRequests = book.requests.length;
-          const uniqueUsers = new Set(book.requests.map((req) => req.userId))
-            .size;
-          return {
-            ...book,
-            totalRequests,
-            uniqueUsers,
-          };
-        })
-      : books;
-
-    const totalPages = Math.ceil(total / limit);
-
-    return {
-      books: booksWithStats,
-      total,
-      totalPages,
-    };
   } catch (error) {
     console.error("Error fetching books: ", error);
     throw error;

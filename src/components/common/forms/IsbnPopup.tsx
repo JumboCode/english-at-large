@@ -26,7 +26,7 @@ const IsbnPopup = (props: IsbnPopupProps) => {
   return (
     <div>
       {isOpen ? (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
           <div className="bg-white pb-12 pt-6 px-12 min-w-[512px] min-h-96 w-2/5 h-2/5 rounded-lg shadow-lg  flex flex-col gap-6">
             <button
               className="text-black flex flex-row justify-end"

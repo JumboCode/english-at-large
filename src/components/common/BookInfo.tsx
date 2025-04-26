@@ -57,7 +57,7 @@ const BookInfo = (props: BookProps) => {
     return getCurrentUserRequestOnBook(book, user);
   }, [book, user]);
   return (
-    <div className="items-start gap-4">
+    <div className="items-start gap-4 relative">
       <Link
         href={`/dashboard/books/${book.id}`}
         className="flex flex-col md:flex-row gap-4 items-start"
@@ -107,37 +107,42 @@ const BookInfo = (props: BookProps) => {
           </div>
           {/* SHELF ONLY */}
           {user && currentRequest ? (
-            <>
-              {currentRequest.status !== RequestStatus.Hold ? (
-                <p className={"text-text-default-secondary italic mt-6"}>
-                  Return by{" "}
-                  {currentRequest.dueDate
-                    ? new Date(currentRequest.dueDate).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "long", // "May"
-                          day: "numeric", // "24"
-                          year: "numeric", // "2024"
-                        }
-                      )
-                    : "N/A"}
-                </p>
-              ) : null}
+            <div className="flex flex-col h-full">
+              {/* Tags and return date */}
+              <div className="flex-grow">
+                {currentRequest.status !== RequestStatus.Hold ? (
+                  <p className={"text-text-default-secondary italic mt-6"}>
+                    Return by{" "}
+                    {currentRequest.dueDate
+                      ? new Date(currentRequest.dueDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          }
+                        )
+                      : "N/A"}
+                  </p>
+                ) : null}
+              </div>
 
-              <CommonButton
-                label={"Cancel"}
-                altStyle="mt-5 rounded-lg ml-auto mr-4 transition duration-100 ease-in-out hover:bg-red-500 hover:text-white"
-                onClick={(e) => {
-                  e.preventDefault(); // Prevent Link navigation
-                  e.stopPropagation();
-                  // Perform your cancel logic here
-                  cancelReq(currentRequest);
-                  if (onDelete) {
-                    onDelete(); // Notify parent (Shelf) to remove this BookInfo
-                  }
-                }}
-              />
-            </>
+              {/* Cancel Button aligned to bottom-right */}
+              <div className="flex mt-4">
+                <CommonButton
+                  label={"Cancel"}
+                  altStyle="rounded-lg transition duration-100 ease-in-out hover:bg-red-500 hover:text-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    cancelReq(currentRequest);
+                    if (onDelete) {
+                      onDelete();
+                    }
+                  }}
+                />
+              </div>
+            </div>
           ) : null}
         </div>
       </Link>

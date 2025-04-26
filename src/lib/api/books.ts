@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BookStats, BookWithRequests } from "../util/types";
-import { Book } from "@prisma/client";
+import { Book, BookLevel, BookSkills } from "@prisma/client";
 
 /**
  * Utility function for fetching all books
@@ -34,6 +34,11 @@ export const getAllBooks = async (options?: {
   withStats?: boolean;
   fromDate?: Date;
   endDate?: Date;
+  skills?: BookSkills[];
+  levels?: BookLevel[];
+  bookAvailable?: boolean;
+  sortBy?: string;
+  search?: string;
 }): Promise<
   | {
       books: (BookWithRequests | (BookWithRequests & BookStats))[];
@@ -43,7 +48,18 @@ export const getAllBooks = async (options?: {
   | undefined
 > => {
   try {
-    const { page, limit, withStats = false, fromDate, endDate } = options || {};
+    const {
+      page,
+      limit,
+      withStats = false,
+      fromDate,
+      endDate,
+      skills,
+      levels,
+      bookAvailable,
+      sortBy,
+      search,
+    } = options || {};
 
     const response = await axios.get(`/api/books`, {
       params: {
@@ -52,6 +68,11 @@ export const getAllBooks = async (options?: {
         withStats: withStats,
         fromDate: fromDate?.toISOString(),
         endDate: endDate?.toISOString(),
+        skills: skills?.join(","),
+        levels: levels?.join(","),
+        bookAvailable,
+        sortBy,
+        search,
       },
     });
 

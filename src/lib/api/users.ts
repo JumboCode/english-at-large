@@ -83,7 +83,7 @@ export async function getOneUserByClerkid(
   } catch (error) {
     if (axios.isAxiosError(error)) {
       // Handle specific error cases
-      if (error.response?.status === 404) {
+      if (error.response?.status === 404 || 403) {
         return null;
       }
       throw new Error(`Failed to fetch user: ${error.message}`);
