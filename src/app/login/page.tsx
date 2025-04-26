@@ -19,10 +19,12 @@ const Login = () => {
 
         <div className="container mx-auto px-20 object-fill col-span-7 md:col-span-3 mt-5">
           <div className="text-2xl font-bold">
-            <h1> Welcome back! </h1>
+            <h1 className="font-[family-name:var(--font-rubik)]">
+              Welcome back!
+            </h1>
           </div>
 
-          <div className="text-m pb-10 text-zinc-500">
+          <div className="text-m pb-10 text-zinc-500 font-[family-name:var(--font-rubik)]">
             <p> Sign in to English at Large Catalog </p>
           </div>
 

@@ -51,11 +51,13 @@ const LoginForm = () => {
   return (
     <>
       <div className="flex flex-col gap-y-4">
-        <label className="text-l font-bold">Email</label>
+        <label className="text-l font-bold font-[family-name:var(--font-rubik)]">
+          Email
+        </label>
         <input
           type="email"
           id="email"
-          className="flex flex-row justify-between items-center -mt-3 text-sm px-4 py-2 border border-medium-grey-border rounded-lg bg-white cursor-text text-black"
+          className="flex flex-row justify-between items-center -mt-3 text-sm px-4 py-2 border border-medium-grey-border rounded-lg bg-white cursor-text text-black font-[family-name:var(--font-rubik)]"
           placeholder="Enter your email"
           onChange={(e) => setEmail(e.target.value)}
         />
