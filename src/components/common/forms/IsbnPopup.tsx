@@ -48,7 +48,7 @@ const IsbnPopup = (props: IsbnPopupProps) => {
                 that identifies published books.
               </p>
               <p className="text-text-default-secondary text-sm font-small font-[family-name:var(--font-rubik)] ">
-                Ex: 9783161484100
+                Ex: 1111111111111
               </p>
             </div>
 
