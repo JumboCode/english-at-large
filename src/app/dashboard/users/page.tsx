@@ -21,7 +21,7 @@ import {
 import useAdminLevelRedirect from "@/lib/hooks/useAdminLevelRedirect";
 
 export default function Manage() {
-  const user = useCurrentUser();
+  const currUser = useCurrentUser();
   useAdminLevelRedirect();
   const [searchData, setSearchData] = useState("");
 
@@ -90,7 +90,7 @@ export default function Manage() {
 
   return (
     <div>
-      {user?.role === UserRole.Admin ? (
+      {currUser?.role === UserRole.Admin ? (
         <div className="bg-white">
           <h1 className="bg-white text-black px-16 pt-12 font-bold text-3xl font-[family-name:var(--font-rubik)]">
             Users
@@ -157,17 +157,19 @@ export default function Manage() {
                       {dateToTimeString(user.createdAt)}
                     </td>
                     <td>
-                      <div className="flex justify-end items-center">
-                        <CommonButton
-                          label="Remove User"
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setRemovePopupOpen(true);
-                          }}
-                          altTextStyle="text-dark-blue"
-                          altStyle="bg-white"
-                        />
-                      </div>
+                      {user.id !== currUser.id ? (
+                        <div className="flex justify-end items-center">
+                          <CommonButton
+                            label="Remove User"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setRemovePopupOpen(true);
+                            }}
+                            altTextStyle="text-dark-blue"
+                            altStyle="bg-white"
+                          />
+                        </div>
+                      ) : null}
                     </td>
                   </tr>
                 ))}
