@@ -115,10 +115,19 @@ const BookForm = (props: BookFormProps) => {
   }, [isbn, newBook.isbn, setConfirmPopup]);
 
   useEffect(() => {
+    if (isbn && !newBook.isbn.includes(isbn)) {
+      setNewBook((prev) => {
+        const updated = { ...prev };
+        addToISBN(isbn, updated);
+        return updated;
+      });
+    }
+
     if (isbn) {
       pullISBN();
     }
-  }, [isbn, pullISBN]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isbn]);
 
   const requiredFields = useMemo(() => {
     const bookToSave = existingBook ? editBook : newBook;
@@ -258,6 +267,11 @@ const BookForm = (props: BookFormProps) => {
         if (setOriginalBook) setOriginalBook(newBook);
 
         if (similarBooks.length === 0) {
+          // Ensure ISBN is captured even if pullISBN failed (404)
+          if (isbn && !newBook.isbn.includes(isbn)) {
+            newBook.isbn.push(isbn);
+          }
+
           const createdBook = await createBook(newBook);
 
           setConfirmPopup({
