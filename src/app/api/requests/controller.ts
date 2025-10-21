@@ -1,10 +1,64 @@
 import { prisma } from "@/lib/prisma";
 import { Book, BookRequest, User, RequestStatus, Prisma } from "@prisma/client";
 import { RequestWithBookAndUser, validateRequestData } from "@/lib/util/types";
-import sgMail from "@sendgrid/mail";
 import { UserRole } from "@prisma/client";
 import { MAX_REQUESTS } from "@/lib/util/types";
-import { checkSendGridLimits } from "@/lib/api/requests";
+import {
+  createBookBorrowedEmail,
+  createPickupAdminNotificationEmail,
+  createPickupNotificationEmail,
+} from "@/lib/email/templates";
+
+// utils/sendResendEmail.ts
+// Updated helper for batch sending
+async function sendBatchEmails(messages: object[]): Promise<{
+  successful: number;
+  failed: number;
+  errors: string[];
+}> {
+  const results = {
+    successful: 0,
+    failed: 0,
+    errors: [] as string[],
+  };
+
+  // Resend batch endpoint accepts up to 100 emails per request
+  const BATCH_SIZE = 100;
+
+  for (let i = 0; i < messages.length; i += BATCH_SIZE) {
+    const batch = messages.slice(i, i + BATCH_SIZE);
+
+    try {
+      const response = await fetch("https://api.resend.com/emails/batch", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(batch),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Batch email failed: ${error}`);
+      }
+
+      results.successful += batch.length;
+
+      // Still respect rate limits between batches
+      if (i + BATCH_SIZE < messages.length) {
+        await new Promise((resolve) => setTimeout(resolve, 550));
+      }
+    } catch (error) {
+      results.failed += batch.length;
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      results.errors.push(errorMsg);
+      console.error("Batch email send failed:", errorMsg);
+    }
+  }
+
+  return results;
+}
 
 /**
  * Utility controller that gets all the Request in the backend.
@@ -195,50 +249,41 @@ export const postRequestController = async (
     // email logic
     const users = await prisma.user.findMany();
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
-
     if (users) {
-      const admins = users
+      const borrower = await prisma.user.findUnique({
+        where: { id: requestData.userId },
+      });
+
+      // in post request controller
+      const emailContent = createBookBorrowedEmail(
+        borrower?.name ?? "[No name provided]",
+        requestData.userId,
+        requestData.bookTitle,
+        requestData.bookId,
+        new Date(requestData.requestedOn)
+      );
+
+      const adminMessages = users
         .filter((user) => {
-          return user.role === UserRole.Admin;
+          return (
+            user.role === UserRole.Admin && user.email && user.pending == false
+          );
         })
-        .map(async (user) => {
-          const email = user.email;
-          if (email) {
-            const borrower = await prisma.user.findUnique({
-              where: { id: requestData.userId },
-            });
-            const msg = {
-              to: email,
-              from: "englishatlarge427@gmail.com",
-              subject: `${borrower?.name ?? "[No Username]"} Borrowed a Book`,
+        .map((user) => ({
+          to: user.email,
+          from: "English at Large Library <library@englishatlarge.org>",
+          ...emailContent,
+        }));
 
-              text: `Borrower Name: ${borrower?.name ?? "[No Username]"} \n
-              Borrower ID: ${requestData.userId} \n
-              Book Borrowed: ${requestData.bookTitle} \n
-              Book ID: ${requestData.bookId} \n
-              Borrowed on: ${requestData.requestedOn}`,
+      const emailResults = await sendBatchEmails(adminMessages);
 
-              html: `<p>
-              <strong>Borrower Name:</strong> ${
-                borrower?.name ?? "[No Username]"
-              } <br>
-              <strong> Borrower ID:</strong> ${requestData.userId} <br>
-              <strong>Book Borrowed:</strong> ${requestData.bookTitle} <br>
-              <strong>Book ID: </strong>${requestData.bookId} <br>
-              <strong>Borrowed on:</strong> ${requestData.requestedOn}
-              </p>`,
-            };
-
-            await sgMail.send(msg).catch((error: unknown) => {
-              console.error(error);
-            });
-          }
-        });
-
-      await Promise.all(admins);
+      if (emailResults.failed > 0) {
+        console.error(
+          `Failed to send ${emailResults.failed}/${adminMessages.length} admin emails`,
+          emailResults.errors
+        );
+      }
     }
-
     return request;
   } catch (error) {
     console.error("Error in postRequestController:", error);
@@ -312,14 +357,10 @@ export const putRequestController = async (
     // if you edit another field of something on pickup it'll send another email
     // changing hold to pickup --> send email
     if (newRequest.status === RequestStatus.Pickup) {
-      const emailsLeft = await checkSendGridLimits();
-      if (emailsLeft <= 0) throw new Error("Maximum emails reached today.");
       // notify tutor
       if (!user.email) {
         throw new Error("Tutor email not found");
       }
-
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY ?? "");
 
       const requests = await prisma.bookRequest.findMany({
         where: { userId: user.id },
@@ -334,99 +375,53 @@ export const putRequestController = async (
       // check if user has exceeded limit
       const exceededLimit: boolean = borrowed && borrowed.length > MAX_REQUESTS;
 
+      const tutorEmailContent = createPickupNotificationEmail(
+        user.name ?? "[No username]",
+        book.title,
+        book.id,
+        new Date(requestData.requestedOn),
+        exceededLimit
+      );
       const tutorMsg = {
         to: user.email,
-        from: "englishatlarge427@gmail.com",
-        subject: `Book Request Moved to Pickup: ${book.title}`,
-        text: `The following hold for: \n
-            Book Title: ${book.title} \n
-            Book ID: ${book.id} \n
-            which was placed on ${
-              requestData.requestedOn
-            } has been moved from hold to pickup.
-            Please ensure you arrive to retrieve it. \n\n
-            ${
-              exceededLimit
-                ? "However, you are currently at the max number of borrowed books. \
-              Please return a book before picking up this one. </strong>"
-                : ""
-            }`,
-
-        html: `<p> The following hold for: <br>
-            <strong> Book Title: </strong>  ${book.title} <br>
-            <strong> Book ID: </strong> ${book.id}  <br>
-            which was placed on <strong> ${
-              requestData.requestedOn
-            } </strong> has been moved
-            from hold to pickup. Please ensure you arrive to retrieve it. <br> <br>
-            ${
-              exceededLimit
-                ? "<strong> However, you are currently at the max number of borrowed books. \
-              Please return a book before picking up this one. </strong>"
-                : ""
-            } </p>`,
+        from: "English at Large Library <library@englishatlarge.org>",
+        ...tutorEmailContent,
       };
 
-      await sgMail.send(tutorMsg).catch((error: unknown) => {
-        console.error(error);
-      });
+      const tutorResult = await sendBatchEmails([tutorMsg]);
+      if (tutorResult.failed > 0) {
+        console.error("Failed to send tutor pickup notification");
+      }
 
       // Notify admins
       const admins = await prisma.user.findMany({
-        where: { role: UserRole.Admin },
+        where: { role: UserRole.Admin, pending: false },
       });
 
-      if (admins) {
-        admins.map(async (user) => {
-          const email = user.email;
-          if (email) {
-            const adminMsg = {
-              to: email,
-              from: "englishatlarge427@gmail.com",
-              subject: `Request by ${
-                user.name ?? "[No Username]"
-              }: Hold to Pickup`,
+      const adminEmailContent = createPickupAdminNotificationEmail(
+        user.name ?? "[No username]",
+        user.email,
+        requestData.userId,
+        requestData.bookTitle,
+        requestData.bookId,
+        new Date(requestData.requestedOn),
+        exceededLimit
+      );
+      if (admins && admins.length > 0) {
+        const adminMessages = admins
+          .filter((admin) => admin.email)
+          .map((user) => ({
+            to: user.email,
+            from: "English at Large Library <library@englishatlarge.org>",
+            ...adminEmailContent,
+          }));
 
-              text: `Holder Name: ${user.name ?? "[No Username]"} \n
-                  Holder Email: ${user.email} \n
-                  Holder ID: ${requestData.userId} \n
-                  Book Held: ${requestData.bookTitle} \n
-                  Book ID: ${requestData.bookId} \n
-                  Hold Placed On: ${requestData.requestedOn} \n\n
-                  The status of this request has been changed from Hold to Pickup.\n
-                  Please ensure proper handling of request.`,
-
-              html: `<p>
-                  <strong> Holder Name:</strong> ${
-                    user.name ?? "[No Username]"
-                  } <br>
-                  <strong> Holder ID:</strong> ${requestData.userId} <br>
-                  <strong>Book Held:</strong> ${requestData.bookTitle} <br>
-                  <strong>Book ID: </strong>${requestData.bookId} <br>
-                  <strong>Hold Placed On:</strong> ${
-                    requestData.requestedOn
-                  } <br><br>
-                  The status of this request has been changed from <strong> Hold </strong>
-                  to <strong> Pickup </strong>. <br>
-                  Please ensure proper handling of request.
-
-                  ${
-                    exceededLimit
-                      ? "<br> <br> <strong> This user has exceeded the maximum \
-                         number of requests. Please ensure that they return a \
-                         book before loaning this out. </strong>"
-                      : ""
-                  }
-                  </p>`,
-            };
-
-            await sgMail.send(adminMsg).catch((error: unknown) => {
-              console.error(error);
-            });
-          }
-        });
-
-        await Promise.all(admins);
+        const adminResults = await sendBatchEmails(adminMessages);
+        if (adminResults.failed > 0) {
+          console.error(
+            `Failed to send ${adminResults.failed}/${adminMessages.length} admin pickup notifications`
+          );
+        }
       }
     }
 

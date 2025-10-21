@@ -234,24 +234,3 @@ export const deleteRequest = async (
     console.error("Failed to delete request: ", error);
   }
 };
-
-export const checkSendGridLimits = async () => {
-  try {
-    const response = await fetch("https://api.sendgrid.com/v3/user/credits", {
-      headers: {
-        Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch SendGrid limits");
-    }
-
-    const data = await response.json();
-    return data.remain || 0; // Remaining emails allowed
-  } catch (error) {
-    console.error("Error checking SendGrid limits:", error);
-    return 0; // Assume limit is reached if check fails
-  }
-};
